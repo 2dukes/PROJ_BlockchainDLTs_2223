@@ -2,11 +2,16 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 contract Campaign {
+    enum RequestState {
+        APPROVED,
+        PENDING
+    }
+
     struct Request {
         uint256 id; // Stored externally as a mapping to a Request description.
         uint256 value;
         bool complete;
-        mapping(address => bool) approvals;
+        mapping(address => RequestState) approvals;
         uint256 approvalCount;
     }
 
@@ -18,19 +23,17 @@ contract Campaign {
     uint256 public endDate;
     address payable private crowdCreator;
 
+    error OnlyCampaignOwner();
+
+    error OnlyCrowdOwner();
+
     modifier onlyCampaignOwner() {
-        require(
-            msg.sender == campaignCreator,
-            "Only invokable by campaign's owner."
-        );
+        if (msg.sender != campaignCreator) revert OnlyCampaignOwner();
         _;
     }
 
     modifier onlyCrowdOwner() {
-        require(
-            msg.sender == crowdCreator,
-            "Only invokable by Crowdfunding's owner."
-        );
+        if (msg.sender != crowdCreator) revert OnlyCrowdOwner();
         _;
     }
 
@@ -46,7 +49,7 @@ contract Campaign {
         endDate = block.timestamp + (_openDays * 24 * 60 * 60);
     }
 
-    function contribute() public payable {
+    function contribute() external payable {
         require(
             msg.value >= minimumContribution,
             "Not enough value for contribution!"
@@ -62,7 +65,7 @@ contract Campaign {
     }
 
     function createRequest(uint256 _id, uint256 _value)
-        public
+        external
         onlyCampaignOwner
     {
         Request storage newRequest = requests.push();
@@ -73,7 +76,7 @@ contract Campaign {
         newRequest.approvalCount = 0;
     }
 
-    function approveRequest(uint256 idx) public {
+    function approveRequest(uint256 idx) external {
         Request storage request = requests[idx];
 
         require(
@@ -81,16 +84,16 @@ contract Campaign {
             "Not elegible for approving requests. Turn into contributor first."
         );
         require(
-            !request.approvals[msg.sender],
+            request.approvals[msg.sender] == RequestState.PENDING,
             "Already approved this request."
         );
         require(!request.complete, "Request already completed.");
 
-        request.approvals[msg.sender] = true;
+        request.approvals[msg.sender] = RequestState.APPROVED;
         request.approvalCount++;
     }
 
-    function completeRequest(uint256 idx) public onlyCampaignOwner {
+    function completeRequest(uint256 idx) external onlyCampaignOwner {
         Request storage request = requests[idx];
 
         require(
@@ -100,13 +103,14 @@ contract Campaign {
         require(!request.complete, "Request already completed.");
 
         // Transfer funds to campaignCreator and charge 2% fee
-        uint256 crowdFee = request.value / 50;
+        uint8 royaltyFeePercentage = 2;
+        uint256 royaltyAmount = (request.value * royaltyFeePercentage) / 100;
 
-        campaignCreator.transfer(request.value - crowdFee);
-        crowdCreator.transfer(crowdFee);
+        campaignCreator.transfer(request.value - royaltyAmount);
+        crowdCreator.transfer(royaltyAmount);
     }
 
-    function terminate() public onlyCrowdOwner {
+    function terminate() external onlyCrowdOwner {
         selfdestruct(crowdCreator);
     }
 }

@@ -11,7 +11,7 @@ contract CampaignFactory {
     }
 
     function deployCampaign(uint256 minimumContribution, uint256 openDays)
-        public
+        external
     {
         Campaign newCampaign = new Campaign(
             minimumContribution,
