@@ -1,8 +1,10 @@
-require("dotenv").config()
+const path = require('path')
+
+require("dotenv").config({ path: path.resolve(__dirname, '../.env') })
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 
-const { API_URL, WALLET_PRIVATE_KEY, ETHERSCAN_API_KEY } = process.env;
+const { ALCHEMY_API_URL, WALLET_PRIVATE_KEY, ETHERSCAN_API_KEY } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -11,7 +13,7 @@ module.exports = {
   networks: {
     hardhat: {},
     goerli: {
-      url: API_URL,
+      url: ALCHEMY_API_URL,
       accounts: [`0x${WALLET_PRIVATE_KEY}`]
     }
   },
