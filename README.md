@@ -28,11 +28,11 @@ Welcome the [Goerli Faucet](https://goerlifaucet.com/).
 
 According to Hardhat's configurations, the deployment already includes the verification of the contracts in the Goerli Network, which an Ethereum Testnet. This means that the code of the Smart Contract is visible to everyone in [Etherscan](https://goerli.etherscan.io/).
 
-**Running instructions:**
+## Frontend Running instructions:
 
 > `docker-compose up`
 
-**Rebuild instructions:**
+## Frontend Rebuild instructions:
 
 > `docker-compose up --build`
 
