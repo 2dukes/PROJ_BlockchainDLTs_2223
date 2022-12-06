@@ -5,20 +5,30 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+/// @title Contract responsible for Minting NFTs.
+/// @notice Used as an reward for campaign contributors.
 contract CrowdNFT is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
+    
+    /// @notice The counter of how many NFTs were minted.
     Counters.Counter private _tokenIds;
 
-    constructor() ERC721("CrowdNFT", "NFT") {}
+    /// @notice Instantiate CrowdNFT token.
+    constructor() CrowdNFT("CrowdNFT", "NFT") {}
 
+    /** @notice Mint an NFT.
+        @param recipient The address of the NFT destination.
+        @param tokenURI The metadata associated to the NFT.
+        @return newItemID The ID of the newly minted NFT.
+     */
     function mintNFT(address recipient, string memory tokenURI)
         public
         onlyOwner
-        returns (uint256)
+        returns (uint)
     {
         _tokenIds.increment();
 
-        uint256 newItemId = _tokenIds.current();
+        uint newItemId = _tokenIds.current();
         _mint(recipient, newItemId);
         _setTokenURI(newItemId, tokenURI);
 

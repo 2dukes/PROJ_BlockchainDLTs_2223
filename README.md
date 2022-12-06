@@ -46,11 +46,16 @@ According to Hardhat's configurations, the deployment already includes the verif
 
 **References:**
 - [Solidity Documentation](https://docs.soliditylang.org/en/v0.8.17/index.html);
-- [Ethers Documentation](https://docs.ethers.io/v5/).
+- [Ethers Documentation](https://docs.ethers.io/v5/);
 - [Alchemy](https://dashboard.alchemy.com/);
 - [How to Create an NFT on Ethereum Tutorial](https://docs.alchemy.com/docs/how-to-create-an-nft#step-3-add-goerlieth-from-a-faucet);
-- [How to Mint and NFT from Code](https://docs.alchemy.com/docs/how-to-mint-an-nft-from-code).
+- [How to Mint and NFT from Code](https://docs.alchemy.com/docs/how-to-mint-an-nft-from-code);
+- [NatSpec Format](https://docs.soliditylang.org/en/develop/natspec-format.html).
 
 ## Example Contract Deployments
 - [CrowdNFT.sol](./solidity/contracts/CrowdNFT.sol), [here](https://goerli.etherscan.io/address/0x5f68fcc1f4eb0246e66278b600aa2ea6d4517ba4).
 - [CampaignFactory.sol](./solidity/contracts/CampaignFactory.sol), [here](https://goerli.etherscan.io/address/0x55d7ff88e359de266ed81f49a605b4f7a8a21e62).
+
+## Contract Documentation
+
+To generate the Solidity contract's documentation, first install the Solidity Compiler, [solc](https://docs.soliditylang.org/en/v0.8.17/installing-solidity.html#clone-the-repository). Then run `solc --pretty-json --devdoc /path/to/solidity/file`.
