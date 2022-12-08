@@ -1,5 +1,6 @@
 import { InputBase } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
+import MuiAppBar from '@mui/material/AppBar';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -43,4 +44,32 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-export { Search, SearchIconWrapper, StyledInputBase };
+const drawerWidth = 240;
+
+const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+    transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    ...(open && {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: `${drawerWidth}px`,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    }),
+}));
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
+}));
+
+export { Search, SearchIconWrapper, StyledInputBase, AppBar, DrawerHeader, drawerWidth };
