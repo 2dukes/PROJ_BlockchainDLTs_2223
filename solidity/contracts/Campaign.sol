@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
+import "./CrowdNFT.sol";
+
 /// @title Campaign contract that includes all the necessary logic to run a campaign.
 contract Campaign {
     /// @notice Denotes the state of a request.
@@ -27,6 +29,9 @@ contract Campaign {
     /// @notice The allowed contribution a person can add to a Campaign.
     uint public minimumContribution;
 
+    /// @notice Number of campaign contributers that will get an NFT bonus.
+    uint8 maximumNFTContributors;
+
     /** @notice List of contributors and invested amount. 
         @dev Invested amount comes in Wei.
     */
@@ -44,6 +49,9 @@ contract Campaign {
         @dev CampaignFactory contract creator.
     */
     address payable private crowdCreator;
+
+    /// @notice Address of the deployed NFT contract.
+    address public crowdNFTContractAddr;
 
     /// @notice Error related to invocation only allowed by the campaign creator. 
     error OnlyCampaignOwner();
@@ -76,26 +84,33 @@ contract Campaign {
 
     /** @notice Instantiate a Campaign.
         @param _minimumContribution the minimum contribution a person can add to a Campaign.
+        @param _maximumNFTContributors number of campaign contributers that will get an NFT bonus.
         @param _openDays the number of days the Campaign will be open to new contributors.
         @param _campaignCreator denotes the creator of the campaign.
         @param _crowdCreator denotes the crowdfunding platform creator.
+        @param _crowdNFTContractAddr the address of the NFT contract.
      */
     constructor(
         uint _minimumContribution,
+        uint8 _maximumNFTContributors,
         uint _openDays,
         address _campaignCreator,
-        address _crowdCreator
+        address _crowdCreator,
+        address _crowdNFTContractAddr
     ) {
         campaignCreator = payable(_campaignCreator);
         crowdCreator = payable(_crowdCreator);
         minimumContribution = _minimumContribution;
+        maximumNFTContributors = _maximumNFTContributors;
+        crowdNFTContractAddr = _crowdNFTContractAddr;
         endDate = block.timestamp + (_openDays * 24 * 60 * 60);
     }
 
-    /** @notice Contribute to a campaign.
+    /** @notice Contribute to a campaign. The first maximumNFTContributors are awarded an NFT.
         @dev Requires a msg.value > minimumContribution and date of contribution less than endDate.
+        @param tokenURI is the metadata of the NFT.
     */ 
-    function contribute() external payable {
+    function contribute(string memory tokenURI) external payable {
         require(
             msg.value >= minimumContribution,
             "Not enough value for contribution!"
@@ -108,6 +123,10 @@ contract Campaign {
         if (approvers[msg.sender] == 0)
             // New approver
             approversCount++;
+        
+        // Contributor is only awarded an NFT if it's one of the first to contribute.
+        if(approversCount <= maximumNFTContributors && bytes(tokenURI).length > 0) 
+            CrowdNFT(crowdNFTContractAddr).mintNFT(msg.sender, tokenURI);
     }
 
     /** @notice Create a request for the use of the campaign funds.
