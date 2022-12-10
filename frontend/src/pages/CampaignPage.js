@@ -32,7 +32,7 @@ const data = [
 const CampaignPage = () => {
     return (
         <Fragment>
-            <Typography variant="h2" marginTop="0.5em" textAlign="center" gutterBottom >
+            <Typography variant="h3" marginTop="2em" textAlign="center" gutterBottom >
                 Campaigns
             </Typography>
             <Grid container

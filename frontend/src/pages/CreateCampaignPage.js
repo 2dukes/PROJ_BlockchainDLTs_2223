@@ -1,5 +1,8 @@
 import { useState, useEffect, Fragment } from 'react';
 import { Box, Stepper, Step, StepButton, Button, Typography, Container } from '@mui/material';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import SendIcon from '@mui/icons-material/Send';
 import dayjs from 'dayjs';
 import CampaignForm from '../components/campaign/CampaignForm';
 import NFTForm from '../components/nft/NFTForm';
@@ -10,7 +13,6 @@ const NewCampaign = () => {
     const [activeStep, setActiveStep] = useState(0);
     const [values, setValues] = useState({
         minimumContribution: 1,
-        NFTAwards: 0,
         campaignTitle: "",
         campaignDescription: "",
         closeDate: dayjs().add(5, 'day'),
@@ -53,7 +55,7 @@ const NewCampaign = () => {
 
     return (
         <Fragment>
-            <Typography variant="h2" marginTop="0.5em" textAlign="center" gutterBottom >
+            <Typography variant="h3" marginTop="2em" textAlign="center" gutterBottom >
                 Create Campaign
             </Typography>
             <Stepper nonLinear activeStep={activeStep}>
@@ -65,27 +67,26 @@ const NewCampaign = () => {
                     </Step>
                 ))}
             </Stepper>
-            <div>
-                <Fragment>
-                    <Container sx={{ mt: 2, mb: 1, py: 1 }}>
-                        {isLastStep() ? <NFTForm handleChange={handleChange} values={values} setValues={setValues} /> : <CampaignForm handleChange={handleChange} values={values} setValues={setValues} />}
-                    </Container>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                        <Button
-                            color="inherit"
-                            disabled={activeStep === 0}
-                            onClick={handleBack}
-                            sx={{ mr: 1 }}
-                        >
-                            Back
-                        </Button>
-                        <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={handleNext} sx={{ mr: 1 }}>
-                            {isLastStep() ? 'Submit' : 'Next'}
-                        </Button>
-                    </Box>
-                </Fragment>
-            </div>
+
+            <Container sx={{ mt: 2, mb: 1, py: 1 }}>
+                {isLastStep() ? <NFTForm values={values} setValues={setValues} /> : <CampaignForm handleChange={handleChange} values={values} setValues={setValues} />}
+                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                    <Button
+                        variant="outlined"
+                        color="inherit"
+                        disabled={activeStep === 0}
+                        onClick={handleBack}
+                        sx={{ fontWeight: "bold" }}
+                        startIcon={<ArrowLeftIcon />}
+                    >
+                        Back
+                    </Button>
+                    <Box sx={{ flex: '1 1 auto' }} />
+                    <Button sx={{ fontWeight: "bold" }} variant="contained" onClick={handleNext} endIcon={isLastStep() ? <SendIcon /> : <ArrowRightIcon />}>
+                        {isLastStep() ? 'Submit' : 'Next'}
+                    </Button>
+                </Box>
+            </Container>
         </Fragment>
     );
 };

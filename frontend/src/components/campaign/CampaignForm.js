@@ -1,10 +1,14 @@
 import { Container, Card, Button, Typography, TextField, InputAdornment, FormControl, Grid, ImageList, ImageListItem } from '@mui/material';
 import AspectRatio from '@mui/joy/AspectRatio';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 
 const CampaignForm = ({ handleChange, values, setValues }) => {
+    const printReset = values.campaignImage !== null && values.campaignImageURL !== null;
+
     return (
         <FormControl variant="outlined" sx={{ width: "100%" }}>
             <Typography variant="body1" fontWeight="bold">
@@ -52,7 +56,7 @@ const CampaignForm = ({ handleChange, values, setValues }) => {
                         <MobileDatePicker
                             inputFormat="MM/DD/YYYY"
                             value={values.closeDate}
-                            onChange={handleChange("closeDate")}
+                            onChange={(newValue) => { setValues({ ...values, closeDate: newValue }); }}
                             renderInput={(params) => <TextField {...params} fullWidth />}
 
                         />
@@ -67,12 +71,17 @@ const CampaignForm = ({ handleChange, values, setValues }) => {
             />
             <Container align="center" sx={{ marginTop: "2em" }}>
                 <label htmlFor="campaign-image">
-                    <Button variant="contained" color="primary" component="span">
-                        Upload Image(s)
+                    <Button sx={{ fontWeight: "bold", mr: printReset ? 2 : 0 }} variant="contained" color="primary" component="span" endIcon={<FileUploadIcon />}>
+                        Upload Image
                     </Button>
                 </label>
+                {printReset && (
+                    <Button sx={{ fontWeight: "bold", ml: 2 }} onClick={(e) => setValues(v => ({ ...v, campaignImage: null, campaignImageURL: null }))} variant="outlined" color="error" component="span" endIcon={<RefreshIcon />}>
+                        Reset
+                    </Button>
+                )}
             </Container>
-            {values.campaignImage !== null && values.campaignImageURL !== null && (
+            {printReset && (
                 <ImageList cols={1} rowHeight={200} sx={{ margin: "auto", marginTop: "1em", width: "22rem", border: "1px solid rgba(0, 0, 0, 0.23)", borderRadius: "4px", padding: "0.5em" }}>
                     {values.campaignImageURL && (
                         <Card variant="outlined">
