@@ -39,6 +39,7 @@ const CampaignForm = ({ handleChange, values }) => {
                         onChange={handleChange("minimumContribution")}
                         InputProps={{
                             startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                            inputProps: { min: 0 }
                         }}
                     />
                 </Grid>

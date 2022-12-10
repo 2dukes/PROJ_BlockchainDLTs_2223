@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { Box, Stepper, Step, StepButton, Button, Typography, Container } from '@mui/material';
 import dayjs from 'dayjs';
 import CampaignForm from '../components/campaign/CampaignForm';
@@ -13,8 +13,15 @@ const NewCampaign = () => {
         NFTAwards: 0,
         campaignTitle: "",
         campaignDescription: "",
-        closeDate: dayjs().add(5, 'day')
+        closeDate: dayjs().add(5, 'day'),
+        selectedImages: [],
+        imageURLs: []
     });
+
+    useEffect(() => {
+        if (values.selectedImages.length > 0)
+            setValues(v => ({ ...v, imageURLs: values.selectedImages.map(img => URL.createObjectURL(img)) }));
+    }, [values.selectedImages]);
 
     const handleChange = (prop) => (event) => {
         setValues({ ...values, [prop]: event.target.value });
@@ -57,7 +64,7 @@ const NewCampaign = () => {
             <div>
                 <Fragment>
                     <Container sx={{ mt: 2, mb: 1, py: 1 }}>
-                        {isLastStep() ? <NFTForm handleChange={handleChange} values={values} /> : <CampaignForm handleChange={handleChange} values={values} />}
+                        {isLastStep() ? <NFTForm handleChange={handleChange} values={values} setValues={setValues} /> : <CampaignForm handleChange={handleChange} values={values} />}
                     </Container>
                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                         <Button
