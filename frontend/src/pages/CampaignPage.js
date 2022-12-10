@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { Typography, Grid } from '@mui/material';
-import CampaignCard from "../components/CampaignCard";
+import CampaignCard from "../components/campaign/CampaignCard";
 
 const data = [
     {
