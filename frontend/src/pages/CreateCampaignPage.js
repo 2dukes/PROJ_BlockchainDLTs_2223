@@ -1,11 +1,26 @@
 import { useState, Fragment } from 'react';
-import { Box, Stepper, Step, StepButton, Button, Typography } from '@mui/material';
 
-const steps = ['Select campaign settings', 'Create an ad group', 'Create an ad'];
+import { Box, Stepper, Step, StepButton, Button, Typography, Container, TextField, InputAdornment, FormControl, Grid } from '@mui/material';
+import dayjs from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+
+const steps = ['Campaign Details', 'NFT Awards'];
 
 const NewCampaign = () => {
     const [activeStep, setActiveStep] = useState(0);
     const [completed, setCompleted] = useState({});
+    const [values, setValues] = useState({
+        minimumContribution: 1,
+        campaignTitle: "",
+        campaignDescription: "",
+        closeDate: dayjs().add(5, 'day')
+    });
+
+    const handleChange = (prop) => (event) => {
+        setValues({ ...values, [prop]: event.target.value });
+    };
 
     const totalSteps = () => {
         return steps.length;
@@ -80,9 +95,62 @@ const NewCampaign = () => {
                     </Fragment>
                 ) : (
                     <Fragment>
-                        <Typography sx={{ mt: 2, mb: 1, py: 1 }}>
-                            Step {activeStep + 1}
-                        </Typography>
+                        <Container sx={{ mt: 2, mb: 1, py: 1 }}>
+                            {/* Step {activeStep + 1} */}
+                            <FormControl variant="outlined" sx={{ width: "100%" }}>
+                                <Typography variant="body1" fontWeight="bold">
+                                    Title
+                                </Typography>
+                                <TextField
+                                    id="title"
+                                    value={values.campaignTitle}
+                                    onChange={handleChange("campaignTitle")}
+                                />
+                                <Typography variant="body1" fontWeight="bold" marginTop="1em">
+                                    Description
+                                </Typography>
+                                <TextField
+                                    id="description"
+                                    value={values.campaignDescription}
+                                    onChange={handleChange("campaignDescription")}
+                                    multiline
+                                    rows={4}
+                                />
+                                <Grid container
+                                    alignItems="center"
+                                    justify="center" columnSpacing={3}>
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="body1" fontWeight="bold" marginTop="1em">
+                                            Minimum Contribution
+                                        </Typography>
+                                        <TextField
+                                            sx={{ width: "100%" }}
+                                            id="minimum-contribution"
+                                            type="number"
+                                            value={values.minimumContribution}
+                                            onChange={handleChange("minimumContribution")}
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="body1" fontWeight="bold" marginTop="1em">
+                                            Open Until
+                                        </Typography>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <MobileDatePicker
+                                                inputFormat="MM/DD/YYYY"
+                                                value={values.closeDate}
+                                                onChange={handleChange("closeDate")}
+                                                renderInput={(params) => <TextField {...params} fullWidth />}
+
+                                            />
+                                        </LocalizationProvider>
+                                    </Grid>
+                                </Grid>
+                            </FormControl>
+                        </Container>
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Button
                                 color="inherit"
