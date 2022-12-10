@@ -14,14 +14,18 @@ const NewCampaign = () => {
         campaignTitle: "",
         campaignDescription: "",
         closeDate: dayjs().add(5, 'day'),
-        selectedImages: [],
-        imageURLs: []
+        NFTselectedImages: [],
+        NFTImageURLs: [],
+        campaignImage: null,
+        campaignImageURL: null
     });
 
     useEffect(() => {
-        if (values.selectedImages.length > 0)
-            setValues(v => ({ ...v, imageURLs: values.selectedImages.map(img => URL.createObjectURL(img)) }));
-    }, [values.selectedImages]);
+        if (values.NFTselectedImages.length > 0)
+            setValues(v => ({ ...v, NFTImageURLs: values.NFTselectedImages.map(img => URL.createObjectURL(img)) }));
+        if (values.campaignImage !== null)
+            setValues(v => ({ ...v, campaignImageURL: URL.createObjectURL(values.campaignImage) }));
+    }, [values.NFTselectedImages, values.campaignImage]);
 
     const handleChange = (prop) => (event) => {
         setValues({ ...values, [prop]: event.target.value });
@@ -64,7 +68,7 @@ const NewCampaign = () => {
             <div>
                 <Fragment>
                     <Container sx={{ mt: 2, mb: 1, py: 1 }}>
-                        {isLastStep() ? <NFTForm handleChange={handleChange} values={values} setValues={setValues} /> : <CampaignForm handleChange={handleChange} values={values} />}
+                        {isLastStep() ? <NFTForm handleChange={handleChange} values={values} setValues={setValues} /> : <CampaignForm handleChange={handleChange} values={values} setValues={setValues} />}
                     </Container>
                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                         <Button
