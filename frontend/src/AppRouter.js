@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import PageLayout from "./components/header/PageLayout";
 import CampaignPage from './pages/CampaignPage';
-import NewCampaign from './pages/NewCampaign';
+import CreateCampaignPage from './pages/CreateCampaignPage';
 // import { connectWallet } from "./services/connectWal  let";
 
 function App() {
@@ -12,7 +13,9 @@ function App() {
           path="/"
           key="/"
           element={
-            <CampaignPage key="/" />
+            <PageLayout>
+              <CampaignPage key="/" />
+            </PageLayout>
           }
         />
         <Route
@@ -20,7 +23,9 @@ function App() {
           path="/campaign/new"
           key="/campaign/new"
           element={
-            <NewCampaign key="/campaign/new" />
+            <PageLayout>
+              <CreateCampaignPage key="/campaign/new" />
+            </PageLayout>
           }
         >
         </Route>

@@ -1,8 +1,6 @@
-import { useState } from 'react';
-import { Box, Typography, Container, Grid } from '@mui/material';
+import { Fragment } from 'react';
+import { Typography, Grid } from '@mui/material';
 import CampaignCard from "../components/CampaignCard";
-import SideBar from '../components/header/SideBar';
-import TopBar from '../components/header/TopBar';
 
 const data = [
     {
@@ -32,31 +30,17 @@ const data = [
 ];
 
 const CampaignPage = () => {
-    const [open, setOpen] = useState(false);
-
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
-
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
-
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <TopBar handleDrawerOpen={handleDrawerOpen} open={open} />
-            <SideBar handleDrawerClose={handleDrawerClose} open={open} />
-            <Container sx={{ marginTop: "5em" }} maxWidth="lg">
-                <Typography variant="h2" marginTop="0.5em" textAlign="center" gutterBottom >
-                    Campaigns
-                </Typography>
-                <Grid container
-                    alignItems="center"
-                    justify="center" spacing={3}>
-                    {data.map(item => <Grid item xs={12} md={6} key={item.id}><CampaignCard title={item.title} description={item.description} imageURL={item.imageURL} /></Grid>)}
-                </Grid>
-            </Container>
-        </Box>
+        <Fragment>
+            <Typography variant="h2" marginTop="0.5em" textAlign="center" gutterBottom >
+                Campaigns
+            </Typography>
+            <Grid container
+                alignItems="center"
+                justify="center" spacing={3}>
+                {data.map(item => <Grid item xs={12} md={6} key={item.id}><CampaignCard title={item.title} description={item.description} imageURL={item.imageURL} /></Grid>)}
+            </Grid>
+        </Fragment>
     );
 };
 
