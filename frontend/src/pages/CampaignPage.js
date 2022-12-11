@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Typography, Grid } from '@mui/material';
 import CampaignCard from "../components/campaign/CampaignCard";
+import CampaignDetails from '../components/campaign/CampaignDetails';
 
 const data = [
     {
@@ -32,6 +33,7 @@ const data = [
 const CampaignPage = () => {
     return (
         <Fragment>
+            <CampaignDetails />
             <Typography variant="h3" marginTop="2em" textAlign="center" gutterBottom >
                 Campaigns
             </Typography>
