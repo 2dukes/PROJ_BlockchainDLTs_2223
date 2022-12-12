@@ -7,8 +7,8 @@ import "./CrowdNFT.sol";
 contract Campaign {
     /// @notice Denotes the state of a request.
     enum RequestState {
-        APPROVED,
-        PENDING
+        PENDING,
+        APPROVED
     }
 
     /// @notice Data structure responsible for a request to invest campaign funds.
