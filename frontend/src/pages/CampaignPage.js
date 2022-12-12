@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { Typography, Grid } from '@mui/material';
 import CampaignCard from "../components/campaign/CampaignCard";
 import CampaignDetails from '../components/campaign/CampaignDetails';
@@ -31,16 +31,18 @@ const data = [
 ];
 
 const CampaignPage = () => {
+    const [modalOpen, setModalOpen] = useState(false);
+
     return (
         <Fragment>
-            <CampaignDetails />
+            <CampaignDetails modalOpen={modalOpen} setModalOpen={setModalOpen} />
             <Typography variant="h3" marginTop="2em" textAlign="center" gutterBottom >
                 Campaigns
             </Typography>
             <Grid container
                 alignItems="center"
                 justify="center" spacing={3}>
-                {data.map(item => <Grid item xs={12} md={6} key={item.id}><CampaignCard title={item.title} description={item.description} imageURL={item.imageURL} /></Grid>)}
+                {data.map(item => <Grid item xs={12} md={6} key={item.id}><CampaignCard {...item} setModalOpen={setModalOpen} /></Grid>)}
             </Grid>
         </Fragment>
     );

@@ -22,7 +22,7 @@ const TopBar = ({ handleDrawerOpen, open }) => {
                     component="div"
                     sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
                 >
-                    Dapp: Crowdfunding Reinvented
+                    DApp: Crowdfunding Reinvented
                 </Typography>
                 <Search>
                     <SearchIconWrapper>

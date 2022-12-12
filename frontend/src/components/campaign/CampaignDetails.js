@@ -1,14 +1,22 @@
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { Box, Grid, Button, Typography, Modal, TextField, InputAdornment } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import CampaignInfoCard from './CampaignInfoCard';
 
 const items = [
     {
-        header: "0x1234567890",
+        header: "0x12345678901123456782345678901234567890123456789012345678901234567890",
         meta: "Address of Manager",
         description:
             "The manager created this campaign and can create requests to withdraw money.",
         style: { wordWrap: "break-word" },
+    },
+    {
+        header: "12/10/2022",
+        meta: "Open Until",
+        description:
+            "The end date of the campaign.",
     },
     {
         header: 1,
@@ -41,8 +49,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '60%',
-    height: '60%',
+    width: '70%',
     bgcolor: 'background.paper',
     border: '2px solid rgba(0, 0, 0, 0.23)',
     borderRadius: '20px',
@@ -50,17 +57,15 @@ const style = {
     p: 4
 };
 
-const CampaignDetails = () => {
-    const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+const CampaignDetails = ({ modalOpen, setModalOpen }) => {
+    const theme = useTheme();
+    const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
     return (
         <Fragment>
-            <Button onClick={handleOpen}>Open modal</Button>
             <Modal
-                open={open}
-                onClose={handleClose}
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -71,11 +76,10 @@ const CampaignDetails = () => {
                     <Grid container>
                         <Grid item xs={12} md={8}> {/* When in small devices, spacing = 0*/}
                             <Grid container spacing={2}>
-                                {items.map(item => (<Grid item={true} key={item.header} xs={12} md={5}><CampaignInfoCard {...item} /></Grid>))}
+                                {items.map(item => (<Grid item={true} key={item.header} xs={6} md={5}><CampaignInfoCard {...item} isSmall={isSmall} /></Grid>))}
                             </Grid>
-
                         </Grid>
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} sx={{ mt: isSmall ? 2 : 0 }}>
                             <Typography variant="body1" fontWeight="bold" marginTop="1em" sx={{ mt: 0 }}>
                                 Amount to Contribute
                             </Typography>

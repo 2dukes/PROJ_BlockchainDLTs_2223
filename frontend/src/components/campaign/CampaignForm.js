@@ -58,7 +58,6 @@ const CampaignForm = ({ handleChange, values, setValues }) => {
                             value={values.closeDate}
                             onChange={(newValue) => { setValues({ ...values, closeDate: newValue }); }}
                             renderInput={(params) => <TextField {...params} fullWidth />}
-
                         />
                     </LocalizationProvider>
                 </Grid>

@@ -1,4 +1,4 @@
-# Dapp: Crowdfunding Reinvented
+# DApp: Crowdfunding Reinvented
 
 ## Setup
 

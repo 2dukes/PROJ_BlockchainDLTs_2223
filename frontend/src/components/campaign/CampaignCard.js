@@ -5,10 +5,10 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
 
-const Campaign = ({ title, description, imageURL }) => {
+const Campaign = ({ title, description, imageURL, setModalOpen }) => {
     return (
         <Card sx={{ maxWidth: 500, margin: "auto" }}>
-            <CardActionArea>
+            <CardActionArea onClick={() => setModalOpen(true)}>
                 <CardMedia
                     component="img"
                     height="140"
