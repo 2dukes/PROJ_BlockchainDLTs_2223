@@ -7,6 +7,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import CampaignInfoCard from './CampaignInfoCard';
 import RequestTable from '../request/RequestTable';
+import CampaignCardWithPrice from './CampaignCardWithPrice';
 
 const items = [
     {
@@ -53,7 +54,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '70%',
+    width: '65%',
     bgcolor: 'background.paper',
     border: '2px solid rgba(0, 0, 0, 0.23)',
     borderRadius: '20px',
@@ -61,12 +62,19 @@ const style = {
     p: 4
 };
 
+const data = {
+    id: 1,
+    title: "CYPLUS Gadget",
+    price: 10,
+    imageURL: "https://c0.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,w_695,g_auto,q_auto,dpr_1.0,f_auto,h_460/kht8woep0znoe8kqfqih",
+};
 
 const CampaignDetails = ({ modalOpen, setModalOpen }) => {
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+    const isReallySmall = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [value, setValue] = useState('campaign-contribute');
+    const [value, setValue] = useState('campaign-details');
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -92,19 +100,17 @@ const CampaignDetails = ({ modalOpen, setModalOpen }) => {
                                 <Tab label="Requests" value="campaign-requests" />
                             </TabList>
                         </Box>
-                        <TabPanel value="campaign-details" sx={{ p: 0, pt: 2, height: '30rem' }}>
-                            <Typography variant="h5">
-                                Test
-                            </Typography>
+                        <TabPanel value="campaign-details" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
+                            <CampaignCardWithPrice {...data} />
                         </TabPanel>
-                        <TabPanel value="campaign-contribute" sx={{ p: 0, pt: 2, height: '30rem' }}>
+                        <TabPanel value="campaign-contribute" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
                             <Grid container>
-                                <Grid item xs={12} md={8}> {/* When in small devices, spacing = 0*/}
-                                    <Grid container spacing={2}>
-                                        {items.map(item => (<Grid item={true} key={item.header} xs={6} md={5}><CampaignInfoCard {...item} isSmall={isSmall} /></Grid>))}
+                                <Grid item xs={12} md={9}> {/* When in small devices, spacing = 0*/}
+                                    <Grid container spacing={1} px={isSmall ? "0em" : "1em"}>
+                                        {items.map(item => (<Grid item={true} key={item.header} xs={6}><CampaignInfoCard {...item} isSmall={isSmall} /></Grid>))}
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} md={4} sx={{ mt: isSmall ? 2 : 0 }}>
+                                <Grid item xs={12} md={3} sx={{ mt: isSmall ? 2 : 0 }}>
                                     <Typography variant="body1" fontWeight="bold" marginTop="1em" sx={{ mt: 0 }}>
                                         Amount to Contribute
                                     </Typography>
@@ -125,7 +131,7 @@ const CampaignDetails = ({ modalOpen, setModalOpen }) => {
                                 </Grid>
                             </Grid>
                         </TabPanel>
-                        <TabPanel value="campaign-requests" sx={{ p: 0, pt: 2, height: '30rem' }}>
+                        <TabPanel value="campaign-requests" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
                             <RequestTable />
                         </TabPanel>
                     </TabContext>

@@ -5,7 +5,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
 
-const Campaign = ({ title, description, imageURL, setModalOpen }) => {
+const CampaignCard = ({ title, description, imageURL, setModalOpen }) => {
     return (
         <Card sx={{ maxWidth: 500, margin: "auto" }}>
             <CardActionArea onClick={() => setModalOpen(true)}>
@@ -28,4 +28,4 @@ const Campaign = ({ title, description, imageURL, setModalOpen }) => {
     );
 };
 
-export default Campaign;
+export default CampaignCard;

@@ -33,7 +33,7 @@ const CampaignInfoCard = ({ header, meta, description, isSmall }) => {
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         display: '-webkit-box',
-                        WebkitLineClamp: '3',
+                        WebkitLineClamp: '2',
                         WebkitBoxOrient: 'vertical',
                     }}>
                         {description}

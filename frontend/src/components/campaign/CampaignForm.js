@@ -71,7 +71,7 @@ const CampaignForm = ({ handleChange, values, setValues }) => {
             <Container align="center" sx={{ marginTop: "2em" }}>
                 <label htmlFor="campaign-image">
                     <Button sx={{ fontWeight: "bold", mr: printReset ? 2 : 0 }} variant="contained" color="primary" component="span" endIcon={<FileUploadIcon />}>
-                        Upload Image
+                        Upload Product Image
                     </Button>
                 </label>
                 {printReset && (
