@@ -13,6 +13,8 @@ const NewCampaign = () => {
     const [activeStep, setActiveStep] = useState(0);
     const [values, setValues] = useState({
         minimumContribution: 1,
+        targetContribution: 10,
+        productPrice: 0.25,
         campaignTitle: "",
         campaignDescription: "",
         closeDate: dayjs().add(5, 'day'),
