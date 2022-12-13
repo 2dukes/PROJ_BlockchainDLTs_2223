@@ -64,7 +64,8 @@ const style = {
 
 const data = {
     id: 1,
-    title: "CYPLUS Gadget",
+    title: "CYPLUS Gadget x 1",
+    description: "Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica",
     price: 10,
     imageURL: "https://c0.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,w_695,g_auto,q_auto,dpr_1.0,f_auto,h_460/kht8woep0znoe8kqfqih",
 };
@@ -101,13 +102,16 @@ const CampaignDetails = ({ modalOpen, setModalOpen }) => {
                             </TabList>
                         </Box>
                         <TabPanel value="campaign-details" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
-                            <CampaignCardWithPrice {...data} />
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} md={6}><CampaignCardWithPrice {...data} /></Grid>
+                            </Grid>
+
                         </TabPanel>
                         <TabPanel value="campaign-contribute" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
                             <Grid container>
                                 <Grid item xs={12} md={9}> {/* When in small devices, spacing = 0*/}
-                                    <Grid container spacing={1} px={isSmall ? "0em" : "1em"}>
-                                        {items.map(item => (<Grid item={true} key={item.header} xs={6}><CampaignInfoCard {...item} isSmall={isSmall} /></Grid>))}
+                                    <Grid container spacing={1} pr={isSmall ? "0em" : "1em"}>
+                                        {items.map(item => (<Grid item key={item.header} xs={6}><CampaignInfoCard {...item} isSmall={isSmall} /></Grid>))}
                                     </Grid>
                                 </Grid>
                                 <Grid item xs={12} md={3} sx={{ mt: isSmall ? 2 : 0 }}>
