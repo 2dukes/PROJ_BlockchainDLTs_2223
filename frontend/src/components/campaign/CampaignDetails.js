@@ -1,7 +1,6 @@
 import { Fragment, useState } from 'react';
-import { Tab, Box, Grid, Button, Typography, Modal, TextField, InputAdornment } from '@mui/material';
+import { Tab, Box, Grid, Button, Typography, Modal, TextField, InputAdornment, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
@@ -54,7 +53,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '65%',
+    width: '55%',
     bgcolor: 'background.paper',
     border: '2px solid rgba(0, 0, 0, 0.23)',
     borderRadius: '20px',
@@ -101,11 +100,17 @@ const CampaignDetails = ({ modalOpen, setModalOpen }) => {
                                 <Tab label="Requests" value="campaign-requests" />
                             </TabList>
                         </Box>
-                        <TabPanel value="campaign-details" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} md={6}><CampaignCardWithPrice {...data} /></Grid>
-                            </Grid>
-
+                        <TabPanel align="center" value="campaign-details" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
+                            <CampaignCardWithPrice {...data} />
+                            {/* <Grid container> */}
+                            {/* <Grid item xs={12} md={6}><CampaignCardWithPrice {...data} /></Grid> */}
+                            {/* <Grid item xs={12} md={6}>
+                                    <Typography variant="h5" fontWeight="bold" gutterBottom>
+                                        Delivery Information
+                                    </Typography>
+                                    <ProductDeliveryForm />
+                                </Grid> */}
+                            {/* </Grid> */}
                         </TabPanel>
                         <TabPanel value="campaign-contribute" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
                             <Grid container>

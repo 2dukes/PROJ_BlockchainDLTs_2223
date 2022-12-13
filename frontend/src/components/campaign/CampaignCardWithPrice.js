@@ -1,16 +1,9 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import { CardActionArea } from '@mui/material';
+import { Box, Chip, Button, Card, CardContent, CardMedia, Typography, CardActionArea } from '@mui/material';
 
 const CampaignCardWithPrice = ({ title, description, price, imageURL }) => {
     return (
-        <Card sx={{ maxWidth: 500 }}>
+        <Card sx={{ maxWidth: 550 }}>
             <CardActionArea>
                 <CardMedia
                     component="img"
@@ -29,7 +22,7 @@ const CampaignCardWithPrice = ({ title, description, price, imageURL }) => {
                             $10&nbsp;303,70
                         </Typography>
                     </Typography>
-                    <Typography variant="body2" component="div" sx={{my: 1.5}}>
+                    <Typography variant="body2" component="div" sx={{ my: 1.5 }}>
                         {description}
                     </Typography>
                     <Typography variant="body1" component="div" paddingBottom="0.75em">
