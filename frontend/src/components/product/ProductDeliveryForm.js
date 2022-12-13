@@ -1,73 +1,74 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
+import { forwardRef } from 'react';
+import { AppBar, Button, TextField, Grid, Typography, FormControl, Dialog, DialogActions, DialogContent, Slide } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
-const Transition = React.forwardRef(function Transition(props, ref) {
+const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ProductDeliveryForm = ({ open, handleClose }) => {
+const ProductDeliveryForm = ({ open, setOpenDialog }) => {
+    const { enqueueSnackbar } = useSnackbar();
+
+    const handleConfirm = () => {
+        enqueueSnackbar('Successfully submitted an order!', { variant: "success" });
+        setOpenDialog(false);
+    };
+
     return (
         <Dialog
             open={open}
             TransitionComponent={Transition}
             keepMounted
-            onClose={handleClose}
+            onClose={() => setOpenDialog(false)}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+            <AppBar position="static" sx={{ p: 3, pl: 3, pb: 1 }}>
+                <Typography variant="h5" color="inherit" component="div">
+                    Delivery Details
+                </Typography>
+            </AppBar>
             <DialogContent>
-                <DialogContentText id="alert-dialog-slide-description">
-                    Let Google help apps determine location. This means sending anonymous
-                    location data to Google, even when no apps are running.
-                </DialogContentText>
+                <FormControl variant="outlined" sx={{ width: "100%" }}>
+                    <Grid container
+                        alignItems="center"
+                        justify="center" columnSpacing={3}>
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="body1" fontWeight="bold">
+                                Name
+                            </Typography>
+                            <TextField
+                                id="title"
+                                sx={{ width: "100%" }}
+                            // value={values.campaignTitle}
+                            // onChange={() => {}}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="body1" fontWeight="bold">
+                                Email
+                            </Typography>
+                            <TextField
+                                id="title"
+                                sx={{ width: "100%" }}
+                            // value={values.campaignTitle}
+                            // onChange={() => {}}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Typography variant="body1" fontWeight="bold" marginTop="1em">
+                        Address
+                    </Typography>
+                    <TextField
+                        id="description"
+                    // value={values.campaignDescription}
+                    // onChange={handleChange("campaignDescription")}
+                    />
+                </FormControl>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>Disagree</Button>
-                <Button onClick={handleClose}>Agree</Button>
+                <Button onClick={handleConfirm}>Confirm</Button>
             </DialogActions>
         </Dialog>
-        // <FormControl variant="outlined" sx={{ width: "100%" }}>
-        //     <Grid container
-        //         alignItems="center"
-        //         justify="center" columnSpacing={3}>
-        //         <Grid item xs={12} md={6}>
-        //             <Typography variant="body1" fontWeight="bold">
-        //                 Name
-        //             </Typography>
-        //             <TextField
-        //                 id="title"
-        //                 sx={{ width: "100%" }}
-        //             // value={values.campaignTitle}
-        //             // onChange={() => {}}
-        //             />
-        //         </Grid>
-        //         <Grid item xs={12} md={6}>
-        //             <Typography variant="body1" fontWeight="bold">
-        //                 Email
-        //             </Typography>
-        //             <TextField
-        //                 id="title"
-        //                 sx={{ width: "100%" }}
-        //             // value={values.campaignTitle}
-        //             // onChange={() => {}}
-        //             />
-        //         </Grid>
-        //     </Grid>
-        //     <Typography variant="body1" fontWeight="bold" marginTop="1em">
-        //         Address
-        //     </Typography>
-        //     <TextField
-        //         id="description"
-        //     // value={values.campaignDescription}
-        //     // onChange={handleChange("campaignDescription")}
-        //     />
-        // </FormControl>
     );
 };
 

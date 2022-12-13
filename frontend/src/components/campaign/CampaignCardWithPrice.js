@@ -9,13 +9,10 @@ const CampaignCardWithPrice = ({ title, description, price, imageURL }) => {
         setOpenDialog(true);
     };
 
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
-    };
 
     return (
         <Fragment>
-            {openDialog && <ProductDeliveryForm open={openDialog} handleClose={handleCloseDialog} />}
+            {openDialog && <ProductDeliveryForm open={openDialog} setOpenDialog={setOpenDialog} />}
             <Card sx={{ maxWidth: 550 }}>
                 <CardActionArea component="a">
                     <CardMedia
