@@ -27,7 +27,7 @@ const ProductDeliveryForm = ({ open, setOpenDialog }) => {
                     Delivery Details
                 </Typography>
             </AppBar>
-            <DialogContent>
+            <DialogContent sx={{pb: 1}}>
                 <FormControl variant="outlined" sx={{ width: "100%" }}>
                     <Grid container
                         alignItems="center"
@@ -66,7 +66,7 @@ const ProductDeliveryForm = ({ open, setOpenDialog }) => {
                 </FormControl>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleConfirm}>Confirm</Button>
+                <Button variant="outlined" sx={{ m: "auto", width: "15em" }} onClick={handleConfirm}>Confirm</Button>
             </DialogActions>
         </Dialog>
     );
