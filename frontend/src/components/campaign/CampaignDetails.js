@@ -31,9 +31,9 @@ const items = [
     },
     {
         header: 10,
-        meta: "Number of Requests",
+        meta: "Number of NFT Awards",
         description:
-            "A request tries to withdraw money from the contract. Requests must be approved by approvers.",
+            "Number of initial contributors elegible to win an NFT.",
     },
     {
         header: 5,
