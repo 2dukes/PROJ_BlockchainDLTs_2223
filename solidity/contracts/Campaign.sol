@@ -17,7 +17,8 @@ contract Campaign {
         uint value;
         bool complete;
         mapping(address => RequestState) approvals;
-        uint approvalCount;
+        uint approvalValue;
+        uint openDate;
     }
 
     /// @notice Array of campaign requests.
@@ -30,7 +31,13 @@ contract Campaign {
     uint public minimumContribution;
 
     /// @notice Number of campaign contributers that will get an NFT bonus.
-    uint8 maximumNFTContributors;
+    uint8 public maximumNFTContributors;
+
+    /// @notice Total amount the campaign raised.
+    uint public raisedValue;
+
+    /// @notice The target amount the campaign wants to raise.
+    uint public targetValue;
 
     /** @notice List of contributors and invested amount. 
         @dev Invested amount comes in Wei.
@@ -83,15 +90,17 @@ contract Campaign {
     }
 
     /** @notice Instantiate a Campaign.
-        @param _minimumContribution the minimum contribution a person can add to a Campaign.
+        @param _minimumContribution the minimum contribution a person can add to a campaign.
+        @param _targetValue the target amount to raise for the campaign.
         @param _maximumNFTContributors number of campaign contributers that will get an NFT bonus.
-        @param _openDays the number of days the Campaign will be open to new contributors.
+        @param _openDays the number of days the campaign will be open to new contributors.
         @param _campaignCreator denotes the creator of the campaign.
         @param _crowdCreator denotes the crowdfunding platform creator.
         @param _crowdNFTContractAddr the address of the NFT contract.
      */
     constructor(
         uint _minimumContribution,
+        uint _targetValue,
         uint8 _maximumNFTContributors,
         uint _openDays,
         address _campaignCreator,
@@ -101,6 +110,7 @@ contract Campaign {
         campaignCreator = payable(_campaignCreator);
         crowdCreator = payable(_crowdCreator);
         minimumContribution = _minimumContribution;
+        targetValue = _targetValue;
         maximumNFTContributors = _maximumNFTContributors;
         crowdNFTContractAddr = _crowdNFTContractAddr;
         endDate = block.timestamp + (_openDays * 24 * 60 * 60);
@@ -121,8 +131,16 @@ contract Campaign {
 
         approvers[msg.sender] = previousValue + msg.value;
         if (approvers[msg.sender] == 0)
-            // New approver
-            approversCount++;
+            approversCount++; // New approver
+
+        raisedValue += msg.value;
+
+        // Update staked value when address already approved other requests.
+        for (uint idx = 0; idx < requests.length; idx++) {
+            Request storage req = requests[idx];
+            if(req.approvals[msg.sender] == RequestState.APPROVED)
+                req.approvalValue += msg.value;
+        }
         
         // Contributor is only awarded an NFT if it's one of the first to contribute.
         if(approversCount <= maximumNFTContributors && bytes(tokenURI).length > 0) 
@@ -143,7 +161,8 @@ contract Campaign {
         newRequest.id = _id;
         newRequest.value = _value;
         newRequest.complete = false;
-        newRequest.approvalCount = 0;
+        newRequest.approvalValue = 0;
+        newRequest.openDate = block.timestamp;
     }
 
     /** @notice Vote for the approval of a request.
@@ -163,7 +182,7 @@ contract Campaign {
         );
 
         request.approvals[msg.sender] = RequestState.APPROVED;
-        request.approvalCount++;
+        request.approvalValue += approvers[msg.sender];
     }
 
     /** @notice Close a campaign request.
@@ -174,7 +193,7 @@ contract Campaign {
         Request storage request = requests[idx];
 
         require(
-            request.approvalCount > (approversCount / 2),
+            request.approvalValue > (raisedValue / 2),
             "Not enough approvers."
         ); // Rounded towards 0
 
