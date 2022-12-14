@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PageLayout from "./components/header/PageLayout";
 import CampaignPage from './pages/CampaignPage';
 import CreateCampaignPage from './pages/CreateCampaignPage';
+import CreateRequestPage from "./pages/CreateRequestPage";
 // import { connectWallet } from "./services/connectWal  let";
 
 function App() {
@@ -25,6 +26,17 @@ function App() {
           element={
             <PageLayout>
               <CreateCampaignPage key="/campaign/new" />
+            </PageLayout>
+          }
+        >
+        </Route>
+        <Route
+          exact
+          path="/request/new"
+          key="/request/new"
+          element={
+            <PageLayout>
+              <CreateRequestPage key="/campaign/new" />
             </PageLayout>
           }
         >
