@@ -21,13 +21,16 @@ const ProductDeliveryForm = ({ open, setOpenDialog }) => {
             keepMounted
             onClose={() => setOpenDialog(false)}
             aria-describedby="alert-dialog-slide-description"
+            PaperProps={{
+                style: { borderRadius: 10 }
+            }}
         >
             <AppBar position="static" sx={{ p: 3, pl: 3, pb: 1 }}>
                 <Typography variant="h5" color="inherit" component="div">
                     Delivery Details
                 </Typography>
             </AppBar>
-            <DialogContent sx={{pb: 1}}>
+            <DialogContent sx={{ pb: 1 }}>
                 <FormControl variant="outlined" sx={{ width: "100%" }}>
                     <Grid container
                         alignItems="center"
@@ -66,7 +69,7 @@ const ProductDeliveryForm = ({ open, setOpenDialog }) => {
                 </FormControl>
             </DialogContent>
             <DialogActions>
-                <Button variant="outlined" sx={{ m: "auto", width: "15em" }} onClick={handleConfirm}>Confirm</Button>
+                <Button variant="outlined" sx={{ m: "auto", width: "15em", mb: 1 }} onClick={handleConfirm}>Confirm</Button>
             </DialogActions>
         </Dialog>
     );
