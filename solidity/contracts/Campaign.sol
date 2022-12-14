@@ -129,9 +129,6 @@ contract Campaign {
 
         uint256 previousValue = approvers[msg.sender]; // Default 0
 
-        approvers[msg.sender] = previousValue + msg.value;
-        if (approvers[msg.sender] == 0) approversCount++; // New approver
-
         raisedValue += msg.value;
 
         // Update staked value when address already approved other requests.
@@ -141,11 +138,16 @@ contract Campaign {
                 req.approvalValue += msg.value;
         }
 
+        if (approvers[msg.sender] == 0) approversCount++; // New approver
+        
         // Contributor is only awarded an NFT if it's one of the first to contribute.
         if (
             approversCount <= maximumNFTContributors &&
+            approvers[msg.sender] != 0 &&
             bytes(tokenURI).length > 0
         ) CrowdNFT(crowdNFTContractAddr).mintNFT(msg.sender, tokenURI);
+
+        approvers[msg.sender] = previousValue + msg.value;
     }
 
     /** @notice Create a request for the use of the campaign funds.
