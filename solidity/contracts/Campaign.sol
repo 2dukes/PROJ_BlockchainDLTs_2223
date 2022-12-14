@@ -13,12 +13,12 @@ contract Campaign {
 
     /// @notice Data structure responsible for a request to invest campaign funds.
     struct Request {
-        uint id; // Stored externally as a mapping to a Request description.
-        uint value;
+        uint256 id; // Stored externally as a mapping to a Request description.
+        uint256 value;
         bool complete;
         mapping(address => RequestState) approvals;
-        uint approvalValue;
-        uint openDate;
+        uint256 approvalValue;
+        uint256 openDate;
     }
 
     /// @notice Array of campaign requests.
@@ -28,29 +28,29 @@ contract Campaign {
     address payable public campaignCreator;
 
     /// @notice The allowed contribution a person can add to a Campaign.
-    uint public minimumContribution;
+    uint256 public minimumContribution;
 
     /// @notice Number of campaign contributers that will get an NFT bonus.
     uint8 public maximumNFTContributors;
 
     /// @notice Total amount the campaign raised.
-    uint public raisedValue;
+    uint256 public raisedValue;
 
     /// @notice The target amount the campaign wants to raise.
-    uint public targetValue;
+    uint256 public targetValue;
 
     /** @notice List of contributors and invested amount. 
         @dev Invested amount comes in Wei.
     */
-    mapping(address => uint) public approvers;
+    mapping(address => uint256) public approvers;
 
-    /// @notice A counter of the total contributors. 
-    uint public approversCount;
+    /// @notice A counter of the total contributors.
+    uint256 public approversCount;
 
     /** @notice Holds the end date of the contract.
         @dev Block.timestamp + OpenDays (in seconds).
     */
-    uint public endDate;
+    uint256 public endDate;
 
     /** @notice Crowdfunding platform creator.
         @dev CampaignFactory contract creator.
@@ -60,7 +60,7 @@ contract Campaign {
     /// @notice Address of the deployed NFT contract.
     address public crowdNFTContractAddr;
 
-    /// @notice Error related to invocation only allowed by the campaign creator. 
+    /// @notice Error related to invocation only allowed by the campaign creator.
     error OnlyCampaignOwner();
 
     /// @notice Error related to invocation only allowed by the crowdfunding platform creator.
@@ -84,8 +84,8 @@ contract Campaign {
     /** @notice Modifier that restricts to requests not yet completed. 
         @param idx The index of the corresponding request in the Requests array.
     */
-    modifier requestNotCompleted(uint idx) {
-        if(requests[idx].complete) revert RequestNotCompleted();
+    modifier requestNotCompleted(uint256 idx) {
+        if (requests[idx].complete) revert RequestNotCompleted();
         _;
     }
 
@@ -99,10 +99,10 @@ contract Campaign {
         @param _crowdNFTContractAddr the address of the NFT contract.
      */
     constructor(
-        uint _minimumContribution,
-        uint _targetValue,
+        uint256 _minimumContribution,
+        uint256 _targetValue,
         uint8 _maximumNFTContributors,
-        uint _openDays,
+        uint256 _openDays,
         address _campaignCreator,
         address _crowdCreator,
         address _crowdNFTContractAddr
@@ -119,7 +119,7 @@ contract Campaign {
     /** @notice Contribute to a campaign. The first maximumNFTContributors are awarded an NFT.
         @dev Requires a msg.value > minimumContribution and date of contribution less than endDate.
         @param tokenURI is the metadata of the NFT.
-    */ 
+    */
     function contribute(string memory tokenURI) external payable {
         require(
             msg.value >= minimumContribution,
@@ -127,24 +127,25 @@ contract Campaign {
         );
         require(block.timestamp <= endDate, "Campaign already closed.");
 
-        uint previousValue = approvers[msg.sender]; // Default 0
+        uint256 previousValue = approvers[msg.sender]; // Default 0
 
         approvers[msg.sender] = previousValue + msg.value;
-        if (approvers[msg.sender] == 0)
-            approversCount++; // New approver
+        if (approvers[msg.sender] == 0) approversCount++; // New approver
 
         raisedValue += msg.value;
 
         // Update staked value when address already approved other requests.
-        for (uint idx = 0; idx < requests.length; idx++) {
+        for (uint256 idx = 0; idx < requests.length; idx++) {
             Request storage req = requests[idx];
-            if(req.approvals[msg.sender] == RequestState.APPROVED)
+            if (req.approvals[msg.sender] == RequestState.APPROVED)
                 req.approvalValue += msg.value;
         }
-        
+
         // Contributor is only awarded an NFT if it's one of the first to contribute.
-        if(approversCount <= maximumNFTContributors && bytes(tokenURI).length > 0) 
-            CrowdNFT(crowdNFTContractAddr).mintNFT(msg.sender, tokenURI);
+        if (
+            approversCount <= maximumNFTContributors &&
+            bytes(tokenURI).length > 0
+        ) CrowdNFT(crowdNFTContractAddr).mintNFT(msg.sender, tokenURI);
     }
 
     /** @notice Create a request for the use of the campaign funds.
@@ -152,7 +153,7 @@ contract Campaign {
         @param _id Request ID.
         @param _value The mount of funds requested.
      */
-    function createRequest(uint _id, uint _value)
+    function createRequest(uint256 _id, uint256 _value)
         external
         onlyCampaignOwner
     {
@@ -169,7 +170,7 @@ contract Campaign {
         @dev Only eligible to non-completed requests. Invocation only allowed by contributors that didn't approve the request before.
         @param idx The index of the corresponding request in the Requests array.
      */
-    function approveRequest(uint idx) external requestNotCompleted(idx) {
+    function approveRequest(uint256 idx) external requestNotCompleted(idx) {
         Request storage request = requests[idx];
 
         require(
@@ -189,7 +190,11 @@ contract Campaign {
         @dev Only eligible to non-completed requests approved by more than half of the contributors. Invocation allowed only by campaign owner. Charge 2% fee upon funds transfer.
         @param idx The index of the corresponding request in the Requests array.
      */
-    function completeRequest(uint idx) external onlyCampaignOwner requestNotCompleted(idx) {
+    function completeRequest(uint256 idx)
+        external
+        onlyCampaignOwner
+        requestNotCompleted(idx)
+    {
         Request storage request = requests[idx];
 
         require(
@@ -199,7 +204,7 @@ contract Campaign {
 
         // Transfer funds to campaignCreator and charge 2% fee
         uint8 royaltyFeePercentage = 2;
-        uint royaltyAmount = (request.value * royaltyFeePercentage) / 100;
+        uint256 royaltyAmount = (request.value * royaltyFeePercentage) / 100;
 
         campaignCreator.transfer(request.value - royaltyAmount);
         crowdCreator.transfer(royaltyAmount);

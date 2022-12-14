@@ -25,9 +25,12 @@ contract CampaignFactory {
         @param maximumNFTContributors number of campaign contributers that will get an NFT bonus.
         @param openDays The number of days the Campaign will be open to new contributors.
      */
-    function deployCampaign(uint minimumContribution, uint targetValue, uint8 maximumNFTContributors, uint openDays)
-        external
-    {
+    function deployCampaign(
+        uint256 minimumContribution,
+        uint256 targetValue,
+        uint8 maximumNFTContributors,
+        uint256 openDays
+    ) external {
         Campaign newCampaign = new Campaign(
             minimumContribution,
             targetValue,
