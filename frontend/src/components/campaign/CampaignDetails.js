@@ -7,6 +7,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import CampaignInfoCard from './CampaignInfoCard';
 import RequestTable from '../request/RequestTable';
 import CampaignCardWithPrice from './CampaignCardWithPrice';
+import { useSnackbar } from 'notistack';
 
 const items = [
     {
@@ -70,6 +71,7 @@ const data = {
 };
 
 const CampaignDetails = ({ modalOpen, setModalOpen }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
     const isReallySmall = useMediaQuery(theme.breakpoints.down('sm'));
@@ -134,7 +136,7 @@ const CampaignDetails = ({ modalOpen, setModalOpen }) => {
                                             inputProps: { min: 0 }
                                         }}
                                     />
-                                    <Button sx={{ fontWeight: "bold", mt: 3 }} variant="contained" color="primary" component="span">
+                                    <Button sx={{ fontWeight: "bold", mt: 3 }} onClick={() => enqueueSnackbar('Successful contribution!', { variant: "success" })} variant="contained" color="primary" component="span">
                                         Contribute
                                     </Button>
                                 </Grid>
@@ -146,7 +148,7 @@ const CampaignDetails = ({ modalOpen, setModalOpen }) => {
                     </TabContext>
                 </Box>
             </Modal>
-        </Fragment>
+        </Fragment >
     );
 };
 
