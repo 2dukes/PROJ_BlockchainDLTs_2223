@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react';
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, Pagination } from '@mui/material';
 import CampaignCard from "../components/campaign/CampaignCard";
 import CampaignDetails from '../components/campaign/CampaignDetails';
 
@@ -43,6 +43,7 @@ const CampaignPage = () => {
                 alignItems="center"
                 justify="center" spacing={3}>
                 {data.map(item => <Grid item xs={12} md={6} key={item.id}><CampaignCard {...item} setModalOpen={setModalOpen} /></Grid>)}
+                <Grid item xs={12} display="flex" justifyContent="center"><Pagination count={10} color="primary" /></Grid>
             </Grid>
         </Fragment>
     );
