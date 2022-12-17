@@ -12,6 +12,7 @@ import TableRow from '@mui/material/TableRow';
 const columns = [
     { id: 'id', label: 'ID', minWidth: 15 },
     { id: 'description', label: 'Description', minWidth: 350 },
+    { id: 'askedValue', label: 'Value (ETH)', minWidth: 15 },
     { id: 'approvalCount', label: 'Approval Count (ETH)', minWidth: 15 },
     { id: 'openDate', label: 'Open Date', minWidth: 15 },
     { id: 'approve', label: 'Approve', minWidth: 15 },
@@ -21,39 +22,38 @@ const columns = [
 const rows = [
     {
         id: 1,
-        description: "This is a description.",
-        openDate: "12/12/2022",
-        approvalCount: "50/250"
+        description: "Buy new bikes for testing.",
+        askedValue: 2,
+        openDate: "10/12/2022",
+        approvalCount: "10/120"
     },
     {
         id: 2,
-        description: "This is a description.",
-        openDate: "12/12/2022",
-        approvalCount: "50/250"
+        description: "Buy new cases for device.",
+        askedValue: 1,
+        openDate: "10/12/2022",
+        approvalCount: "50/120"
     },
     {
         id: 3,
-        description: "This is a description.",
-        openDate: "12/12/2022",
-        approvalCount: "50/250"
+        description: "Hire personnel.",
+        askedValue: 20,
+        openDate: "10/12/2022",
+        approvalCount: "2/250"
     },
     {
         id: 4,
-        description: "This is a description.",
-        openDate: "12/12/2022",
-        approvalCount: "50/250"
+        description: "New office furniture.",
+        askedValue: 4,
+        openDate: "10/12/2022",
+        approvalCount: "3/120"
     },
     {
         id: 5,
-        description: "This is a description.",
-        openDate: "12/12/2022",
-        approvalCount: "50/250"
-    },
-    {
-        id: 6,
-        description: "This is a description.",
-        openDate: "12/12/2022",
-        approvalCount: "50/250"
+        description: "Participate in famous conference and advertise product.",
+        askedValue: 10,
+        openDate: "10/12/2022",
+        approvalCount: "5/120"
     },
 ];
 
