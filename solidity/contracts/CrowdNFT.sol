@@ -21,7 +21,7 @@ contract CrowdNFT is ERC721URIStorage, Ownable {
         @param tokenURI The metadata associated to the NFT.
         @return newItemID The ID of the newly minted NFT.
      */
-    function mintNFT(address recipient, string memory tokenURI)
+    function mintNFT(address recipient, string tokenURI)
         public
         onlyOwner
         returns (uint256)

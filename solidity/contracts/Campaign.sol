@@ -120,7 +120,7 @@ contract Campaign {
         @dev Requires a msg.value > minimumContribution and date of contribution less than endDate.
         @param tokenURI is the metadata of the NFT.
     */
-    function contribute(string memory tokenURI) external payable {
+    function contribute(string tokenURI) external payable {
         require(
             msg.value >= minimumContribution,
             "Not enough value for contribution!"
