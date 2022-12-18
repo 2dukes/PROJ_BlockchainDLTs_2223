@@ -13,3 +13,13 @@ services:
       - ./frontend/public:/app/public
     stdin_open: true
     tty: true
+    
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    stdin_open: true
+    tty: true

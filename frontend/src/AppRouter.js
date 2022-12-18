@@ -4,7 +4,6 @@ import CampaignPage from './pages/CampaignPage';
 import CreateCampaignPage from './pages/CreateCampaignPage';
 import CreateRequestPage from "./pages/CreateRequestPage";
 import ProfilePage from "./pages/ProfilePage";
-// import { connectWallet } from "./services/connectWal  let";
 
 function App() {
   return (

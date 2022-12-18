@@ -1,4 +1,4 @@
-const ethers = require("ethers")
+const ethers = require("ethers");
 const contract = require("../contracts/CampaignFactory.json");
 
 let signer;
@@ -19,20 +19,20 @@ const connectWallet = async () => {
             provider = new ethers.providers.Web3Provider(window.ethereum);
 
         await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner()
+        signer = provider.getSigner();
 
         await ethereum.request({
             method: "eth_requestAccounts",
         });
 
         // Get contract ABI and address
-        const abi = contract.abi
-        const contractAddress = process.env.REACT_APP_CAMPAIGN_CONTRACT_ADDR
+        const abi = contract.abi;
+        const contractAddress = process.env.REACT_APP_CAMPAIGN_CONTRACT_ADDR;
 
         // Create a contract instance
-        campaignContract = new ethers.Contract(contractAddress, abi, signer)
+        campaignContract = new ethers.Contract(contractAddress, abi, signer);
 
-        console.log(signer._address)
+        console.log(await signer.getAddress());
 
         return {
             status: true,

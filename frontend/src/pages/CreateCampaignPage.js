@@ -55,6 +55,11 @@ const NewCampaign = () => {
         setActiveStep(step);
     };
 
+    const submitCampaign = () => {
+        handleNext();
+        
+    };
+
     return (
         <Fragment>
             <Typography variant="h3" marginTop="2em" textAlign="center" gutterBottom >
@@ -84,7 +89,7 @@ const NewCampaign = () => {
                         Back
                     </Button>
                     <Box sx={{ flex: '1 1 auto' }} />
-                    <Button sx={{ fontWeight: "bold" }} variant="contained" onClick={handleNext} endIcon={isLastStep() ? <SendIcon /> : <ArrowRightIcon />}>
+                    <Button sx={{ fontWeight: "bold" }} variant="contained" onClick={isLastStep() ? submitCampaign : handleNext} endIcon={isLastStep() ? <SendIcon /> : <ArrowRightIcon />}>
                         {isLastStep() ? 'Submit' : 'Next'}
                     </Button>
                 </Box>

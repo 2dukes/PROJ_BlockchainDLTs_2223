@@ -8,12 +8,14 @@ import CampaignIcon from '@mui/icons-material/Campaign';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CreateIcon from '@mui/icons-material/Create';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import { connectWallet } from '../../services/connectWallet';
 
 const SideBar = ({ handleDrawerClose, open }) => {
     const theme = useTheme();
 
     const sideBarNames = ['All Campaigns', 'Create Campaign', 'Create Request', 'My Profile', 'Connect Wallet'];
     const sideBarIcons = [<CampaignIcon />, <AddCircleIcon />, <CreateIcon />, <AccountCircleIcon />, <LockOpenIcon />];
+    const onClickActions = [() => { }, () => { }, () => { }, () => { }, connectWallet];
 
     return (
         <Drawer
@@ -38,7 +40,7 @@ const SideBar = ({ handleDrawerClose, open }) => {
             <List>
                 {sideBarNames.slice(0, 3).map((text, index) => (
                     <ListItem key={text} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={onClickActions[index]}>
                             <ListItemIcon>
                                 {sideBarIcons[index]}
                             </ListItemIcon>
@@ -51,7 +53,7 @@ const SideBar = ({ handleDrawerClose, open }) => {
             <List>
                 {sideBarNames.slice(3, 5).map((text, index) => (
                     <ListItem key={text} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={onClickActions[index + 3]}>
                             <ListItemIcon>
                                 {sideBarIcons[index + 3]}
                             </ListItemIcon>
