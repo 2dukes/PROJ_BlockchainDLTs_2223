@@ -14,14 +14,14 @@ contract CrowdNFT is ERC721URIStorage, Ownable {
     Counters.Counter private _tokenIds;
 
     /// @notice Instantiate CrowdNFT token.
-    constructor() CrowdNFT("CrowdNFT", "NFT") {}
+    constructor() ERC721("CrowdNFT", "NFT") {}
 
     /** @notice Mint an NFT.
         @param recipient The address of the NFT destination.
         @param tokenURI The metadata associated to the NFT.
         @return newItemID The ID of the newly minted NFT.
      */
-    function mintNFT(address recipient, string tokenURI)
+    function mintNFT(address recipient, string calldata tokenURI)
         public
         onlyOwner
         returns (uint256)

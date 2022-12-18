@@ -6,6 +6,7 @@ import SendIcon from '@mui/icons-material/Send';
 import dayjs from 'dayjs';
 import CampaignForm from '../components/campaign/CampaignForm';
 import NFTForm from '../components/nft/NFTForm';
+import { campaignFactoryContract, web3 } from '../services/connectWallet';
 
 const steps = ['Campaign Details', 'NFT Awards'];
 
@@ -71,6 +72,24 @@ const NewCampaign = () => {
         // campaignImageURL: null
 
         // Deploy Campaign and get its address.
+        const { ethereum } = window;
+
+        console.log(values);
+        console.log(campaignFactoryContract)
+
+        const tx = await campaignFactoryContract.methods.deployCampaign(
+                web3.utils.toWei(String(values.minimumContribution)),
+                web3.utils.toWei(String(values.targetContribution)),
+                values.NFTselectedImages.length,
+                10
+            ).send({
+                from: ethereum.selectedAddress
+            });
+
+        const status = tx.status || false;
+
+        console.log(tx);
+        console.log(status);
 
         const formData = new FormData();
         formData.append("campaignAddress", "0x12345");

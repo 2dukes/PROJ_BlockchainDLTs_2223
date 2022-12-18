@@ -1,11 +1,10 @@
-const ethers = require("ethers");
+const Web3 = require("web3");
 const contract = require("../contracts/CampaignFactory.json");
 
-let signer;
-let campaignContract;
+let web3;
+let campaignFactoryContract;
 
 const connectWallet = async () => {
-    let provider;
 
     try {
         const { ethereum } = window;
@@ -16,10 +15,7 @@ const connectWallet = async () => {
             typeof window !== "undefined" &&
             typeof window.ethereum !== "undefined"
         )
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
+            web3 = new Web3(ethereum);
 
         await ethereum.request({
             method: "eth_requestAccounts",
@@ -30,13 +26,13 @@ const connectWallet = async () => {
         const contractAddress = process.env.REACT_APP_CAMPAIGN_CONTRACT_ADDR;
 
         // Create a contract instance
-        campaignContract = new ethers.Contract(contractAddress, abi, signer);
+        campaignFactoryContract = new web3.eth.Contract(abi, contractAddress);
 
-        console.log(await signer.getAddress());
+        console.log(campaignFactoryContract);
 
         return {
             status: true,
-            message: "Connected Wallet: " + signer,
+            message: "Connected Wallet: " + ethereum.selectedAddress,
         };
     } catch (error) {
         return {
@@ -46,4 +42,4 @@ const connectWallet = async () => {
     }
 };
 
-export { connectWallet, signer, campaignContract };
+export { connectWallet, web3, campaignFactoryContract };
