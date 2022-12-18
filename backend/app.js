@@ -10,11 +10,15 @@ app.use(express.static(path.join(__dirname, 'public', 'campaigns'))); // http://
 const imageRoutes = require("./routes/image");
 const campaignRoutes = require("./routes/campaign");
 
+const errorMiddleware = require("./middleware/error");
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use("/images", imageRoutes);
 app.use("/campaigns", campaignRoutes);
+
+app.use(errorMiddleware);
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_DB_ATLAS_USERNAME}:${process.env.MONGO_DB_ATLAS_PASSWORD}@${process.env.MONGO_DB_ATLAS_CLUSTER}.73kmevk.mongodb.net/?retryWrites=true&w=majority`;
 
