@@ -49,10 +49,10 @@ contract CampaignFactory {
         emit NewCampaignDeployed(newCampaignAddr);
     }
 
-    /** @notice Get all deployed campaigns.
-        @return campaigns Array containing address of all the deployed campaigns.
+    /** @notice Get number of deployed campaigns.
+        @return campaignsCount Length of campaigns array.
      */
-    function getCampaigns() public view returns (address[] campaigns) {
-        return campaigns;
+    function getCampaignsCount() public view returns (uint256 campaignsCount) {
+        return campaigns.length;
     }
 }

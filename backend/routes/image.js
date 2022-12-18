@@ -1,4 +1,4 @@
-const { storeImages } = require("../controllers/images");
+const { storeImages } = require("../controllers/image");
 
 const express = require("express");
 const multer = require("multer");

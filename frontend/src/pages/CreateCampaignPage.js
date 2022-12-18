@@ -95,20 +95,36 @@ const NewCampaign = () => {
         // Campaign Image
         formData.append("campaignImage", values.campaignImage);
 
+        // NFT Images
         for (let i = 0; i < values.NFTselectedImages.length; i++)
             formData.append("nfts", values.NFTselectedImages[i]);
 
-        // Request to save string fields in MongoDB.
+        const storeCampaignImgResult = await fetch("http://localhost:8000/images", {
+            method: "POST",
+            body: formData,
+        });
 
-        const createCampaignResult = await fetch("http://localhost:8000/images",
-            {
-                method: "POST",
-                body: formData,
-            }
-        );
+        const storeCampaignImgResultJSON = await storeCampaignImgResult.json();
 
-        const createCampaignResultJSON = await createCampaignResult.json();
-        console.log(createCampaignResultJSON);
+        console.log(storeCampaignImgResultJSON);
+
+        // Request to save string fields in MongoDB
+        const data = { id: newCampaignAddr, title: values.campaignTitle, description: values.campaignDescription };
+        console.log(data)
+        const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const storeCampaignDetailsResultJSON = await storeCampaignDetailsResult.json();
+
+        console.log(storeCampaignDetailsResultJSON);
+
+        // TO DO: Frontend validation
+        // TO DO: Loading spinner!
     };
 
     return (

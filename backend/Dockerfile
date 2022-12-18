@@ -1,9 +1,12 @@
 FROM node:lts-alpine
 
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
+COPY ./backend/package*.json ./
+RUN npm install -s
+COPY ./backend .
+
+RUN mkdir -p /app/env
+COPY .env ./env
 
 EXPOSE 8000
 

@@ -13,7 +13,6 @@ contract Campaign {
 
     /// @notice Data structure responsible for a request to invest campaign funds.
     struct Request {
-        uint256 id; // Stored externally as a mapping to a Request description.
         uint256 value;
         bool complete;
         mapping(address => RequestState) approvals;
@@ -152,16 +151,14 @@ contract Campaign {
 
     /** @notice Create a request for the use of the campaign funds.
         @dev Only invokable by the campaign owner.
-        @param _id Request ID.
         @param _value The mount of funds requested.
      */
-    function createRequest(uint256 _id, uint256 _value)
+    function createRequest(uint256 _value)
         external
         onlyCampaignOwner
     {
         Request storage newRequest = requests.push();
 
-        newRequest.id = _id;
         newRequest.value = _value;
         newRequest.complete = false;
         newRequest.approvalValue = 0;

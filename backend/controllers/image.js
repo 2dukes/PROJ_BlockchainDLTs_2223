@@ -5,7 +5,7 @@ const storeImages = (req, res) => {
     const campaignAddress = req.body.campaignAddress;
     const campaignImage = req.files.campaignImage?.[0];
     const NFTs = req.files.nfts || [];
-    
+
     const dirToWrite = path.join(__dirname, "..", 'public', 'campaigns', campaignAddress);
 
     if (!fs.existsSync(dirToWrite))
