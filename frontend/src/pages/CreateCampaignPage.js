@@ -55,9 +55,43 @@ const NewCampaign = () => {
         setActiveStep(step);
     };
 
-    const submitCampaign = () => {
+    const submitCampaign = async (event) => {
+        event.preventDefault();
         handleNext();
-        
+
+        // minimumContribution: 1,
+        // targetContribution: 10,
+        // productPrice: 0.25,
+        // campaignTitle: "",
+        // campaignDescription: "",
+        // closeDate: dayjs().add(5, 'day'),
+        // NFTselectedImages: [],
+        // NFTImageURLs: [],
+        // campaignImage: null,
+        // campaignImageURL: null
+
+        // Deploy Campaign and get its address.
+
+        const formData = new FormData();
+        formData.append("campaignAddress", "0x12345");
+
+        // Campaign Image
+        formData.append("campaignImage", values.campaignImage);
+
+        for (let i = 0; i < values.NFTselectedImages.length; i++)
+            formData.append("nfts", values.NFTselectedImages[i]);
+
+        // Request to save string fields in MongoDB.
+
+        const createCampaignResult = await fetch("http://localhost:8000/images",
+            {
+                method: "POST",
+                body: formData,
+            }
+        );
+
+        const createCampaignResultJSON = await createCampaignResult.json();
+        console.log(createCampaignResultJSON);
     };
 
     return (

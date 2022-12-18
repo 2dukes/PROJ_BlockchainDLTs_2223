@@ -2,10 +2,8 @@ FROM node:lts-alpine
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm install -s
+RUN npm install
 COPY . .
-
-VOLUME ["/app/node_modules"]
 
 EXPOSE 8000
 

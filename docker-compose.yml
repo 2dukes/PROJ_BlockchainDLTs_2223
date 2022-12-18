@@ -20,6 +20,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - /app/node_modules
       - ./backend:/app
     stdin_open: true
     tty: true
