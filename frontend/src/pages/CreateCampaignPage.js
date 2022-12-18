@@ -72,27 +72,25 @@ const NewCampaign = () => {
         // campaignImageURL: null
 
         // Deploy Campaign and get its address.
+        let status = true;
         const { ethereum } = window;
 
-        console.log(values);
-        console.log(campaignFactoryContract)
-
         const tx = await campaignFactoryContract.methods.deployCampaign(
-                web3.utils.toWei(String(values.minimumContribution)),
-                web3.utils.toWei(String(values.targetContribution)),
-                values.NFTselectedImages.length,
-                10
-            ).send({
-                from: ethereum.selectedAddress
-            });
+            web3.utils.toWei(String(values.minimumContribution)),
+            web3.utils.toWei(String(values.targetContribution)),
+            values.NFTselectedImages.length,
+            Math.round(values.closeDate.diff(dayjs(), 'day', true))
+        ).send({ from: ethereum.selectedAddress });
 
-        const status = tx.status || false;
+        const newCampaignAddr = tx.events['NewCampaignDeployed'].returnValues.campaignAddr;
+        status &= Boolean(tx.status);
 
-        console.log(tx);
+        console.log(newCampaignAddr);
         console.log(status);
 
+        // Store images locally
         const formData = new FormData();
-        formData.append("campaignAddress", "0x12345");
+        formData.append("campaignAddress", newCampaignAddr);
 
         // Campaign Image
         formData.append("campaignImage", values.campaignImage);

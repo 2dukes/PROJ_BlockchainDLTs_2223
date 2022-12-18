@@ -14,6 +14,9 @@ contract CampaignFactory {
     /// @notice Address of the deployed NFT contract.
     address public crowdNFTContractAddr;
 
+    /// @notice Signals the creation of a new campaign.
+    event NewCampaignDeployed(address campaignAddr);
+
     /// @notice Instantiate a CampaignFactory.
     constructor() {
         crowdCreator = msg.sender;
@@ -40,6 +43,9 @@ contract CampaignFactory {
             crowdCreator,
             crowdNFTContractAddr
         );
-        campaigns.push(address(newCampaign));
+
+        address newCampaignAddr = address(newCampaign);
+        campaigns.push(newCampaignAddr);
+        emit NewCampaignDeployed(newCampaignAddr);
     }
 }
