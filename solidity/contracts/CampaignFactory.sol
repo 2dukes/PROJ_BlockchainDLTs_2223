@@ -48,4 +48,11 @@ contract CampaignFactory {
         campaigns.push(newCampaignAddr);
         emit NewCampaignDeployed(newCampaignAddr);
     }
+
+    /** @notice Get all deployed campaigns.
+        @return campaigns Array containing address of all the deployed campaigns.
+     */
+    function getCampaigns() public view returns (address[] campaigns) {
+        return campaigns;
+    }
 }

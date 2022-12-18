@@ -139,7 +139,7 @@ contract Campaign {
         }
 
         if (approvers[msg.sender] == 0) approversCount++; // New approver
-        
+
         // Contributor is only awarded an NFT if it's one of the first to contribute.
         if (
             approversCount <= maximumNFTContributors &&
@@ -210,6 +210,13 @@ contract Campaign {
 
         campaignCreator.transfer(request.value - royaltyAmount);
         crowdCreator.transfer(royaltyAmount);
+    }
+
+    /** @notice Get number of requests so far.
+        @return requestsCount Length of the requests array.
+     */
+    function getRequestsCount() public view returns (uint256 requestsCount) {
+        return requests.length;
     }
 
     /** @notice Terminate contract.
