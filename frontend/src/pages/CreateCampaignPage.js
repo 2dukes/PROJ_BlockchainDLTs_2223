@@ -83,7 +83,8 @@ const NewCampaign = () => {
         }
         if (!formErrorVerification()) {
             enqueueSnackbar('Please fix incorrect inputs before submitting!', { variant: "error" });
-
+            setIsLoading(false);
+            return;
         }
 
         // Deploy Campaign and get its address.
@@ -150,7 +151,6 @@ const NewCampaign = () => {
         setIsLoading(false);
 
         // Redirect to main page after successful submition.
-        // TO DO: Error message whenever wallet is not connected.
     };
 
     return (

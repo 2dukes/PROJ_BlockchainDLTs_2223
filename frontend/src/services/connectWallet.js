@@ -42,4 +42,9 @@ const connectWallet = async () => {
     }
 };
 
-export { connectWallet, web3, campaignFactoryContract };
+const disconnectWallet = () => {
+    web3 = undefined;
+    campaignFactoryContract = undefined;
+};
+
+export { connectWallet, disconnectWallet, web3, campaignFactoryContract };
