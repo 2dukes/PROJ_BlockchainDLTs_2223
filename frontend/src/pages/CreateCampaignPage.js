@@ -7,10 +7,13 @@ import dayjs from 'dayjs';
 import CampaignForm from '../components/campaign/CampaignForm';
 import NFTForm from '../components/nft/NFTForm';
 import { campaignFactoryContract, web3 } from '../services/connectWallet';
+import { useSnackbar } from 'notistack';
 
 const steps = ['Campaign Details', 'NFT Awards'];
 
 const NewCampaign = () => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const [activeStep, setActiveStep] = useState(0);
     const [values, setValues] = useState({
         minimumContribution: 1,
@@ -56,9 +59,21 @@ const NewCampaign = () => {
         setActiveStep(step);
     };
 
+    const formErrorVerification = () => {
+        let withError = false;
+        withError &= values.campaignTitle !== "";
+        withError &= values.campaignDescription !== "";
+        withError &= values.minimumContribution < values.targetContribution;
+        withError &= dayjs().isBefore(values.closeDate, 'day');
+        return withError;
+    };
+
     const submitCampaign = async (event) => {
         event.preventDefault();
         handleNext();
+
+        if (!formErrorVerification())
+            enqueueSnackbar('Please fix incorrect inputs before submitting!', { variant: "error" });
 
         // minimumContribution: 1,
         // targetContribution: 10,
@@ -85,9 +100,6 @@ const NewCampaign = () => {
         const newCampaignAddr = tx.events['NewCampaignDeployed'].returnValues.campaignAddr;
         status &= Boolean(tx.status);
 
-        console.log(newCampaignAddr);
-        console.log(status);
-
         // Store images locally
         const formData = new FormData();
         formData.append("campaignAddress", newCampaignAddr);
@@ -106,11 +118,11 @@ const NewCampaign = () => {
 
         const storeCampaignImgResultJSON = await storeCampaignImgResult.json();
 
-        console.log(storeCampaignImgResultJSON);
+        status &= storeCampaignImgResultJSON.status;
 
         // Request to save string fields in MongoDB
         const data = { id: newCampaignAddr, title: values.campaignTitle, description: values.campaignDescription };
-        console.log(data)
+        console.log(data);
         const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns", {
             method: 'POST',
             headers: {
@@ -121,10 +133,13 @@ const NewCampaign = () => {
 
         const storeCampaignDetailsResultJSON = await storeCampaignDetailsResult.json();
 
-        console.log(storeCampaignDetailsResultJSON);
+        status &= storeCampaignDetailsResultJSON.status;
 
-        // TO DO: Frontend validation
+        console.log(status);
+
+        // Redirect to main page after successful submition.
         // TO DO: Loading spinner!
+        // TO DO: Error message whenever wallet is not connected.
     };
 
     return (
