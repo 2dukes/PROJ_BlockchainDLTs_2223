@@ -1,7 +1,9 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Typography, Grid, Pagination } from '@mui/material';
 import CampaignCard from "../components/campaign/CampaignCard";
 import CampaignDetails from '../components/campaign/CampaignDetails';
+import { campaignFactoryContract, connectWallet, web3 } from '../services/connectWallet';
+import campaign from "../contracts/Campaign.json";
 
 const data = [
     {
@@ -30,8 +32,32 @@ const data = [
     }
 ];
 
+const fetchCampaigns = async () => {
+    await connectWallet(); // testing
+
+    let numCampaigns = await campaignFactoryContract.methods.getCampaignsCount().call();
+    console.log("Number of Campaigns:" + numCampaigns);
+
+    let campaignPromises = [];
+
+    for (let i = 0; i < numCampaigns; i++)
+        campaignPromises.push(campaignFactoryContract.methods.campaigns(i).call());
+
+    const campaignAddresses = await Promise.all(campaignPromises);
+
+    console.log(campaignAddresses);
+
+    let campaignContract = new web3.eth.Contract(campaign.abi, campaignAddresses[0]);
+    let campaignCreator = await campaignContract.methods.campaignCreator().call();
+    console.log("Campaign Creator:" + campaignCreator);
+};
+
 const CampaignPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
+
+    useEffect(() => {
+        fetchCampaigns();
+    }, []);
 
     return (
         <Fragment>

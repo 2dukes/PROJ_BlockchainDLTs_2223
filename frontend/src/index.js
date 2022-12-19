@@ -5,9 +5,9 @@ import { SnackbarProvider } from 'notistack';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <SnackbarProvider maxSnack={3}>
       <AppRouter />
     </SnackbarProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
