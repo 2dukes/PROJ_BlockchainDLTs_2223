@@ -20,7 +20,7 @@ app.use("/campaigns", campaignRoutes);
 
 app.use(errorMiddleware);
 
-const MONGODB_URI = `mongodb+srv://${process.env.MONGO_DB_ATLAS_USERNAME}:${process.env.MONGO_DB_ATLAS_PASSWORD}@${process.env.MONGO_DB_ATLAS_CLUSTER}.73kmevk.mongodb.net/?retryWrites=true&w=majority`;
+const MONGODB_URI = `mongodb://${process.env.MONGO_DB_ATLAS_USERNAME}:${process.env.MONGO_DB_ATLAS_PASSWORD}@mongodb:27017/?authMechanism=DEFAULT`;
 
 mongoose.set("strictQuery", false);
 mongoose
