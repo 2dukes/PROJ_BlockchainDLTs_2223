@@ -6,14 +6,16 @@ import SendIcon from '@mui/icons-material/Send';
 import dayjs from 'dayjs';
 import CampaignForm from '../components/campaign/CampaignForm';
 import NFTForm from '../components/nft/NFTForm';
-import { campaignFactoryContract, web3 } from '../services/connectWallet';
+import LoadingSpinner from '../components/progress/LoadingSpinner';
 import { useSnackbar } from 'notistack';
+import { campaignFactoryContract, web3 } from '../services/connectWallet';
 
 const steps = ['Campaign Details', 'NFT Awards'];
 
 const NewCampaign = () => {
     const { enqueueSnackbar } = useSnackbar();
 
+    const [isLoading, setIsLoading] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
     const [values, setValues] = useState({
         minimumContribution: 1,
@@ -60,33 +62,29 @@ const NewCampaign = () => {
     };
 
     const formErrorVerification = () => {
-        let withError = false;
-        withError &= values.campaignTitle !== "";
-        withError &= values.campaignDescription !== "";
-        withError &= values.minimumContribution < values.targetContribution;
-        withError &= dayjs().isBefore(values.closeDate, 'day');
-        return withError;
+        let noError = true;
+        noError &= values.campaignTitle !== "";
+        noError &= values.campaignDescription !== "";
+        noError &= values.minimumContribution < values.targetContribution;
+        noError &= dayjs().isBefore(values.closeDate, 'day');
+        return noError;
     };
 
     const submitCampaign = async (event) => {
         event.preventDefault();
         handleNext();
+        
+        setIsLoading(true);
 
-        if (!formErrorVerification())
+        if (!formErrorVerification()) {
             enqueueSnackbar('Please fix incorrect inputs before submitting!', { variant: "error" });
-
-        // minimumContribution: 1,
-        // targetContribution: 10,
-        // productPrice: 0.25,
-        // campaignTitle: "",
-        // campaignDescription: "",
-        // closeDate: dayjs().add(5, 'day'),
-        // NFTselectedImages: [],
-        // NFTImageURLs: [],
-        // campaignImage: null,
-        // campaignImageURL: null
+            setIsLoading(false);
+            return;
+        }
 
         // Deploy Campaign and get its address.
+
+
         let status = true;
         const { ethereum } = window;
 
@@ -122,7 +120,7 @@ const NewCampaign = () => {
 
         // Request to save string fields in MongoDB
         const data = { id: newCampaignAddr, title: values.campaignTitle, description: values.campaignDescription };
-        console.log(data);
+        
         const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns", {
             method: 'POST',
             headers: {
@@ -137,6 +135,8 @@ const NewCampaign = () => {
 
         console.log(status);
 
+        setIsLoading(false);
+
         // Redirect to main page after successful submition.
         // TO DO: Loading spinner!
         // TO DO: Error message whenever wallet is not connected.
@@ -144,6 +144,7 @@ const NewCampaign = () => {
 
     return (
         <Fragment>
+            {isLoading && <LoadingSpinner />}
             <Typography variant="h3" marginTop="2em" textAlign="center" gutterBottom >
                 Create Campaign
             </Typography>
