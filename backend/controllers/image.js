@@ -12,12 +12,12 @@ const storeImages = (req, res) => {
         fs.mkdirSync(dirToWrite);
 
     // Campaign Image
-    if(campaignImage)
+    if (campaignImage)
         fs.writeFileSync(path.join(__dirname, '..', 'public', 'campaigns', campaignAddress, 'campaignImage.png'), campaignImage.buffer, 'binary', (err) => {
             if (err) throw err;
             console.log('File saved.');
         });
-    
+
     for (let i = 0; i < NFTs.length; i++) {
         fs.writeFileSync(path.join(__dirname, '..', 'public', 'campaigns', campaignAddress, `${i}.jpg`), NFTs[i].buffer, 'binary', (err) => {
             if (err) throw err;

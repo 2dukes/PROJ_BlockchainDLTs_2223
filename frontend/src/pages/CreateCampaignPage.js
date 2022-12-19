@@ -8,12 +8,14 @@ import CampaignForm from '../components/campaign/CampaignForm';
 import NFTForm from '../components/nft/NFTForm';
 import LoadingSpinner from '../components/progress/LoadingSpinner';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 import { campaignFactoryContract, web3 } from '../services/connectWallet';
 
 const steps = ['Campaign Details', 'NFT Awards'];
 
 const NewCampaign = () => {
     const { enqueueSnackbar } = useSnackbar();
+    const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
@@ -106,13 +108,14 @@ const NewCampaign = () => {
             status = false;
         }
 
-        if(status) {
+        if (status) {
             // Store images locally
             const formData = new FormData();
             formData.append("campaignAddress", newCampaignAddr);
 
             // Campaign Image
-            formData.append("campaignImage", values.campaignImage);
+            if(values.campaignImage)
+                formData.append("campaignImage", values.campaignImage);
 
             // NFT Images
             for (let i = 0; i < values.NFTselectedImages.length; i++)
@@ -130,7 +133,7 @@ const NewCampaign = () => {
 
         // Request to save string fields in MongoDB
 
-        if(status) {
+        if (status) {
             const data = { id: newCampaignAddr, title: values.campaignTitle, description: values.campaignDescription };
 
             const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns", {
@@ -149,8 +152,7 @@ const NewCampaign = () => {
         console.log(status);
 
         setIsLoading(false);
-
-        // Redirect to main page after successful submition.
+        return navigate("/");
     };
 
     return (
