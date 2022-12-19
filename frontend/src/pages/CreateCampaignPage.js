@@ -73,72 +73,83 @@ const NewCampaign = () => {
     const submitCampaign = async (event) => {
         event.preventDefault();
         handleNext();
-        
+
         setIsLoading(true);
 
-        if (!formErrorVerification()) {
-            enqueueSnackbar('Please fix incorrect inputs before submitting!', { variant: "error" });
+        if (!web3) {
+            enqueueSnackbar('Please connect MetaMask!', { variant: "error" });
             setIsLoading(false);
             return;
+        }
+        if (!formErrorVerification()) {
+            enqueueSnackbar('Please fix incorrect inputs before submitting!', { variant: "error" });
+
         }
 
         // Deploy Campaign and get its address.
 
-
-        let status = true;
+        let status = true, tx, newCampaignAddr;
         const { ethereum } = window;
 
-        const tx = await campaignFactoryContract.methods.deployCampaign(
-            web3.utils.toWei(String(values.minimumContribution)),
-            web3.utils.toWei(String(values.targetContribution)),
-            values.NFTselectedImages.length,
-            Math.round(values.closeDate.diff(dayjs(), 'day', true))
-        ).send({ from: ethereum.selectedAddress });
+        try {
+            tx = await campaignFactoryContract.methods.deployCampaign(
+                web3.utils.toWei(String(values.minimumContribution)),
+                web3.utils.toWei(String(values.targetContribution)),
+                values.NFTselectedImages.length,
+                Math.round(values.closeDate.diff(dayjs(), 'day', true))
+            ).send({ from: ethereum.selectedAddress });
 
-        const newCampaignAddr = tx.events['NewCampaignDeployed'].returnValues.campaignAddr;
-        status &= Boolean(tx.status);
+            newCampaignAddr = tx.events['NewCampaignDeployed'].returnValues.campaignAddr;
+            status &= Boolean(tx.status);
+        } catch (err) {
+            status = false;
+        }
 
-        // Store images locally
-        const formData = new FormData();
-        formData.append("campaignAddress", newCampaignAddr);
+        if(status) {
+            // Store images locally
+            const formData = new FormData();
+            formData.append("campaignAddress", newCampaignAddr);
 
-        // Campaign Image
-        formData.append("campaignImage", values.campaignImage);
+            // Campaign Image
+            formData.append("campaignImage", values.campaignImage);
 
-        // NFT Images
-        for (let i = 0; i < values.NFTselectedImages.length; i++)
-            formData.append("nfts", values.NFTselectedImages[i]);
+            // NFT Images
+            for (let i = 0; i < values.NFTselectedImages.length; i++)
+                formData.append("nfts", values.NFTselectedImages[i]);
 
-        const storeCampaignImgResult = await fetch("http://localhost:8000/images", {
-            method: "POST",
-            body: formData,
-        });
+            const storeCampaignImgResult = await fetch("http://localhost:8000/images", {
+                method: "POST",
+                body: formData,
+            });
 
-        const storeCampaignImgResultJSON = await storeCampaignImgResult.json();
+            const storeCampaignImgResultJSON = await storeCampaignImgResult.json();
 
-        status &= storeCampaignImgResultJSON.status;
+            status &= storeCampaignImgResultJSON.status;
+        }
 
         // Request to save string fields in MongoDB
-        const data = { id: newCampaignAddr, title: values.campaignTitle, description: values.campaignDescription };
-        
-        const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
 
-        const storeCampaignDetailsResultJSON = await storeCampaignDetailsResult.json();
+        if(status) {
+            const data = { id: newCampaignAddr, title: values.campaignTitle, description: values.campaignDescription };
 
-        status &= storeCampaignDetailsResultJSON.status;
+            const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const storeCampaignDetailsResultJSON = await storeCampaignDetailsResult.json();
+
+            status &= storeCampaignDetailsResultJSON.status;
+        }
 
         console.log(status);
 
         setIsLoading(false);
 
         // Redirect to main page after successful submition.
-        // TO DO: Loading spinner!
         // TO DO: Error message whenever wallet is not connected.
     };
 
