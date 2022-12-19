@@ -2,6 +2,7 @@ import { Toolbar, IconButton, Typography } from '@mui/material';
 import { Search, SearchIconWrapper, StyledInputBase, AppBar } from '../../styles/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
+import { Link } from 'react-router-dom';
 
 const TopBar = ({ handleDrawerOpen, open }) => {
     return (
@@ -16,14 +17,15 @@ const TopBar = ({ handleDrawerOpen, open }) => {
                 >
                     <MenuIcon />
                 </IconButton>
-                <Typography
-                    variant="h5"
-                    noWrap
-                    component="div"
-                    sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-                >
-                    DApp: Crowdfunding Reinvented
-                </Typography>
+                <Link to="/" style={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, color: 'inherit', textDecoration: 'inherit' }}>
+                    <Typography
+                        variant="h5"
+                        noWrap
+                        component="div"
+                    >
+                        DApp: Crowdfunding Reinvented
+                    </Typography>
+                </Link>
                 <Search>
                     <SearchIconWrapper>
                         <SearchIcon />

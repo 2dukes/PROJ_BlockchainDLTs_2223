@@ -12,6 +12,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import LockIcon from '@mui/icons-material/Lock';
 import { connectWallet, disconnectWallet } from '../../services/connectWallet';
 import { useSnackbar } from 'notistack';
+import { Link } from 'react-router-dom';
 
 const SideBar = ({ handleDrawerClose, open }) => {
     const { enqueueSnackbar } = useSnackbar();
@@ -31,6 +32,7 @@ const SideBar = ({ handleDrawerClose, open }) => {
     };
 
     const sideBarNames = ['All Campaigns', 'Create Campaign', 'Create Request', 'My Profile', isWalletConnected ? 'Disconnect Wallet' : 'Connect Wallet'];
+    const linkTo = ["/", "/campaign/new", "/request/new", "/profile", undefined];
     const sideBarIcons = [<CampaignIcon />, <AddCircleIcon />, <CreateIcon />, <AccountCircleIcon />, isWalletConnected ? <LockOpenIcon /> : <LockIcon />];
     const onClickActions = [() => { }, () => { }, () => { }, () => { }, isWalletConnected ? onClickDisconnectWallet : onClickConnectWallet];
 
@@ -55,31 +57,63 @@ const SideBar = ({ handleDrawerClose, open }) => {
             </DrawerHeader>
             <Divider />
             <List>
-                {sideBarNames.slice(0, 3).map((text, index) => (
-                    <ListItem key={text} disablePadding>
-                        <ListItemButton onClick={onClickActions[index]}>
-                            <ListItemIcon>
-                                {sideBarIcons[index]}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
+                {sideBarNames.slice(0, 3).map((text, index) => {
+                    if (linkTo[index])
+                        return (
+                            <Link to={linkTo[index]} key={text} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+                                <ListItem disablePadding>
+                                    <ListItemButton onClick={onClickActions[index]}>
+                                        <ListItemIcon>
+                                            {sideBarIcons[index]}
+                                        </ListItemIcon>
+                                        <ListItemText primary={text} />
+                                    </ListItemButton>
+                                </ListItem>
+                            </Link>
+                        );
+                    else
+                        return (
+                            <ListItem key={text} disablePadding>
+                                <ListItemButton onClick={onClickActions[index]}>
+                                    <ListItemIcon>
+                                        {sideBarIcons[index]}
+                                    </ListItemIcon>
+                                    <ListItemText primary={text} />
+                                </ListItemButton>
+                            </ListItem>
+                        );
+                })}
             </List>
             <Divider />
             <List>
-                {sideBarNames.slice(3, 5).map((text, index) => (
-                    <ListItem key={text} disablePadding>
-                        <ListItemButton onClick={onClickActions[index + 3]}>
-                            <ListItemIcon>
-                                {sideBarIcons[index + 3]}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
+                {sideBarNames.slice(3, 5).map((text, index) => {
+                    if (linkTo[index + 3])
+                        return (
+                            <Link to={linkTo[index + 3]} key={text} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+                                <ListItem disablePadding>
+                                    <ListItemButton onClick={onClickActions[index + 3]}>
+                                        <ListItemIcon>
+                                            {sideBarIcons[index + 3]}
+                                        </ListItemIcon>
+                                        <ListItemText primary={text} />
+                                    </ListItemButton>
+                                </ListItem>
+                            </Link>
+                        );
+                    else
+                        return (
+                            <ListItem key={text} disablePadding>
+                                <ListItemButton onClick={onClickActions[index + 3]}>
+                                    <ListItemIcon>
+                                        {sideBarIcons[index + 3]}
+                                    </ListItemIcon>
+                                    <ListItemText primary={text} />
+                                </ListItemButton>
+                            </ListItem>
+                        );
+                })}
             </List>
-        </Drawer>
+        </Drawer >
     );
 };
 
