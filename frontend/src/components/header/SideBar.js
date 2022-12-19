@@ -12,12 +12,13 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import LockIcon from '@mui/icons-material/Lock';
 import { connectWallet, disconnectWallet } from '../../services/connectWallet';
 import { useSnackbar } from 'notistack';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const SideBar = ({ handleDrawerClose, open }) => {
-    const { enqueueSnackbar } = useSnackbar();
-    const theme = useTheme();
     const [isWalletConnected, setIsWalletConnected] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
+    const location = useLocation();
+    const theme = useTheme();
 
     const onClickConnectWallet = () => {
         connectWallet();
@@ -61,7 +62,7 @@ const SideBar = ({ handleDrawerClose, open }) => {
                     if (linkTo[index])
                         return (
                             <Link to={linkTo[index]} key={text} style={{ color: 'inherit', textDecoration: 'inherit' }}>
-                                <ListItem disablePadding>
+                                <ListItem disablePadding style={{ backgroundColor: location.pathname === linkTo[index] ? 'lightgray' : 'white' }}>
                                     <ListItemButton onClick={onClickActions[index]}>
                                         <ListItemIcon>
                                             {sideBarIcons[index]}
@@ -91,7 +92,7 @@ const SideBar = ({ handleDrawerClose, open }) => {
                         return (
                             <Link to={linkTo[index + 3]} key={text} style={{ color: 'inherit', textDecoration: 'inherit' }}>
                                 <ListItem disablePadding>
-                                    <ListItemButton onClick={onClickActions[index + 3]}>
+                                    <ListItemButton onClick={onClickActions[index + 3]} style={{ backgroundColor: location.pathname === linkTo[index + 3] ? 'lightgray' : 'white' }}>
                                         <ListItemIcon>
                                             {sideBarIcons[index + 3]}
                                         </ListItemIcon>
