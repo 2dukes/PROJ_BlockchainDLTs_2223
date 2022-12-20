@@ -12,12 +12,23 @@ const ProductDeliveryForm = ({ address, open, setOpenDialog }) => {
     const [email, setEmail] = useState("");
     const [sendingAddress, setSendingAddress] = useState("");
 
+    const formErrorVerification = () => {
+        let noError = true;
+        noError &= name !== "";
+        noError &= email !== "";
+        noError &= sendingAddress !== "";
+        return noError;
+    };
+
     const handleConfirm = async () => {
-        enqueueSnackbar('Successfully submitted an order!', { variant: "success" });
+        if (!formErrorVerification()) {
+            enqueueSnackbar('Please fix incorrect inputs before ordering!', { variant: "error" });
+            return;
+        }
 
         // Send data to mongo DB
         const data = { name, email, sendingAddress };
-
+        
         const orderProductResult = await fetch(`http://localhost:8000/campaigns/${address}`, {
             method: 'PUT',
             headers: {
@@ -25,18 +36,19 @@ const ProductDeliveryForm = ({ address, open, setOpenDialog }) => {
             },
             body: JSON.stringify(data)
         });
-
+        
         const orderProductResultJSON = await orderProductResult.json();
-
+        
         console.log(orderProductResultJSON)
-
+        
         // Buy product function Solidity
         // If available NFTs
         // Use PINATA to mint them and fetch JSON tokenURI
         // If not send tokenURI as empty string as it won't matter
-
+        
         // Check update info
-
+        
+        enqueueSnackbar('Successfully submitted an order!', { variant: "success" });
         setOpenDialog(false);
     };
 
