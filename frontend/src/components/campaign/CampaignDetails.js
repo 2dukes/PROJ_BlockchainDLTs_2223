@@ -33,7 +33,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
     const handleChange = (_, newValue) => {
         setValue(newValue);
     };
-    
+
     const campaignProductData = {
         address,
         title: `${title} x 1`,

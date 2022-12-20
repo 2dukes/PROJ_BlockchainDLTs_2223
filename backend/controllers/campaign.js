@@ -1,4 +1,4 @@
-const Campaign = require("../models/Campaign");
+const { Campaign, Order } = require("../models/Campaign");
 
 const storeCampaignDetails = async (req, res, next) => {
     const { title, description } = req.body;
@@ -22,6 +22,31 @@ const storeCampaignDetails = async (req, res, next) => {
     }
 };
 
+const buyCampaignProduct = async (req, res, next) => {
+    const id = req.params.campaignAddress;
+    const { name, email, sendingAddress } = req.body;
+
+    try {
+        const campaign = await Campaign.findOne({ id });
+        const newOrder = new Order({
+            name,
+            email,
+            address: sendingAddress
+        });
+
+        campaign.orders.push(newOrder);
+
+        const result = await campaign.save();
+
+        return res.status(200).json({
+            status: true,
+            orderID: result._id
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 const getCampaignDetails = async (req, res, next) => {
     const id = req.params.campaignAddress;
 
@@ -38,4 +63,4 @@ const getCampaignDetails = async (req, res, next) => {
     }
 };
 
-module.exports = { storeCampaignDetails, getCampaignDetails };
+module.exports = { storeCampaignDetails, getCampaignDetails, buyCampaignProduct };

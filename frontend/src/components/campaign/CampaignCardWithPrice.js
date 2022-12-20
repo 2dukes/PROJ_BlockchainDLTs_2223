@@ -3,7 +3,7 @@ import { Box, Chip, Button, Card, CardContent, CardMedia, Typography, CardAction
 import ProductDeliveryForm from '../product/ProductDeliveryForm';
 import LoadingSpinner from '../progress/LoadingSpinner';
 
-const CampaignCardWithPrice = ({ title, description, productPrice, unitsSold, imageURL }) => {
+const CampaignCardWithPrice = ({ address, title, description, productPrice, unitsSold, imageURL }) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [ethPrice, setEthPrice] = useState(0);
@@ -14,9 +14,13 @@ const CampaignCardWithPrice = ({ title, description, productPrice, unitsSold, im
 
     useEffect(() => {
         const fetchEthPrice = async () => {
-            const coinGeckoData = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum");
-            const coinGeckoDataJSON = await coinGeckoData.json();
-            setEthPrice(coinGeckoDataJSON[0].current_price);
+            try {
+                const coinGeckoData = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum");
+                const coinGeckoDataJSON = await coinGeckoData.json();
+                setEthPrice(coinGeckoDataJSON[0].current_price);
+            } catch(err) {
+                setEthPrice(1200); // Testing purposes because of free API plans
+            }
             setIsLoading(false);
         };
 
@@ -25,7 +29,7 @@ const CampaignCardWithPrice = ({ title, description, productPrice, unitsSold, im
 
     return (
         <Fragment>
-            {openDialog && <ProductDeliveryForm open={openDialog} setOpenDialog={setOpenDialog} />}
+            {openDialog && <ProductDeliveryForm address={address} open={openDialog} setOpenDialog={setOpenDialog} />}
             {isLoading ? <LoadingSpinner borderRadius='20px' /> : (
                 <Card sx={{ maxWidth: 550 }}>
                     <CardActionArea component="a">

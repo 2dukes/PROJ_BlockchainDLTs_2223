@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { useState, forwardRef } from 'react';
 import { AppBar, Button, TextField, Grid, Typography, FormControl, Dialog, DialogActions, DialogContent, Slide } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
@@ -6,11 +6,37 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ProductDeliveryForm = ({ open, setOpenDialog }) => {
+const ProductDeliveryForm = ({ address, open, setOpenDialog }) => {
     const { enqueueSnackbar } = useSnackbar();
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [sendingAddress, setSendingAddress] = useState("");
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         enqueueSnackbar('Successfully submitted an order!', { variant: "success" });
+
+        // Send data to mongo DB
+        const data = { name, email, sendingAddress };
+
+        const orderProductResult = await fetch(`http://localhost:8000/campaigns/${address}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const orderProductResultJSON = await orderProductResult.json();
+
+        console.log(orderProductResultJSON)
+
+        // Buy product function Solidity
+        // If available NFTs
+        // Use PINATA to mint them and fetch JSON tokenURI
+        // If not send tokenURI as empty string as it won't matter
+
+        // Check update info
+
         setOpenDialog(false);
     };
 
@@ -42,8 +68,8 @@ const ProductDeliveryForm = ({ open, setOpenDialog }) => {
                             <TextField
                                 id="title"
                                 sx={{ width: "100%" }}
-                            // value={values.campaignTitle}
-                            // onChange={() => {}}
+                                value={name}
+                                onChange={(event) => { setName(event.target.value); }}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -53,8 +79,8 @@ const ProductDeliveryForm = ({ open, setOpenDialog }) => {
                             <TextField
                                 id="title"
                                 sx={{ width: "100%" }}
-                            // value={values.campaignTitle}
-                            // onChange={() => {}}
+                                value={email}
+                                onChange={(event) => { setEmail(event.target.value); }}
                             />
                         </Grid>
                     </Grid>
@@ -63,8 +89,8 @@ const ProductDeliveryForm = ({ open, setOpenDialog }) => {
                     </Typography>
                     <TextField
                         id="description"
-                    // value={values.campaignDescription}
-                    // onChange={handleChange("campaignDescription")}
+                        value={sendingAddress}
+                        onChange={(event) => { setSendingAddress(event.target.value); }}
                     />
                 </FormControl>
             </DialogContent>

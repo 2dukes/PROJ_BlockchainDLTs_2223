@@ -194,6 +194,7 @@ contract Campaign {
         onlyOpenCampaign
     {
         contribute(tokenURI);
+        unitsSold += 1;
     }
 
     /** @notice Create a request for the use of the campaign funds.

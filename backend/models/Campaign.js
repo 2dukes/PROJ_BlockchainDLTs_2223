@@ -1,6 +1,21 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const deliveryDetailsSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  }
+});
+
 const campaignSchema = new Schema({
   id: {
     type: String,
@@ -14,6 +29,12 @@ const campaignSchema = new Schema({
     type: String,
     required: true,
   },
+  orders: {
+    type: [deliveryDetailsSchema] // Default []
+  }
 });
 
-module.exports = mongoose.model("Campaign", campaignSchema);
+const Campaign = mongoose.model("Campaign", campaignSchema);
+const Order = mongoose.model("Orders", deliveryDetailsSchema);
+
+module.exports = { Campaign, Order };
