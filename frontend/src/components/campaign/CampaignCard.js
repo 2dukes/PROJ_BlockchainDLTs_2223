@@ -36,13 +36,20 @@ const CampaignCard = ({ title, description, imageURL, setModalOpen }) => {
                     component="img"
                     height="140"
                     image={imageURL}
-                    alt="green iguana"
+                    alt="campaign image"
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                         {title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: "1em" }}>
+                    <Typography variant="body2" color="text.secondary" sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '1',
+                        WebkitBoxOrient: 'vertical',
+                        mb: "1em"
+                    }}>
                         {description}
                     </Typography>
                     <Typography variant="body2" component="span" color="text.secondary">
@@ -50,7 +57,7 @@ const CampaignCard = ({ title, description, imageURL, setModalOpen }) => {
                     </Typography>
                     <LinearProgressWithLabel value={progress} />
                     <Stack direction="row" alignItems="center" gap={1} marginTop="0.5em">
-                        <WatchLaterIcon color="disabled"/> 3 days left
+                        <WatchLaterIcon color="disabled" /> 3 days left
                         <Typography variant="body2" component="div" color="text.secondary">
                         </Typography>
                     </Stack>

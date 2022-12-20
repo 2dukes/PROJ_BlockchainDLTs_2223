@@ -1,6 +1,6 @@
 const Campaign = require("../models/Campaign");
 
-const storeCampaignDetails = async (req, res) => {
+const storeCampaignDetails = async (req, res, next) => {
     const { id, title, description } = req.body;
 
     try {
@@ -19,8 +19,22 @@ const storeCampaignDetails = async (req, res) => {
     } catch (err) {
         next(err);
     }
-
-
 };
 
-module.exports = { storeCampaignDetails };
+const getCampaignDetails = async (req, res, next) => {
+    const { id } = req.query;
+
+    try {
+        const campaign = await Campaign.findOne({ id });
+
+        return res.status(200).json({
+            status: true,
+            campaignTitle: campaign.title,
+            campaignDescription: campaign.description
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+module.exports = { storeCampaignDetails, getCampaignDetails };

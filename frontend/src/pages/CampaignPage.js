@@ -54,8 +54,19 @@ const fetchCampaigns = async () => {
     const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate", "unitsSold", "productPrice"];
 
     for (let i = 0; i < numCampaigns; i++) {
+        // Fetch data from Campaign contract
         const campaignDataPromises = methodNames.map(name => campaignContracts[i].methods[name]().call());
         const campaignData = await Promise.all(campaignDataPromises);
+
+        // Fetch title and description from MongoDB
+        const data = { id: campaignAddresses[i] };
+        const queryParams = Object.keys(data)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+            .join('&');
+
+        const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns/get?" + queryParams);
+
+        const storeCampaignDetailsResultJSON = await storeCampaignDetailsResult.json();
 
         campaignObjs[i] = {
             campaignCreator: campaignData[0],
@@ -67,10 +78,15 @@ const fetchCampaigns = async () => {
             endDate: dayjs.unix(campaignData[6]).format('DD/MM/YYYY'),
             remainingDays: Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true)),
             unitsSold: campaignData[7],
-            productPrice: web3.utils.fromWei(campaignData[8])
+            productPrice: web3.utils.fromWei(campaignData[8]),
+            imageURL: `http://localhost:8000/${campaignAddresses[i]}/campaignImage.png`,
+            title: storeCampaignDetailsResultJSON.campaignTitle,
+            description: storeCampaignDetailsResultJSON.campaignDescription,
         };
     }
-    
+
+    // status &= storeCampaignDetailsResultJSON.status;
+
     console.log(campaignObjs);
 };
 

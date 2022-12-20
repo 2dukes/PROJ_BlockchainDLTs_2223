@@ -137,7 +137,7 @@ const NewCampaign = () => {
         if (status) {
             const data = { id: newCampaignAddr, title: values.campaignTitle, description: values.campaignDescription };
 
-            const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns", {
+            const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns/store", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
