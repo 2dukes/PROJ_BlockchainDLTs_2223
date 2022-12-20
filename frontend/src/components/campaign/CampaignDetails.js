@@ -9,46 +9,6 @@ import RequestTable from '../request/RequestTable';
 import CampaignCardWithPrice from './CampaignCardWithPrice';
 import { useSnackbar } from 'notistack';
 
-const items = [
-    {
-        header: "0x12345678901123456782345678901234567890123456789012345678901234567890",
-        meta: "Address of Manager",
-        description:
-            "The manager created this campaign and can create requests to withdraw money.",
-        style: { wordWrap: "break-word" },
-    },
-    {
-        header: "12/10/2022",
-        meta: "Open Until",
-        description:
-            "The end date of the campaign.",
-    },
-    {
-        header: 1,
-        meta: "Minimum Contribution (ETH)",
-        description:
-            "You must contribute at least this much ETH to become and approver.",
-    },
-    {
-        header: 10,
-        meta: "Number of NFT Awards",
-        description:
-            "Number of initial contributors elegible to win an NFT.",
-    },
-    {
-        header: 5,
-        meta: "Number of Approvers",
-        description:
-            "Number of people who have already donated to this campaign.",
-    },
-    {
-        header: 120,
-        meta: "Campaign Balance (ETH)",
-        description:
-            "The balance is how much money this campaign has left to spend.",
-    },
-];
-
 const style = {
     position: 'absolute',
     top: '50%',
@@ -62,7 +22,7 @@ const style = {
     p: 4
 };
 
-const CampaignDetails = ({ address, title, description, productPrice, unitsSold, imageURL, modalOpen, setModalOpen }) => {
+const CampaignDetails = ({ address, title, description, productPrice, unitsSold, balance, approversCount, maximumNFTContributors, minimumContribution, endDate, imageURL, modalOpen, setModalOpen }) => {
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
@@ -73,7 +33,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
     const handleChange = (_, newValue) => {
         setValue(newValue);
     };
-
+    
     const campaignProductData = {
         address,
         title: `${title} x 1`,
@@ -82,6 +42,46 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
         unitsSold,
         imageURL
     };
+
+    const items = [
+        {
+            header: address,
+            meta: "Address of Manager",
+            description:
+                "The manager created this campaign and can create requests to withdraw money.",
+            style: { wordWrap: "break-word" },
+        },
+        {
+            header: endDate,
+            meta: "Open Until",
+            description:
+                "The end date of the campaign.",
+        },
+        {
+            header: minimumContribution,
+            meta: "Minimum Contribution (ETH)",
+            description:
+                "You must contribute at least this much ETH to become and approver.",
+        },
+        {
+            header: maximumNFTContributors,
+            meta: "Number of NFT Awards",
+            description:
+                "Number of initial contributors elegible to win an NFT.",
+        },
+        {
+            header: approversCount,
+            meta: "Number of Approvers",
+            description:
+                "Number of people who have already donated to this campaign.",
+        },
+        {
+            header: balance,
+            meta: "Campaign Balance (ETH)",
+            description:
+                "The balance is how much money this campaign has left to spend.",
+        },
+    ];
 
     return (
         <Fragment>
@@ -110,7 +110,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
                             <Grid container>
                                 <Grid item xs={12} md={9}> {/* When in small devices, spacing = 0*/}
                                     <Grid container spacing={1} pr={isSmall ? "0em" : "1em"}>
-                                        {items.map(item => (<Grid item key={item.header} xs={6}><CampaignInfoCard {...item} isSmall={isSmall} /></Grid>))}
+                                        {items.map(item => (<Grid item key={item.meta} xs={6}><CampaignInfoCard {...item} isSmall={isSmall} /></Grid>))}
                                     </Grid>
                                 </Grid>
                                 <Grid item xs={12} md={3} sx={{ mt: isSmall ? 2 : 0 }}>

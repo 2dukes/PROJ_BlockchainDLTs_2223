@@ -32,6 +32,7 @@ const fetchCampaigns = async () => {
     for (let i = 0; i < numCampaigns; i++) {
         // Fetch data from Campaign contract
         const campaignDataPromises = methodNames.map(name => campaignContracts[i].methods[name]().call());
+        campaignDataPromises.push(web3.eth.getBalance(campaignAddresses[i])); // Get Balance
         const campaignData = await Promise.all(campaignDataPromises);
 
         // Fetch title and description from MongoDB
@@ -45,8 +46,9 @@ const fetchCampaigns = async () => {
 
         campaignObjs[i] = {
             address: campaignAddresses[i],
+            balance: web3.utils.fromWei(await web3.eth.getBalance(campaignAddresses[i])),
             campaignCreator: campaignData[0],
-            minimumContribution: web3.utils.fromWei(campaignData[1]),
+            minimumContribution: web3.utils.fromWei(campaignData.at(-1)),
             maximumNFTContributors: campaignData[2],
             raisedValue: web3.utils.fromWei(campaignData[3]),
             targetValue: web3.utils.fromWei(campaignData[4]),

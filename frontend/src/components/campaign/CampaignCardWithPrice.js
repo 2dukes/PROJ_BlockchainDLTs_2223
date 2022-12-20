@@ -26,7 +26,7 @@ const CampaignCardWithPrice = ({ title, description, productPrice, unitsSold, im
     return (
         <Fragment>
             {openDialog && <ProductDeliveryForm open={openDialog} setOpenDialog={setOpenDialog} />}
-            {isLoading ? <LoadingSpinner /> : (
+            {isLoading ? <LoadingSpinner borderRadius='20px' /> : (
                 <Card sx={{ maxWidth: 550 }}>
                     <CardActionArea component="a">
                         <CardMedia
