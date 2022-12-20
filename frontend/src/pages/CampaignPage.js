@@ -3,84 +3,23 @@ import { Typography, Grid, Pagination, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import CampaignCard from "../components/campaign/CampaignCard";
 import CampaignDetails from '../components/campaign/CampaignDetails';
-import dayjs from 'dayjs';
 import LoadingSpinner from '../components/progress/LoadingSpinner';
-import { campaignFactoryContract, connectWallet, web3 } from '../services/connectWallet';
-import campaign from "../contracts/Campaign.json";
 
 const CAMPAIGNS_PER_PAGE = 4;
 
 const fetchCampaigns = async (pageNumber) => {
-    await connectWallet(); // testing
+    const data = { pageNumber, campaignsPerPage: CAMPAIGNS_PER_PAGE};
+    const queryParams = Object.keys(data)
+        .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+        .join('&');
 
-    let numCampaigns = await campaignFactoryContract.methods.getCampaignsCount().call();
-    let campaignPromises = [];
+    const campaignResult = await fetch("http://localhost:8000/campaigns?" + queryParams);
 
-    let indexOfLastResult = pageNumber * CAMPAIGNS_PER_PAGE;
-    const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
-    indexOfLastResult = (indexOfLastResult + 1 > numCampaigns) ? numCampaigns : indexOfLastResult;
-
-    const numberCampaignsToDisplay = indexOfLastResult - indexOfFirstResult;
-
-    for (let i = indexOfFirstResult; i < indexOfLastResult; i++)
-        campaignPromises.push(campaignFactoryContract.methods.campaigns(i).call());
-
-    const campaignAddresses = await Promise.all(campaignPromises);
-
-    console.log(campaignAddresses);
-
-    let campaignObjs = new Array(numCampaigns).fill({});
-    let campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
-
-    const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate", "unitsSold", "productPrice"];
-
-    let campaignStrDataPromises = [];
-
-    for (let i = 0; i < numberCampaignsToDisplay; i++) {
-        // Fetch data from Campaign contract
-        const campaignDataPromises = methodNames.map(name => campaignContracts[i].methods[name]().call());
-        campaignDataPromises.push(web3.eth.getBalance(campaignAddresses[i])); // Get Balance
-        const campaignData = await Promise.all(campaignDataPromises);
-
-        // Fetch title and description from MongoDB
-        const data = { id: campaignAddresses[i] };
-        const queryParams = Object.keys(data)
-            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
-            .join('&');
-
-        // Do this in parallel
-        campaignStrDataPromises.push(fetch(`http://localhost:8000/campaigns/${campaignAddresses[i]}?` + queryParams));
-
-        campaignObjs[i] = {
-            address: campaignAddresses[i],
-            balance: web3.utils.fromWei(await web3.eth.getBalance(campaignAddresses[i])),
-            campaignCreator: campaignData[0],
-            minimumContribution: web3.utils.fromWei(campaignData.at(-1)),
-            maximumNFTContributors: campaignData[2],
-            raisedValue: web3.utils.fromWei(campaignData[3]),
-            targetValue: web3.utils.fromWei(campaignData[4]),
-            approversCount: campaignData[5],
-            endDate: dayjs.unix(campaignData[6]).format('DD/MM/YYYY'),
-            remainingDays: Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true)),
-            unitsSold: campaignData[7],
-            productPrice: web3.utils.fromWei(campaignData[8]),
-            imageURL: `http://localhost:8000/${campaignAddresses[i]}/campaignImage.png`,
-        };
-    }
-
-    const campaignStrData = await Promise.all(campaignStrDataPromises);
-    const campaignStrDataJSONPromises = await Promise.all(campaignStrData.map(data => data.json()));
-
-    for (let i = 0; i < numberCampaignsToDisplay; i++) {
-        campaignObjs[i].title = campaignStrDataJSONPromises[i].campaignTitle;
-        campaignObjs[i].description = campaignStrDataJSONPromises[i].campaignDescription;
-    }
-
-    console.log(campaignObjs);
+    const campaignResultJSON = await campaignResult.json();
 
     return {
-        campaigns: campaignObjs,
-        numCampaigns
+        campaigns: campaignResultJSON.campaigns,
+        numCampaigns: campaignResultJSON.numCampaigns
     };
 };
 
