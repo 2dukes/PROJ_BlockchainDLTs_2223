@@ -2,6 +2,7 @@ import { Fragment, useState, useEffect } from 'react';
 import { Typography, Grid, Pagination } from '@mui/material';
 import CampaignCard from "../components/campaign/CampaignCard";
 import CampaignDetails from '../components/campaign/CampaignDetails';
+import dayjs from 'dayjs';
 import { campaignFactoryContract, connectWallet, web3 } from '../services/connectWallet';
 import campaign from "../contracts/Campaign.json";
 
@@ -47,9 +48,31 @@ const fetchCampaigns = async () => {
 
     console.log(campaignAddresses);
 
-    let campaignContract = new web3.eth.Contract(campaign.abi, campaignAddresses[0]);
-    let campaignCreator = await campaignContract.methods.campaignCreator().call();
-    console.log("Campaign Creator:" + campaignCreator);
+    let campaignObjs = new Array(numCampaigns).fill({});
+    let campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
+
+    console.log(campaignContracts);
+    console.log(campaignObjs);
+
+    const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate"];
+
+    for (let i = 0; i < numCampaigns; i++) {
+        const campaignDataPromises = methodNames.map(name => campaignContracts[i].methods[name]().call());
+        const campaignData = await Promise.all(campaignDataPromises);
+
+        campaignObjs[i] = {
+            campaignCreator: campaignData[0],
+            minimumContribution: web3.utils.fromWei(campaignData[1]),
+            maximumNFTContributors: campaignData[2],
+            raisedValue: web3.utils.fromWei(campaignData[3]),
+            targetValue: web3.utils.fromWei(campaignData[4]),
+            approversCount: campaignData[5],
+            endDate: dayjs.unix(campaignData[6]).format('DD/MM/YYYY'),
+            remainingDays: Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true))
+        };
+    }
+    
+    console.log(campaignObjs);
 };
 
 const CampaignPage = () => {
