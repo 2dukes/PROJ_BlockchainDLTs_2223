@@ -12,6 +12,19 @@ const campaignRoutes = require("./routes/campaign");
 
 const errorMiddleware = require("./middleware/error");
 
+
+app.use((req, res, next) => {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "*"
+  ); // * could be replaced by a domain. Allow different origins to access our data.
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE"); // Allow origins to use specific HTTP methods.
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Cookie"); // Headers that clients might set on their requests.
+
+  next();
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
