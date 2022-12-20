@@ -62,15 +62,7 @@ const style = {
     p: 4
 };
 
-const data = {
-    id: 1,
-    title: "CYPLUS Gadget x 1",
-    description: "Thinking on cycling enthusiasts, we have designed a bike trainer that best suits you and your goals, environment, and most importantly, your budget.",
-    price: 10,
-    imageURL: "https://c0.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,w_695,g_auto,q_auto,dpr_1.0,f_auto,h_460/kht8woep0znoe8kqfqih",
-};
-
-const CampaignDetails = ({ modalOpen, setModalOpen }) => {
+const CampaignDetails = ({ address, title, description, productPrice, unitsSold, imageURL, modalOpen, setModalOpen }) => {
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
@@ -78,8 +70,17 @@ const CampaignDetails = ({ modalOpen, setModalOpen }) => {
 
     const [value, setValue] = useState('campaign-details');
 
-    const handleChange = (event, newValue) => {
+    const handleChange = (_, newValue) => {
         setValue(newValue);
+    };
+
+    const campaignProductData = {
+        address,
+        title: `${title} x 1`,
+        description,
+        productPrice,
+        unitsSold,
+        imageURL
     };
 
     return (
@@ -92,7 +93,7 @@ const CampaignDetails = ({ modalOpen, setModalOpen }) => {
             >
                 <Box sx={style}>
                     <Typography id="modal-modal-title" variant="h4" component="h2" sx={{ pb: 2 }}>
-                        Campaign Title
+                        {title}
                     </Typography>
                     <TabContext value={value}>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -103,16 +104,7 @@ const CampaignDetails = ({ modalOpen, setModalOpen }) => {
                             </TabList>
                         </Box>
                         <TabPanel align="center" value="campaign-details" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
-                            <CampaignCardWithPrice {...data} />
-                            {/* <Grid container> */}
-                            {/* <Grid item xs={12} md={6}><CampaignCardWithPrice {...data} /></Grid> */}
-                            {/* <Grid item xs={12} md={6}>
-                                    <Typography variant="h5" fontWeight="bold" gutterBottom>
-                                        Delivery Information
-                                    </Typography>
-                                    <ProductDeliveryForm />
-                                </Grid> */}
-                            {/* </Grid> */}
+                            <CampaignCardWithPrice {...campaignProductData} />
                         </TabPanel>
                         <TabPanel value="campaign-contribute" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
                             <Grid container>

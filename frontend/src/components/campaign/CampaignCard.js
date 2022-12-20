@@ -26,9 +26,7 @@ LinearProgressWithLabel.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-const CampaignCard = ({ title, description, imageURL, setModalOpen }) => {
-    const progress = 25;
-
+const CampaignCard = ({ raisedValue, targetValue, remainingDays, imageURL, title, description, setModalOpen }) => {
     return (
         <Card sx={{ maxWidth: 500, margin: "auto" }}>
             <CardActionArea onClick={() => setModalOpen(true)}>
@@ -53,11 +51,11 @@ const CampaignCard = ({ title, description, imageURL, setModalOpen }) => {
                         {description}
                     </Typography>
                     <Typography variant="body2" component="span" color="text.secondary">
-                        <b>2 ETH</b> raised
+                        <b>{raisedValue} ETH</b> raised
                     </Typography>
-                    <LinearProgressWithLabel value={progress} />
+                    <LinearProgressWithLabel value={Math.round(raisedValue / targetValue * 100)} />
                     <Stack direction="row" alignItems="center" gap={1} marginTop="0.5em">
-                        <WatchLaterIcon color="disabled" /> 3 days left
+                        <WatchLaterIcon color="disabled" /> {remainingDays} days left
                         <Typography variant="body2" component="div" color="text.secondary">
                         </Typography>
                     </Stack>
