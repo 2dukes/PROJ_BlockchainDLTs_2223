@@ -2,7 +2,7 @@
 
 ## Setup
 
-Install [Metamask](https://metamask.io/) on your browser. Create an `.env` file in the project's root folder with the following structure:
+Install [MetaMask](https://metamask.io/) on your browser. Create an `.env` file in the project's root folder with the following structure:
 
 ```
 ALCHEMY_API_URL = "https://eth-goerli.g.alchemy.com/v2/OMigXz2SzOnoSvOvI1YXiyDPDYRq6sUr"

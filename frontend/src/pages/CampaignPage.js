@@ -13,11 +13,7 @@ const CAMPAIGNS_PER_PAGE = 4;
 const fetchCampaigns = async (pageNumber) => {
     await connectWallet(); // testing
 
-    console.log(pageNumber);
-
     let numCampaigns = await campaignFactoryContract.methods.getCampaignsCount().call();
-    console.log("Number of Campaigns:" + numCampaigns);
-
     let campaignPromises = [];
 
     let indexOfLastResult = pageNumber * CAMPAIGNS_PER_PAGE;
@@ -25,8 +21,6 @@ const fetchCampaigns = async (pageNumber) => {
     indexOfLastResult = (indexOfLastResult + 1 > numCampaigns) ? numCampaigns : indexOfLastResult;
 
     const numberCampaignsToDisplay = indexOfLastResult - indexOfFirstResult;
-
-    console.log(indexOfFirstResult, indexOfLastResult);
 
     for (let i = indexOfFirstResult; i < indexOfLastResult; i++)
         campaignPromises.push(campaignFactoryContract.methods.campaigns(i).call());
@@ -86,15 +80,17 @@ const fetchCampaigns = async (pageNumber) => {
 
     return {
         campaigns: campaignObjs,
-        totalPages: Math.ceil(numCampaigns / CAMPAIGNS_PER_PAGE)
+        numCampaigns
     };
 };
 
 const CampaignPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [highestPageNumber, setHighestPageNumber] = useState(1);
+    const [isNextPage, setIsNextPage] = useState(true);
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [totalCampaigns, setTotalCampaigns] = useState(1);
     const [selectedCampaignAddr, setSelectedCampaignAddr] = useState(null);
     const [campaigns, setCampaigns] = useState([]);
 
@@ -103,22 +99,34 @@ const CampaignPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const campaignData = await fetchCampaigns(page);
-            setCampaigns(campaignData.campaigns);
-            setTotalPages(campaignData.totalPages);
-            setIsLoading(false);
+            if (isNextPage) {
+                setIsLoading(true);
+                const campaignData = await fetchCampaigns(page);
+                setCampaigns(prevCampaigns => [...prevCampaigns, ...campaignData.campaigns]);
+                setTotalCampaigns(campaignData.numCampaigns);
+                setIsLoading(false);
+            }
         };
 
         fetchData();
-    }, [page]);
+    }, [page, isNextPage]);
 
     const changePage = (_, newPageNumber) => {
+        if (newPageNumber > highestPageNumber) {
+            setIsNextPage(true);
+            setHighestPageNumber(newPageNumber);
+        } else
+            setIsNextPage(false);
         setPage(newPageNumber);
     };
 
     const updateSelectedCampaign = (campaignAddress) => {
         setSelectedCampaignAddr(campaignAddress);
     };
+
+    let indexOfLastResult = page * CAMPAIGNS_PER_PAGE;
+    const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
+    indexOfLastResult = (indexOfLastResult + 1 > totalCampaigns) ? totalCampaigns : indexOfLastResult;
 
     return (
         <Fragment>
@@ -131,9 +139,9 @@ const CampaignPage = () => {
                     <Grid container
                         alignItems="center"
                         justify="center" spacing={3}>
-                        {campaigns.map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
+                        {campaigns.slice(indexOfFirstResult, indexOfLastResult).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
                         <Grid item xs={12} display="flex" justifyContent="center">
-                            <Pagination size={isReallySmall ? "small" : "medium"} count={totalPages} page={page} onChange={changePage} color="primary" />
+                            <Pagination size={isReallySmall ? "small" : "medium"} count={Math.ceil(totalCampaigns / CAMPAIGNS_PER_PAGE)} page={page} onChange={changePage} color="primary" />
                         </Grid>
                     </Grid>
                 </Fragment>
