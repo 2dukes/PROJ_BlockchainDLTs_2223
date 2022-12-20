@@ -49,7 +49,7 @@ According to Hardhat's configurations, the deployment already includes the verif
 
 **References:**
 - [Solidity Documentation](https://docs.soliditylang.org/en/v0.8.17/index.html);
-- [Ethers Documentation](https://docs.ethers.io/v5/);
+- [Web3 Documentation](https://web3js.readthedocs.io/en/v1.8.1/);
 - [Alchemy](https://dashboard.alchemy.com/);
 - [How to Create an NFT on Ethereum Tutorial](https://docs.alchemy.com/docs/how-to-create-an-nft#step-3-add-goerlieth-from-a-faucet);
 - [How to Mint and NFT from Code](https://docs.alchemy.com/docs/how-to-mint-an-nft-from-code);

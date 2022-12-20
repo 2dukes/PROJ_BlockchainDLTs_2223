@@ -1,5 +1,6 @@
 import { Fragment, useState, useEffect } from 'react';
-import { Typography, Grid, Pagination } from '@mui/material';
+import { Typography, Grid, Pagination, useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import CampaignCard from "../components/campaign/CampaignCard";
 import CampaignDetails from '../components/campaign/CampaignDetails';
 import dayjs from 'dayjs';
@@ -7,15 +8,27 @@ import LoadingSpinner from '../components/progress/LoadingSpinner';
 import { campaignFactoryContract, connectWallet, web3 } from '../services/connectWallet';
 import campaign from "../contracts/Campaign.json";
 
-const fetchCampaigns = async () => {
+const CAMPAIGNS_PER_PAGE = 4;
+
+const fetchCampaigns = async (pageNumber) => {
     await connectWallet(); // testing
+
+    console.log(pageNumber);
 
     let numCampaigns = await campaignFactoryContract.methods.getCampaignsCount().call();
     console.log("Number of Campaigns:" + numCampaigns);
 
     let campaignPromises = [];
 
-    for (let i = 0; i < numCampaigns; i++)
+    let indexOfLastResult = pageNumber * CAMPAIGNS_PER_PAGE;
+    const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
+    indexOfLastResult = (indexOfLastResult + 1 > numCampaigns) ? numCampaigns : indexOfLastResult;
+
+    const numberCampaignsToDisplay = indexOfLastResult - indexOfFirstResult;
+
+    console.log(indexOfFirstResult, indexOfLastResult);
+
+    for (let i = indexOfFirstResult; i < indexOfLastResult; i++)
         campaignPromises.push(campaignFactoryContract.methods.campaigns(i).call());
 
     const campaignAddresses = await Promise.all(campaignPromises);
@@ -29,7 +42,7 @@ const fetchCampaigns = async () => {
 
     let campaignStrDataPromises = [];
 
-    for (let i = 0; i < numCampaigns; i++) {
+    for (let i = 0; i < numberCampaignsToDisplay; i++) {
         // Fetch data from Campaign contract
         const campaignDataPromises = methodNames.map(name => campaignContracts[i].methods[name]().call());
         campaignDataPromises.push(web3.eth.getBalance(campaignAddresses[i])); // Get Balance
@@ -64,29 +77,44 @@ const fetchCampaigns = async () => {
     const campaignStrData = await Promise.all(campaignStrDataPromises);
     const campaignStrDataJSONPromises = await Promise.all(campaignStrData.map(data => data.json()));
 
-    for (let i = 0; i < numCampaigns; i++) {
+    for (let i = 0; i < numberCampaignsToDisplay; i++) {
         campaignObjs[i].title = campaignStrDataJSONPromises[i].campaignTitle;
         campaignObjs[i].description = campaignStrDataJSONPromises[i].campaignDescription;
     }
 
     console.log(campaignObjs);
-    return campaignObjs;
+
+    return {
+        campaigns: campaignObjs,
+        totalPages: Math.ceil(numCampaigns / CAMPAIGNS_PER_PAGE)
+    };
 };
 
 const CampaignPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [selectedCampaignAddr, setSelectedCampaignAddr] = useState(null);
     const [campaigns, setCampaigns] = useState([]);
 
+    const theme = useTheme();
+    const isReallySmall = useMediaQuery(theme.breakpoints.down('sm'));
+
     useEffect(() => {
         const fetchData = async () => {
-            setCampaigns(await fetchCampaigns());
+            const campaignData = await fetchCampaigns(page);
+            setCampaigns(campaignData.campaigns);
+            setTotalPages(campaignData.totalPages);
             setIsLoading(false);
         };
 
         fetchData();
-    }, []);
+    }, [page]);
+
+    const changePage = (_, newPageNumber) => {
+        setPage(newPageNumber);
+    };
 
     const updateSelectedCampaign = (campaignAddress) => {
         setSelectedCampaignAddr(campaignAddress);
@@ -104,7 +132,9 @@ const CampaignPage = () => {
                         alignItems="center"
                         justify="center" spacing={3}>
                         {campaigns.map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
-                        <Grid item xs={12} display="flex" justifyContent="center"><Pagination count={3} color="primary" /></Grid>
+                        <Grid item xs={12} display="flex" justifyContent="center">
+                            <Pagination size={isReallySmall ? "small" : "medium"} count={totalPages} page={page} onChange={changePage} color="primary" />
+                        </Grid>
                     </Grid>
                 </Fragment>
             )}
