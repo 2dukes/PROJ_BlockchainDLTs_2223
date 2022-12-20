@@ -112,7 +112,6 @@ const NewCampaign = () => {
         if (status) {
             // Store images locally
             const formData = new FormData();
-            formData.append("campaignAddress", newCampaignAddr);
 
             // Campaign Image
             if (values.campaignImage)
@@ -122,7 +121,7 @@ const NewCampaign = () => {
             for (let i = 0; i < values.NFTselectedImages.length; i++)
                 formData.append("nfts", values.NFTselectedImages[i]);
 
-            const storeCampaignImgResult = await fetch("http://localhost:8000/images", {
+            const storeCampaignImgResult = await fetch(`http://localhost:8000/images/${newCampaignAddr}`, {
                 method: "POST",
                 body: formData,
             });
@@ -135,9 +134,9 @@ const NewCampaign = () => {
         // Request to save string fields in MongoDB
 
         if (status) {
-            const data = { id: newCampaignAddr, title: values.campaignTitle, description: values.campaignDescription };
+            const data = { title: values.campaignTitle, description: values.campaignDescription };
 
-            const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns/store", {
+            const storeCampaignDetailsResult = await fetch(`http://localhost:8000/campaigns/${newCampaignAddr}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

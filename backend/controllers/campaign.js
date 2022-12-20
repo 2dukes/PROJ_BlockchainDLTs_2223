@@ -1,7 +1,8 @@
 const Campaign = require("../models/Campaign");
 
 const storeCampaignDetails = async (req, res, next) => {
-    const { id, title, description } = req.body;
+    const { title, description } = req.body;
+    const id = req.params.campaignAddress;
 
     try {
         const campaign = new Campaign({
@@ -22,7 +23,7 @@ const storeCampaignDetails = async (req, res, next) => {
 };
 
 const getCampaignDetails = async (req, res, next) => {
-    const { id } = req.query;
+    const id = req.params.campaignAddress;
 
     try {
         const campaign = await Campaign.findOne({ id });

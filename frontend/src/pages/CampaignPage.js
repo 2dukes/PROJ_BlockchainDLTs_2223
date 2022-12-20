@@ -64,7 +64,7 @@ const fetchCampaigns = async () => {
             .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
             .join('&');
 
-        const storeCampaignDetailsResult = await fetch("http://localhost:8000/campaigns/get?" + queryParams);
+        const storeCampaignDetailsResult = await fetch(`http://localhost:8000/campaigns/${campaignAddresses[i]}?` + queryParams);
 
         const storeCampaignDetailsResultJSON = await storeCampaignDetailsResult.json();
 

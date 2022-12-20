@@ -3,8 +3,8 @@ const { storeCampaignDetails, getCampaignDetails } = require("../controllers/cam
 const express = require("express");
 const router = express.Router();
 
-router.post('/store', storeCampaignDetails);
+router.post('/:campaignAddress', storeCampaignDetails);
 
-router.get('/get', getCampaignDetails);
+router.get('/:campaignAddress', getCampaignDetails);
 
 module.exports = router;

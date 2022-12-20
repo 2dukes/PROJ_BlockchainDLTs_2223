@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const storeImages = (req, res) => {
-    const campaignAddress = req.body.campaignAddress;
+    const campaignAddress = req.params.campaignAddress;
     const campaignImage = req.files.campaignImage?.[0];
     const NFTs = req.files.nfts || [];
 
