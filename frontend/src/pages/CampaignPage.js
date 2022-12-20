@@ -136,14 +136,18 @@ const CampaignPage = () => {
                     <Typography variant="h3" marginTop="2em" textAlign="center" gutterBottom >
                         Campaigns
                     </Typography>
-                    <Grid container
-                        alignItems="center"
-                        justify="center" spacing={3}>
-                        {campaigns.slice(indexOfFirstResult, indexOfLastResult).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
-                        <Grid item xs={12} display="flex" justifyContent="center">
-                            <Pagination size={isReallySmall ? "small" : "medium"} count={Math.ceil(totalCampaigns / CAMPAIGNS_PER_PAGE)} page={page} onChange={changePage} color="primary" />
+                    {totalCampaigns === 0 ? <Typography variant="body1" marginTop="2em" textAlign="center" gutterBottom>
+                        No data to show.
+                    </Typography> : (
+                        <Grid container
+                            alignItems="center"
+                            justify="center" spacing={3}>
+                            {campaigns.slice(indexOfFirstResult, indexOfLastResult).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
+                            <Grid item xs={12} display="flex" justifyContent="center">
+                                <Pagination size={isReallySmall ? "small" : "medium"} count={Math.ceil(totalCampaigns / CAMPAIGNS_PER_PAGE)} page={page} onChange={changePage} color="primary" />
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    )}
                 </Fragment>
             )}
         </Fragment>
