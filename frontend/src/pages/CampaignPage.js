@@ -51,9 +51,6 @@ const fetchCampaigns = async () => {
     let campaignObjs = new Array(numCampaigns).fill({});
     let campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
 
-    console.log(campaignContracts);
-    console.log(campaignObjs);
-
     const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate", "unitsSold", "productPrice"];
 
     for (let i = 0; i < numCampaigns; i++) {

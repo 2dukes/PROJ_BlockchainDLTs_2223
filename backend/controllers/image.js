@@ -13,17 +13,12 @@ const storeImages = (req, res) => {
 
     // Campaign Image
     if (campaignImage)
-        fs.writeFileSync(path.join(__dirname, '..', 'public', 'campaigns', campaignAddress, 'campaignImage.png'), campaignImage.buffer, 'binary', (err) => {
-            if (err) throw err;
-            console.log('File saved.');
-        });
+        fs.writeFileSync(path.join(__dirname, '..', 'public', 'campaigns', campaignAddress, 'campaignImage.png'), campaignImage.buffer, 'binary');
+    else
+        fs.copyFileSync(path.join(__dirname, '..', 'public', 'campaigns', 'default.png'), path.join(__dirname, "..", "public", "campaigns", campaignAddress, 'campaignImage.png'));
 
-    for (let i = 0; i < NFTs.length; i++) {
-        fs.writeFileSync(path.join(__dirname, '..', 'public', 'campaigns', campaignAddress, `${i}.jpg`), NFTs[i].buffer, 'binary', (err) => {
-            if (err) throw err;
-            console.log('File saved.');
-        });
-    }
+    for (let i = 0; i < NFTs.length; i++)
+        fs.writeFileSync(path.join(__dirname, '..', 'public', 'campaigns', campaignAddress, `${i}.png`), NFTs[i].buffer, 'binary');
 
     return res.status(200).json({
         status: true,
