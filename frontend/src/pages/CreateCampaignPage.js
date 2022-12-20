@@ -99,7 +99,8 @@ const NewCampaign = () => {
                 web3.utils.toWei(String(values.minimumContribution)),
                 web3.utils.toWei(String(values.targetContribution)),
                 values.NFTselectedImages.length,
-                Math.round(values.closeDate.diff(dayjs(), 'day', true))
+                Math.round(values.closeDate.diff(dayjs(), 'day', true)),
+                web3.utils.toWei(String(values.productPrice))
             ).send({ from: ethereum.selectedAddress });
 
             newCampaignAddr = tx.events['NewCampaignDeployed'].returnValues.campaignAddr;
@@ -114,7 +115,7 @@ const NewCampaign = () => {
             formData.append("campaignAddress", newCampaignAddr);
 
             // Campaign Image
-            if(values.campaignImage)
+            if (values.campaignImage)
                 formData.append("campaignImage", values.campaignImage);
 
             // NFT Images

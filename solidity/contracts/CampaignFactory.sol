@@ -27,18 +27,21 @@ contract CampaignFactory {
         @param minimumContribution The minimum contribution a person can add to a Campaign.
         @param maximumNFTContributors number of campaign contributers that will get an NFT bonus.
         @param openDays The number of days the Campaign will be open to new contributors.
+        @param productPrice The price of the campaign product.
      */
     function deployCampaign(
         uint256 minimumContribution,
         uint256 targetValue,
         uint8 maximumNFTContributors,
-        uint256 openDays
+        uint256 openDays,
+        uint256 productPrice
     ) external {
         Campaign newCampaign = new Campaign(
             minimumContribution,
             targetValue,
             maximumNFTContributors,
             openDays,
+            productPrice,
             msg.sender,
             crowdCreator,
             crowdNFTContractAddr

@@ -54,7 +54,7 @@ const fetchCampaigns = async () => {
     console.log(campaignContracts);
     console.log(campaignObjs);
 
-    const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate"];
+    const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate", "unitsSold", "productPrice"];
 
     for (let i = 0; i < numCampaigns; i++) {
         const campaignDataPromises = methodNames.map(name => campaignContracts[i].methods[name]().call());
@@ -68,7 +68,9 @@ const fetchCampaigns = async () => {
             targetValue: web3.utils.fromWei(campaignData[4]),
             approversCount: campaignData[5],
             endDate: dayjs.unix(campaignData[6]).format('DD/MM/YYYY'),
-            remainingDays: Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true))
+            remainingDays: Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true)),
+            unitsSold: campaignData[7],
+            productPrice: web3.utils.fromWei(campaignData[8])
         };
     }
     

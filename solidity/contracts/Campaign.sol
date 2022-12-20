@@ -38,6 +38,12 @@ contract Campaign {
     /// @notice The target amount the campaign wants to raise.
     uint256 public targetValue;
 
+    /// @notice The campaign's product price.
+    uint256 public productPrice;
+
+    /// @notice The number campaign products sold.
+    uint256 public unitsSold;
+
     /** @notice List of contributors and invested amount. 
         @dev Invested amount comes in Wei.
     */
@@ -68,6 +74,12 @@ contract Campaign {
     /// @notice Error related to the fact that a request was already completed.
     error RequestNotCompleted();
 
+    /// @notice Error related to the fact that a campaign has already closed.
+    error OnlyOpenCampaign();
+
+    /// @notice Error related to transactions sent with low value.
+    error SentEnoughValue();
+
     /// @notice Modifier that restricts invocation to campaign creator.
     modifier onlyCampaignOwner() {
         if (msg.sender != campaignCreator) revert OnlyCampaignOwner();
@@ -77,6 +89,18 @@ contract Campaign {
     /// @notice Modifier that restricts invocation to crowdfunding platform creator.
     modifier onlyCrowdOwner() {
         if (msg.sender != crowdCreator) revert OnlyCrowdOwner();
+        _;
+    }
+
+    /// @notice Modifier that restricts invocation to open campaigns.
+    modifier onlyOpenCampaign() {
+        if (block.timestamp > endDate) revert OnlyOpenCampaign();
+        _;
+    }
+
+    /// @notice Modifier that restricts invocations to the ones that have sufficient value.
+    modifier sentEnoughValue(uint256 value) {
+        if (msg.value < value) revert SentEnoughValue();
         _;
     }
 
@@ -93,6 +117,7 @@ contract Campaign {
         @param _targetValue the target amount to raise for the campaign.
         @param _maximumNFTContributors number of campaign contributers that will get an NFT bonus.
         @param _openDays the number of days the campaign will be open to new contributors.
+        @param _productPrice The price of the campaign product.
         @param _campaignCreator denotes the creator of the campaign.
         @param _crowdCreator denotes the crowdfunding platform creator.
         @param _crowdNFTContractAddr the address of the NFT contract.
@@ -102,6 +127,7 @@ contract Campaign {
         uint256 _targetValue,
         uint8 _maximumNFTContributors,
         uint256 _openDays,
+        uint256 _productPrice,
         address _campaignCreator,
         address _crowdCreator,
         address _crowdNFTContractAddr
@@ -109,23 +135,18 @@ contract Campaign {
         campaignCreator = payable(_campaignCreator);
         crowdCreator = payable(_crowdCreator);
         minimumContribution = _minimumContribution;
+        productPrice = _productPrice;
         targetValue = _targetValue;
         maximumNFTContributors = _maximumNFTContributors;
         crowdNFTContractAddr = _crowdNFTContractAddr;
         endDate = block.timestamp + (_openDays * 24 * 60 * 60);
+        unitsSold = 0;
     }
 
     /** @notice Contribute to a campaign. The first maximumNFTContributors are awarded an NFT.
-        @dev Requires a msg.value > minimumContribution and date of contribution less than endDate.
         @param tokenURI is the metadata of the NFT.
     */
-    function contribute(string calldata tokenURI) external payable {
-        require(
-            msg.value >= minimumContribution,
-            "Not enough value for contribution!"
-        );
-        require(block.timestamp <= endDate, "Campaign already closed.");
-
+    function contribute(string calldata tokenURI) private {
         uint256 previousValue = approvers[msg.sender]; // Default 0
 
         raisedValue += msg.value;
@@ -149,14 +170,37 @@ contract Campaign {
         approvers[msg.sender] = previousValue + msg.value;
     }
 
+    /** @notice Donate money to a campaign.
+        @dev Requires a msg.value > minimumContribution and date of contribution less than endDate.
+        @param tokenURI is the metadata of the NFT.
+     */
+    function donate(string calldata tokenURI)
+        external
+        payable
+        sentEnoughValue(minimumContribution)
+        onlyOpenCampaign
+    {
+        contribute(tokenURI);
+    }
+
+    /** @notice Buy product of a campaign.
+        @dev Requires a msg.value > productPrice and date of contribution less than endDate.
+        @param tokenURI is the metadata of the NFT.
+     */
+    function buyProduct(string calldata tokenURI)
+        external
+        payable
+        sentEnoughValue(productPrice)
+        onlyOpenCampaign
+    {
+        contribute(tokenURI);
+    }
+
     /** @notice Create a request for the use of the campaign funds.
         @dev Only invokable by the campaign owner.
         @param _value The mount of funds requested.
      */
-    function createRequest(uint256 _value)
-        external
-        onlyCampaignOwner
-    {
+    function createRequest(uint256 _value) external onlyCampaignOwner {
         Request storage newRequest = requests.push();
 
         newRequest.value = _value;
