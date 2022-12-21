@@ -146,7 +146,7 @@ contract Campaign {
     /** @notice Contribute to a campaign. The first maximumNFTContributors are awarded an NFT.
         @param tokenURI is the metadata of the NFT.
     */
-    function contribute(string calldata tokenURI) private {
+    function contribute(string memory tokenURI) private {
         uint256 previousValue = approvers[msg.sender]; // Default 0
 
         raisedValue += msg.value;
@@ -174,7 +174,7 @@ contract Campaign {
         @dev Requires a msg.value > minimumContribution and date of contribution less than endDate.
         @param tokenURI is the metadata of the NFT.
      */
-    function donate(string calldata tokenURI)
+    function donate(string memory tokenURI)
         external
         payable
         sentEnoughValue(minimumContribution)
@@ -187,7 +187,7 @@ contract Campaign {
         @dev Requires a msg.value > productPrice and date of contribution less than endDate.
         @param tokenURI is the metadata of the NFT.
      */
-    function buyProduct(string calldata tokenURI)
+    function buyProduct(string memory tokenURI)
         external
         payable
         sentEnoughValue(productPrice)

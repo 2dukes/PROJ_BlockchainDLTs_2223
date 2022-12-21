@@ -29,7 +29,7 @@ const CampaignCardWithPrice = ({ address, title, description, productPrice, unit
 
     return (
         <Fragment>
-            {openDialog && <ProductDeliveryForm address={address} open={openDialog} setOpenDialog={setOpenDialog} />}
+            {openDialog && <ProductDeliveryForm address={address} title={title} open={openDialog} setOpenDialog={setOpenDialog} />}
             {isLoading ? <LoadingSpinner borderRadius='20px' /> : (
                 <Card sx={{ maxWidth: 550 }}>
                     <CardActionArea component="a">

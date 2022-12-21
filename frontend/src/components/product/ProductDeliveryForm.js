@@ -1,12 +1,16 @@
 import { useState, forwardRef } from 'react';
 import { AppBar, Button, TextField, Grid, Typography, FormControl, Dialog, DialogActions, DialogContent, Slide } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import { connectWallet, web3 } from '../../services/connectWallet';
+import campaign from '../../contracts/Campaign.json';
+import crowdnft from '../../contracts/CrowdNFT.json';
+
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ProductDeliveryForm = ({ address, open, setOpenDialog }) => {
+const ProductDeliveryForm = ({ address, title, open, setOpenDialog }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -41,6 +45,8 @@ const ProductDeliveryForm = ({ address, open, setOpenDialog }) => {
 
         // console.log(orderProductResultJSON)
 
+        await connectWallet(); // TESTING
+
         // Check available NFTs
         const nftResult = await fetch(`http://localhost:8000/images/nft/${address}`);
         const nftResultJSON = await nftResult.json();
@@ -48,19 +54,25 @@ const ProductDeliveryForm = ({ address, open, setOpenDialog }) => {
         console.log(nftResultJSON);
 
         if (nftResultJSON.status) { // If available NFT
-            // const imageIndex = nftResultJSON.imageIndex;
-            // const imagePath = nftResultJSON.imagePath;
+            const tokenURI = `https://gateway.pinata.cloud/ipfs/${nftResultJSON.IpfsHash}`;
 
-            // const imageResponse = await fetch(imagePath);
-            // const imageBlob = await imageResponse.blob();
-            // const imageFile = new File([imageBlob], `${imageIndex}.png`, { type: 'image/png' });
-        
-            // Use PINATA to mint them and fetch JSON tokenURI
-        
-        } else {
+            console.log(tokenURI)
+
+            const { ethereum } = window;
+
+            // const campaignContract = new web3.eth.Contract(campaign.abi, address);
+            // const tx = await campaignContract.methods.buyProduct(tokenURI).send({ from: ethereum.selectedAddress });
             
+            const crowdNFTContract = new web3.eth.Contract(crowdnft.abi, "0x0E1b5E0a9e6619eBe68A156fCBD823a1E3f720Db");
+            const tx = await crowdNFTContract.methods.mintNFT("0x42275AcDF307648FA35E436867eB75D966f4A5f7", tokenURI).send({ from: ethereum.selectedAddress });
+
+            // REMOVE ONLYOWNER
+
+            console.log(tx);
+        } else {
+
         }
-        
+
         // If not send tokenURI as empty string as it won't matter
         // Buy product function Solidity
 

@@ -61,6 +61,33 @@ const getNFTImage = async (req, res, next) => {
 
                 const pinataResponseJSON = await pinataResponse.json();
 
+                console.log(pinataResponseJSON);
+
+                const options = {
+                    pinataOptions: {
+                        "cidVersion": 1
+                    },
+                    pinataContent: {
+                        name: 'EthQuad-prod',
+                        description: 'Test description',
+                        image: `https://gateway.pinata.cloud/ipfs/${pinataResponseJSON.IpfsHash}`
+                    }
+                };
+
+                const response = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        pinata_api_key: PINATA_API_KEY,
+                        pinata_secret_api_key: PINATA_SECRET_API_KEY,
+                    },
+                    body: JSON.stringify(options)
+                });
+
+                const resJSON = await response.json();
+
+                console.log(resJSON);
+
                 //     backend     |   IpfsHash: 'QmXrMtyFDQ4Dz4KGJ7cXtNZqYqiaxLFUYdFzxmh2pmzmFh',
                 //     backend     |   PinSize: 216290,
                 //     backend     |   Timestamp: '2022-12-21T10:11:33.669Z',
@@ -69,7 +96,7 @@ const getNFTImage = async (req, res, next) => {
                 return res.status(200).json({
                     status: true,
                     imageIndex: imgIndex,
-                    IpfsHash: pinataResponseJSON.IpfsHash
+                    IpfsHash: resJSON.IpfsHash
                 });
             } catch (error) {
                 console.log(error);
@@ -92,7 +119,7 @@ const moveNFTImage = (req, res, next) => {
 
     try {
         if (fs.existsSync(sourcePath))
-            fs.renameSync(sourcePath, destinationPath)
+            fs.renameSync(sourcePath, destinationPath);
 
         return res.status(400).json({
             status: true,

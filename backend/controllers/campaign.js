@@ -144,7 +144,7 @@ const getCampaigns = async (req, res, next) => {
 
         return res.status(200).json({
             campaigns: campaignObjs,
-            numCampaigns
+            numCampaigns: parseInt(numCampaigns)
         });
     } catch (err) {
         next(err);
