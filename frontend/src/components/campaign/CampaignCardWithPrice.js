@@ -45,7 +45,7 @@ const CampaignCardWithPrice = ({ address, title, description, productPrice, unit
                                 {`${title} x 1`}
                             </Typography>
                             <Typography gutterBottom variant="h6" component="div" mb="0" paddingBottom="0.5em">
-                                <b>{productPrice}</b> ETH <span style={{ color: "red", fontSize: "15px" }}><del>{parseFloat(productPrice * 100 / 66).toFixed(2)} ETH</del>&nbsp;(33% OFF)</span>
+                                <b>{productPrice}</b> ETH <span style={{ color: "red", fontSize: "15px" }}><del>{parseFloat(productPrice * 100 / 66).toFixed(3)} ETH</del>&nbsp;(33% OFF)</span>
                                 <Typography variant="body2" component="div" color="gray">
                                     {"$ " + parseFloat(ethPrice * productPrice).toFixed(2)}
                                 </Typography>

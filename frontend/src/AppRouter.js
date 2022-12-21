@@ -4,8 +4,27 @@ import CampaignPage from './pages/CampaignPage';
 import CreateCampaignPage from './pages/CreateCampaignPage';
 import CreateRequestPage from "./pages/CreateRequestPage";
 import ProfilePage from "./pages/ProfilePage";
+import { useEffect, useContext } from "react";
+import { connectWallet } from "./services/connectWallet";
+import { Context } from "./services/context";
 
-function App() {
+const App = () => {
+  const { setConnectedWallet } = useContext(Context);
+
+  useEffect(() => {
+    const testConnection = async () => {
+      const { ethereum } = window;
+      const accounts = await ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length) {
+        await connectWallet();
+        setConnectedWallet(true);
+        console.log(`You're connected to: ${accounts[0]}`);
+      }
+    };
+
+    testConnection();
+  }, [setConnectedWallet]);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -54,6 +73,6 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>);
-}
+};
 
 export default App;

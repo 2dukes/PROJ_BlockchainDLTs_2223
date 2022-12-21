@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext } from 'react';
 import { IconButton, Drawer, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { DrawerHeader, drawerWidth } from '../../styles/Menu';
 import { useTheme } from '@mui/material/styles';
@@ -13,29 +13,30 @@ import LockIcon from '@mui/icons-material/Lock';
 import { connectWallet, disconnectWallet } from '../../services/connectWallet';
 import { useSnackbar } from 'notistack';
 import { Link, useLocation } from 'react-router-dom';
+import { Context } from '../../services/context';
 
 const SideBar = ({ handleDrawerClose, open }) => {
-    const [isWalletConnected, setIsWalletConnected] = useState(false);
+    const { connectedWallet, setConnectedWallet } = useContext(Context);
     const { enqueueSnackbar } = useSnackbar();
     const location = useLocation();
     const theme = useTheme();
 
-    const onClickConnectWallet = () => {
-        connectWallet();
-        setIsWalletConnected(true);
+    const onClickConnectWallet = async () => {
+        await connectWallet();
+        setConnectedWallet(true);
         enqueueSnackbar('Wallet connected!', { variant: "success" });
     };
 
     const onClickDisconnectWallet = () => {
         disconnectWallet();
-        setIsWalletConnected(false);
+        setConnectedWallet(false);
         enqueueSnackbar('Wallet disconnected!', { variant: "success" });
     };
 
-    const sideBarNames = ['All Campaigns', 'Create Campaign', 'Create Request', 'My Profile', isWalletConnected ? 'Disconnect Wallet' : 'Connect Wallet'];
+    const sideBarNames = ['All Campaigns', 'Create Campaign', 'Create Request', 'My Profile', connectedWallet ? 'Disconnect Wallet' : 'Connect Wallet'];
     const linkTo = ["/", "/campaign/new", "/request/new", "/profile", undefined];
-    const sideBarIcons = [<CampaignIcon />, <AddCircleIcon />, <CreateIcon />, <AccountCircleIcon />, isWalletConnected ? <LockOpenIcon /> : <LockIcon />];
-    const onClickActions = [() => { }, () => { }, () => { }, () => { }, isWalletConnected ? onClickDisconnectWallet : onClickConnectWallet];
+    const sideBarIcons = [<CampaignIcon />, <AddCircleIcon />, <CreateIcon />, <AccountCircleIcon />, connectedWallet ? <LockOpenIcon /> : <LockIcon />];
+    const onClickActions = [() => { }, () => { }, () => { }, () => { }, connectedWallet ? onClickDisconnectWallet : onClickConnectWallet];
 
     return (
         <Drawer

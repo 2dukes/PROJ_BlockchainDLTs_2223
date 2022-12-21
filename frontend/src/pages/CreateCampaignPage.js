@@ -151,7 +151,6 @@ const NewCampaign = () => {
             return navigate("/");
         }
         
-        console.log(status);
         setIsLoading(false);
     };
 
