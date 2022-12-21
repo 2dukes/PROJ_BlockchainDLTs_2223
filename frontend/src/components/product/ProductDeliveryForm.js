@@ -1,9 +1,10 @@
-import { useState, forwardRef, Fragment } from 'react';
+import { useState, forwardRef, Fragment, useContext } from 'react';
 import { AppBar, Button, TextField, Grid, Typography, FormControl, Dialog, DialogActions, DialogContent, Slide } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { web3 } from '../../services/connectWallet';
 import campaign from '../../contracts/Campaign.json';
 import LoadingSpinner from '../progress/LoadingSpinner';
+import { Context } from "../../services/context";
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -11,6 +12,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 
 const ProductDeliveryForm = ({ address, productPrice, title, description, open, setOpenDialog }) => {
     const { enqueueSnackbar } = useSnackbar();
+    const { connectedWallet } = useContext(Context);
     const [isLoading, setIsLoading] = useState(false);
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -27,7 +29,7 @@ const ProductDeliveryForm = ({ address, productPrice, title, description, open, 
     const handleConfirm = async () => {
         setIsLoading(true);
 
-        if (!web3) {
+        if (!connectedWallet) {
             enqueueSnackbar('Please connect MetaMask!', { variant: "error" });
             setOpenDialog(false);
             setIsLoading(false);
@@ -36,7 +38,7 @@ const ProductDeliveryForm = ({ address, productPrice, title, description, open, 
         if (!formErrorVerification()) {
             enqueueSnackbar('Please fix incorrect inputs before ordering!', { variant: "error" });
             setOpenDialog(false);
-            setIsLoading(true);
+            setIsLoading(false);
             return;
         }
 
@@ -100,8 +102,6 @@ const ProductDeliveryForm = ({ address, productPrice, title, description, open, 
         } catch (err) {
             console.log(err);
         }
-
-        // Check update info
 
         setIsLoading(false);
         setOpenDialog(false);

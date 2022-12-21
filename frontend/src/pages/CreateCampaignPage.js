@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, useContext } from 'react';
 import { Box, Stepper, Step, StepButton, Button, Typography, Container } from '@mui/material';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -10,11 +10,13 @@ import LoadingSpinner from '../components/progress/LoadingSpinner';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import { campaignFactoryContract, web3 } from '../services/connectWallet';
+import { Context } from "../services/context";
 
 const steps = ['Campaign Details', 'NFT Awards'];
 
 const NewCampaign = () => {
     const { enqueueSnackbar } = useSnackbar();
+    const { connectedWallet } = useContext(Context);
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +80,7 @@ const NewCampaign = () => {
 
         setIsLoading(true);
 
-        if (!web3) {
+        if (!connectedWallet) {
             enqueueSnackbar('Please connect MetaMask!', { variant: "error" });
             setIsLoading(false);
             return;

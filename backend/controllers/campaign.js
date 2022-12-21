@@ -112,9 +112,9 @@ const getCampaigns = async (req, res, next) => {
 
             campaignObjs[i] = {
                 address: campaignAddresses[i],
-                balance: web3.utils.fromWei(await web3.eth.getBalance(campaignAddresses[i])),
+                balance: web3.utils.fromWei(campaignData.at(-1)),
                 campaignCreator: campaignData[0],
-                minimumContribution: web3.utils.fromWei(campaignData.at(-1)),
+                minimumContribution: web3.utils.fromWei(campaignData[1]),
                 maximumNFTContributors: campaignData[2],
                 raisedValue: web3.utils.fromWei(campaignData[3]),
                 targetValue: web3.utils.fromWei(campaignData[4]),
