@@ -97,6 +97,7 @@ const CampaignForm = ({ handleChange, values, setValues }) => {
             <input
                 type="file"
                 id="campaign-image"
+                accept="image/png"
                 style={{ display: "none" }}
                 onChange={(e) => setValues(v => ({ ...v, campaignImage: e.target.files[0] }))}
             />
