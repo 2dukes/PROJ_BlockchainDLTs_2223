@@ -21,33 +21,51 @@ const ProductDeliveryForm = ({ address, open, setOpenDialog }) => {
     };
 
     const handleConfirm = async () => {
-        if (!formErrorVerification()) {
-            enqueueSnackbar('Please fix incorrect inputs before ordering!', { variant: "error" });
-            return;
-        }
+        // if (!formErrorVerification()) {
+        //     enqueueSnackbar('Please fix incorrect inputs before ordering!', { variant: "error" });
+        //     return;
+        // }
 
-        // Send data to mongo DB
-        const data = { name, email, sendingAddress };
+        // // Send data to mongo DB
+        // const data = { name, email, sendingAddress };
+
+        // const orderProductResult = await fetch(`http://localhost:8000/campaigns/${address}`, {
+        //     method: 'PUT',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(data)
+        // });
+
+        // const orderProductResultJSON = await orderProductResult.json();
+
+        // console.log(orderProductResultJSON)
+
+        // Check available NFTs
+        const nftResult = await fetch(`http://localhost:8000/images/nft/${address}`);
+        const nftResultJSON = await nftResult.json();
+
+        console.log(nftResultJSON);
+
+        if (nftResultJSON.status) { // If available NFT
+            // const imageIndex = nftResultJSON.imageIndex;
+            // const imagePath = nftResultJSON.imagePath;
+
+            // const imageResponse = await fetch(imagePath);
+            // const imageBlob = await imageResponse.blob();
+            // const imageFile = new File([imageBlob], `${imageIndex}.png`, { type: 'image/png' });
         
-        const orderProductResult = await fetch(`http://localhost:8000/campaigns/${address}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
+            // Use PINATA to mint them and fetch JSON tokenURI
         
-        const orderProductResultJSON = await orderProductResult.json();
+        } else {
+            
+        }
         
-        console.log(orderProductResultJSON)
-        
-        // Buy product function Solidity
-        // If available NFTs
-        // Use PINATA to mint them and fetch JSON tokenURI
         // If not send tokenURI as empty string as it won't matter
-        
+        // Buy product function Solidity
+
         // Check update info
-        
+
         enqueueSnackbar('Successfully submitted an order!', { variant: "success" });
         setOpenDialog(false);
     };
