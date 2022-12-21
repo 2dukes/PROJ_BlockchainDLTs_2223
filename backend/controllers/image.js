@@ -70,7 +70,7 @@ const getNFTImage = async (req, res, next) => {
                         "cidVersion": 1
                     },
                     pinataContent: {
-                        name: title,
+                        name: `${title} #${imgIndex + 1}`,
                         description: description,
                         image: `https://gateway.pinata.cloud/ipfs/${pinataResponseJSON.IpfsHash}`
                     }
@@ -97,6 +97,7 @@ const getNFTImage = async (req, res, next) => {
                 });
             } catch (error) {
                 console.log(error);
+                next(error);
             }
         }
     }

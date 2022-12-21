@@ -147,12 +147,12 @@ const NewCampaign = () => {
             const storeCampaignDetailsResultJSON = await storeCampaignDetailsResult.json();
 
             status &= storeCampaignDetailsResultJSON.status;
+    
+            return navigate("/");
         }
-
+        
         console.log(status);
-
         setIsLoading(false);
-        return navigate("/");
     };
 
     return (
