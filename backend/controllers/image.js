@@ -90,11 +90,6 @@ const getNFTImage = async (req, res, next) => {
 
                 console.log(resJSON);
 
-                //     backend     |   IpfsHash: 'QmXrMtyFDQ4Dz4KGJ7cXtNZqYqiaxLFUYdFzxmh2pmzmFh',
-                //     backend     |   PinSize: 216290,
-                //     backend     |   Timestamp: '2022-12-21T10:11:33.669Z',
-                //     backend     |   isDuplicate: true
-
                 return res.status(200).json({
                     status: true,
                     imageIndex: imgIndex,
@@ -115,15 +110,16 @@ const getNFTImage = async (req, res, next) => {
 const moveNFTImage = (req, res, next) => {
     const campaignAddress = req.params.campaignAddress;
     const imageIndex = req.params.imgIndex;
+    const tokenID = req.query.tokenID;
 
     const sourcePath = path.join(__dirname, '..', 'public', 'campaigns', campaignAddress, `${imageIndex}.png`);
-    const destinationPath = path.join(__dirname, '..', 'public', 'nfts', `${imageIndex}.png`);
+    const destinationPath = path.join(__dirname, '..', 'public', 'nfts', `${tokenID}.png`);
 
     try {
         if (fs.existsSync(sourcePath))
             fs.renameSync(sourcePath, destinationPath);
 
-        return res.status(400).json({
+        return res.status(200).json({
             status: true,
             message: "File successfully moved!"
         });

@@ -19,6 +19,9 @@ contract Campaign {
         uint256 approvalValue;
         uint256 openDate;
     }
+    
+    /// @notice Signals the minting of an NFT.
+    event NFTMinted(uint256 tokenID);
 
     /// @notice Array of campaign requests.
     Request[] public requests;
@@ -165,7 +168,8 @@ contract Campaign {
             approvers[msg.sender] == 0 &&
             bytes(tokenURI).length > 0
         ) {
-            CrowdNFT(crowdNFTContractAddr).mintNFT(msg.sender, tokenURI);
+            uint256 tokenID = CrowdNFT(crowdNFTContractAddr).mintNFT(msg.sender, tokenURI);
+            emit NFTMinted(tokenID);
             maximumNFTContributors--;
         }
 

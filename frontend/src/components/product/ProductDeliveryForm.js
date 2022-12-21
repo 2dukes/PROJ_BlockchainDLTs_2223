@@ -48,12 +48,12 @@ const ProductDeliveryForm = ({ address, productPrice, title, description, open, 
         await connectWallet(); // TESTING
 
         // Check available NFTs
-        const data = { nftTitle: title, nftDescription: description };
-        const queryParams = Object.keys(data)
-            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+        const storeData = { nftTitle: title, nftDescription: description };
+        const storeParams = Object.keys(storeData)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(storeData[k]))
             .join('&');
 
-        const nftResult = await fetch(`http://localhost:8000/images/nft/${address}?${queryParams}`);
+        const nftResult = await fetch(`http://localhost:8000/images/nft/${address}?${storeParams}`);
         const nftResultJSON = await nftResult.json();
 
         console.log(nftResultJSON);
@@ -67,8 +67,21 @@ const ProductDeliveryForm = ({ address, productPrice, title, description, open, 
 
             const campaignContract = new web3.eth.Contract(campaign.abi, address);
             const tx = await campaignContract.methods.buyProduct(tokenURI).send({ from: ethereum.selectedAddress, value: web3.utils.toWei(String(productPrice)) });
+            const mintedTokenID = tx.events['NFTMinted'].returnValues.tokenID;
 
-            console.log(tx);
+            console.log(mintedTokenID);
+
+            const moveData = { tokenID: mintedTokenID };
+            const moveParams = Object.keys(moveData)
+                .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(moveData[k]))
+                .join('&');
+
+            const moveNFT = await fetch(`http://localhost:8000/images/nft/${address}/${nftResultJSON.imageIndex}?${moveParams}`, {
+                method: 'POST'
+            });
+            const moveNFTJSON = await moveNFT.json();
+
+            console.log(moveNFTJSON);
         } else {
 
         }

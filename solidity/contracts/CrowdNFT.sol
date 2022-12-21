@@ -10,7 +10,7 @@ contract CrowdNFT is ERC721URIStorage {
     using Counters for Counters.Counter;
 
     /// @notice The counter of how many NFTs were minted.
-    Counters.Counter public tokenIds;
+    Counters.Counter private _tokenIds;
 
     /// @notice Instantiate CrowdNFT token.
     constructor() ERC721("CrowdNFT", "NFT") {}
@@ -18,15 +18,15 @@ contract CrowdNFT is ERC721URIStorage {
     /** @notice Mint an NFT.
         @param recipient The address of the NFT destination.
         @param tokenURI The metadata associated to the NFT.
-        @return newItemID The ID of the newly minted NFT.
+        @return newItemId The ID of the newly minted NFT.
      */
     function mintNFT(address recipient, string memory tokenURI)
-        public
+        external
         returns (uint256)
     {
-        tokenIds.increment();
+        _tokenIds.increment();
 
-        uint256 newItemId = tokenIds.current();
+        uint256 newItemId = _tokenIds.current();
         _mint(recipient, newItemId);
         _setTokenURI(newItemId, tokenURI);
 
