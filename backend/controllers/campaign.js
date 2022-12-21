@@ -108,12 +108,6 @@ const getCampaigns = async (req, res, next) => {
             const campaignData = await Promise.all(campaignDataPromises);
 
             // Fetch title and description from MongoDB
-            const data = { id: campaignAddresses[i] };
-            const queryParams = Object.keys(data)
-                .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
-                .join('&');
-
-            // campaignStrDataPromises.push(fetch(`http://localhost:8000/campaigns/${campaignAddresses[i]}?` + queryParams));
             campaignStrDataPromises.push(Campaign.findOne({ id: campaignAddresses[i] }));
 
             campaignObjs[i] = {

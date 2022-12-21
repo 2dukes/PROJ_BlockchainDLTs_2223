@@ -18,7 +18,7 @@ const CampaignCardWithPrice = ({ address, title, description, productPrice, unit
                 const coinGeckoData = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum");
                 const coinGeckoDataJSON = await coinGeckoData.json();
                 setEthPrice(coinGeckoDataJSON[0].current_price);
-            } catch(err) {
+            } catch (err) {
                 setEthPrice(1200); // Testing purposes because of free API plans
             }
             setIsLoading(false);
@@ -29,7 +29,7 @@ const CampaignCardWithPrice = ({ address, title, description, productPrice, unit
 
     return (
         <Fragment>
-            {openDialog && <ProductDeliveryForm address={address} title={title} open={openDialog} setOpenDialog={setOpenDialog} />}
+            {openDialog && <ProductDeliveryForm address={address} productPrice={productPrice} title={title} description={description} open={openDialog} setOpenDialog={setOpenDialog} />}
             {isLoading ? <LoadingSpinner borderRadius='20px' /> : (
                 <Card sx={{ maxWidth: 550 }}>
                     <CardActionArea component="a">
@@ -42,7 +42,7 @@ const CampaignCardWithPrice = ({ address, title, description, productPrice, unit
                         <CardContent>
                             <Chip label="FEATURED" color="primary" size="small" sx={{ mb: "0.75em", borderRadius: 0 }} />
                             <Typography gutterBottom variant="h6" component="div" fontWeight="bold">
-                                {title}
+                                {`${title} x 1`}
                             </Typography>
                             <Typography gutterBottom variant="h6" component="div" mb="0" paddingBottom="0.5em">
                                 <b>{productPrice}</b> ETH <span style={{ color: "red", fontSize: "15px" }}><del>{parseFloat(productPrice * 100 / 66).toFixed(2)} ETH</del>&nbsp;(33% OFF)</span>

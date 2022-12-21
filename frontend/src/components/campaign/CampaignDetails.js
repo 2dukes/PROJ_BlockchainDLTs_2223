@@ -36,7 +36,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
 
     const campaignProductData = {
         address,
-        title: `${title} x 1`,
+        title,
         description,
         productPrice,
         unitsSold,
@@ -67,7 +67,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
             header: maximumNFTContributors,
             meta: "Number of NFT Awards",
             description:
-                "Number of initial contributors elegible to win an NFT.",
+                "Number of NFTs to award to the first contributors.",
         },
         {
             header: approversCount,

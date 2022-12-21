@@ -140,7 +140,6 @@ contract Campaign {
         maximumNFTContributors = _maximumNFTContributors;
         crowdNFTContractAddr = _crowdNFTContractAddr;
         endDate = block.timestamp + (_openDays * 24 * 60 * 60);
-        unitsSold = 0;
     }
 
     /** @notice Contribute to a campaign. The first maximumNFTContributors are awarded an NFT.
@@ -163,9 +162,12 @@ contract Campaign {
         // Contributor is only awarded an NFT if it's one of the first to contribute.
         if (
             approversCount <= maximumNFTContributors &&
-            approvers[msg.sender] != 0 &&
+            approvers[msg.sender] == 0 &&
             bytes(tokenURI).length > 0
-        ) CrowdNFT(crowdNFTContractAddr).mintNFT(msg.sender, tokenURI);
+        ) {
+            CrowdNFT(crowdNFTContractAddr).mintNFT(msg.sender, tokenURI);
+            maximumNFTContributors--;
+        }
 
         approvers[msg.sender] = previousValue + msg.value;
     }

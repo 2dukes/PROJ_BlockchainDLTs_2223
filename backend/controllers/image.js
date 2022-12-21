@@ -31,6 +31,8 @@ const storeImages = (req, res) => {
 
 const getNFTImage = async (req, res, next) => {
     const campaignAddress = req.params.campaignAddress;
+    const title = req.query.nftTitle;
+    const description = req.query.nftDescription;
 
     const dirToWrite = path.join(__dirname, '..', 'public', 'campaigns', campaignAddress);
     if (fs.existsSync(dirToWrite)) {
@@ -68,8 +70,8 @@ const getNFTImage = async (req, res, next) => {
                         "cidVersion": 1
                     },
                     pinataContent: {
-                        name: 'EthQuad-prod',
-                        description: 'Test description',
+                        name: title,
+                        description: description,
                         image: `https://gateway.pinata.cloud/ipfs/${pinataResponseJSON.IpfsHash}`
                     }
                 };

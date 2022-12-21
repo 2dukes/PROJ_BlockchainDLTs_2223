@@ -3,14 +3,14 @@ import { AppBar, Button, TextField, Grid, Typography, FormControl, Dialog, Dialo
 import { useSnackbar } from 'notistack';
 import { connectWallet, web3 } from '../../services/connectWallet';
 import campaign from '../../contracts/Campaign.json';
-import crowdnft from '../../contracts/CrowdNFT.json';
+// import crowdnft from '../../contracts/CrowdNFT.json';
 
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ProductDeliveryForm = ({ address, title, open, setOpenDialog }) => {
+const ProductDeliveryForm = ({ address, productPrice, title, description, open, setOpenDialog }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -48,7 +48,12 @@ const ProductDeliveryForm = ({ address, title, open, setOpenDialog }) => {
         await connectWallet(); // TESTING
 
         // Check available NFTs
-        const nftResult = await fetch(`http://localhost:8000/images/nft/${address}`);
+        const data = { nftTitle: title, nftDescription: description };
+        const queryParams = Object.keys(data)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+            .join('&');
+
+        const nftResult = await fetch(`http://localhost:8000/images/nft/${address}?${queryParams}`);
         const nftResultJSON = await nftResult.json();
 
         console.log(nftResultJSON);
@@ -56,17 +61,12 @@ const ProductDeliveryForm = ({ address, title, open, setOpenDialog }) => {
         if (nftResultJSON.status) { // If available NFT
             const tokenURI = `https://gateway.pinata.cloud/ipfs/${nftResultJSON.IpfsHash}`;
 
-            console.log(tokenURI)
+            console.log(tokenURI);
 
             const { ethereum } = window;
 
-            // const campaignContract = new web3.eth.Contract(campaign.abi, address);
-            // const tx = await campaignContract.methods.buyProduct(tokenURI).send({ from: ethereum.selectedAddress });
-            
-            const crowdNFTContract = new web3.eth.Contract(crowdnft.abi, "0x0E1b5E0a9e6619eBe68A156fCBD823a1E3f720Db");
-            const tx = await crowdNFTContract.methods.mintNFT("0x42275AcDF307648FA35E436867eB75D966f4A5f7", tokenURI).send({ from: ethereum.selectedAddress });
-
-            // REMOVE ONLYOWNER
+            const campaignContract = new web3.eth.Contract(campaign.abi, address);
+            const tx = await campaignContract.methods.buyProduct(tokenURI).send({ from: ethereum.selectedAddress, value: web3.utils.toWei(String(productPrice)) });
 
             console.log(tx);
         } else {
