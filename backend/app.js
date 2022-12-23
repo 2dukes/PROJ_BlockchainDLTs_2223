@@ -9,6 +9,7 @@ const port = 8000;
 app.use(express.static(path.join(__dirname, 'public', 'campaigns'))); // http://localhost:8000/<campaign_addr>/<filename>.png
 const imageRoutes = require("./routes/image");
 const campaignRoutes = require("./routes/campaign");
+const requestRoutes = require("./routes/request");
 
 const errorMiddleware = require("./middleware/error");
 
@@ -30,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use("/images", imageRoutes);
 app.use("/campaigns", campaignRoutes);
+app.use("/requests", requestRoutes);
 
 app.use(errorMiddleware);
 

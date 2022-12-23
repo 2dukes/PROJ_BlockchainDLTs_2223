@@ -16,6 +16,13 @@ const deliveryDetailsSchema = new Schema({
   }
 });
 
+const requestSchema = new Schema({
+  description: {
+    type: String,
+    required: true,
+  }
+});
+
 const campaignSchema = new Schema({
   id: {
     type: String,
@@ -31,10 +38,14 @@ const campaignSchema = new Schema({
   },
   orders: {
     type: [deliveryDetailsSchema] // Default []
+  },
+  requests: {
+    type: [requestSchema]
   }
 });
 
 const Campaign = mongoose.model("Campaign", campaignSchema);
 const Order = mongoose.model("Orders", deliveryDetailsSchema);
+const Request = mongoose.model("Request", requestSchema);
 
-module.exports = { Campaign, Order };
+module.exports = { Campaign, Order, Request };
