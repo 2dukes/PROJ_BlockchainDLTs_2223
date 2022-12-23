@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useContext } from 'react';
 import { Tab, Box, Grid, Button, Typography, Modal, TextField, InputAdornment, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import TabContext from '@mui/lab/TabContext';
@@ -8,6 +8,10 @@ import CampaignInfoCard from './CampaignInfoCard';
 import RequestTable from '../request/RequestTable';
 import CampaignCardWithPrice from './CampaignCardWithPrice';
 import { useSnackbar } from 'notistack';
+import LoadingSpinner from '../progress/LoadingSpinner';
+import { Context } from "../../services/context";
+import { web3 } from '../../services/connectWallet';
+import campaign from '../../contracts/Campaign.json';
 
 const style = {
     position: 'absolute',
@@ -24,19 +28,93 @@ const style = {
 
 const CampaignDetails = ({ address, title, description, productPrice, unitsSold, balance, approversCount, maximumNFTContributors, minimumContribution, endDate, imageURL, modalOpen, setModalOpen }) => {
     const { enqueueSnackbar } = useSnackbar();
+    const { connectedWallet } = useContext(Context);
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
     const isReallySmall = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [value, setValue] = useState('campaign-details');
+    const [amountToContribute, setAmountToContribute] = useState(minimumContribution);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (_, newValue) => {
         setValue(newValue);
     };
 
+    const formErrorVerification = () => {
+        let noError = true;
+        noError &= amountToContribute > 0 && amountToContribute >= minimumContribution;
+        return noError;
+    };
+
+    const handleConfirm = async () => {
+        setIsLoading(true);
+
+        if (!connectedWallet) {
+            enqueueSnackbar('Please connect MetaMask!', { variant: "error" });
+            setIsLoading(false);
+            return;
+        }
+        if (!formErrorVerification()) {
+            enqueueSnackbar('Please fix incorrect inputs before ordering!', { variant: "error" });
+            setIsLoading(false);
+            return;
+        }
+
+        // Check available NFTs
+        const storeData = { nftTitle: title, nftDescription: description };
+        const storeParams = Object.keys(storeData)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(storeData[k]))
+            .join('&');
+
+        const nftResult = await fetch(`http://localhost:8000/images/nft/${address}?${storeParams}`);
+        const nftResultJSON = await nftResult.json();
+
+        console.log(nftResultJSON);
+
+        const availableNFT = nftResultJSON.status;
+        const tokenURI = availableNFT ? `https://gateway.pinata.cloud/ipfs/${nftResultJSON.IpfsHash}` : "";
+        
+        console.log(tokenURI);
+
+        const { ethereum } = window;
+
+        try {
+            const campaignContract = new web3.eth.Contract(campaign.abi, address);
+            const contributedValue = await campaignContract.methods.approvers(ethereum.selectedAddress).call();
+            const tx = await campaignContract.methods.donate(tokenURI).send({ from: ethereum.selectedAddress, value: web3.utils.toWei(String(amountToContribute)) });
+
+            if (availableNFT && contributedValue === "0") {
+                const mintedTokenID = tx.events['NFTMinted'].returnValues.tokenID;
+                console.log(mintedTokenID);
+
+                const moveData = { tokenID: mintedTokenID };
+                const moveParams = Object.keys(moveData)
+                    .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(moveData[k]))
+                    .join('&');
+
+                const moveNFT = await fetch(`http://localhost:8000/images/nft/${address}/${nftResultJSON.imageIndex}?${moveParams}`, {
+                    method: 'POST'
+                });
+                const moveNFTJSON = await moveNFT.json();
+
+                enqueueSnackbar('You were awarded an NFT!', { variant: "success" });
+                console.log(moveNFTJSON);
+            }
+            
+            enqueueSnackbar('Successful donation!', { variant: "success" });
+        } catch (err) {
+            console.log(err);
+        }
+
+        // Check update info
+
+        setIsLoading(false);
+    } 
+
     const campaignProductData = {
         address,
-        title: `${title} x 1`,
+        title,
         description,
         productPrice,
         unitsSold,
@@ -67,7 +145,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
             header: maximumNFTContributors,
             meta: "Number of NFT Awards",
             description:
-                "Number of initial contributors elegible to win an NFT.",
+                "Number of NFTs to award to the first contributors.",
         },
         {
             header: approversCount,
@@ -85,6 +163,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
 
     return (
         <Fragment>
+            {isLoading && <LoadingSpinner borderRadius='20px' />}
             <Modal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
@@ -121,14 +200,14 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
                                         sx={{ width: "100%" }}
                                         id="minimum-contribution"
                                         type="number"
-                                        // value={values.minimumContribution}
-                                        // onChange={handleChange("minimumContribution")}
+                                        value={amountToContribute}
+                                        onChange={(event) => setAmountToContribute(event.target.value)}
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
-                                            inputProps: { min: 0 }
+                                            inputProps: { min: 0, step: 0.1 }
                                         }}
                                     />
-                                    <Button sx={{ fontWeight: "bold", mt: 3 }} onClick={() => enqueueSnackbar('Successful contribution!', { variant: "success" })} variant="contained" color="primary" component="span">
+                                    <Button sx={{ fontWeight: "bold", mt: 3 }} onClick={handleConfirm} variant="contained" color="primary" component="span">
                                         Contribute
                                     </Button>
                                 </Grid>

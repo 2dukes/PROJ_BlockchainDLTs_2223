@@ -5,7 +5,6 @@ let web3;
 let campaignFactoryContract;
 
 const connectWallet = async () => {
-
     try {
         const { ethereum } = window;
 
@@ -27,8 +26,6 @@ const connectWallet = async () => {
 
         // Create a contract instance
         campaignFactoryContract = new web3.eth.Contract(abi, contractAddress);
-
-        console.log(campaignFactoryContract);
 
         return {
             status: true,

@@ -16,6 +16,7 @@ const NFTForm = ({ values, setValues }) => {
             <input
                 type="file"
                 id="nfts-images"
+                accept="image/png"
                 multiple
                 style={{ display: "none" }}
                 onChange={(e) => setValues(v => ({ ...v, NFTselectedImages: Array.from(e.target.files) }))}

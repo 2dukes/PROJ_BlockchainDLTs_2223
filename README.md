@@ -11,6 +11,8 @@ ETHERSCAN_API_KEY = "1CIKT13TG7M115V5CQSRCT2QKGIIUZEYIX"
 CAMPAIGN_CONTRACT_ADDR = "..."
 MONGO_DB_ATLAS_USERNAME = "admin"
 MONGO_DB_ATLAS_PASSWORD = "UTJtbKxUzoxQ3arP"
+PINATA_API_KEY = "d2521bdd89920f00a4af"
+PINATA_SECRET_API_KEY = "db6004caef4de67648925ba3f6356c4aad257b02024bb7eda06f2a3bf7f55bfd"
 ```
 
 - `ALCHEMY_API_URL` which is Alchemy's API HTTPS entrypoint combined with the corresponding API Key.
@@ -19,6 +21,8 @@ MONGO_DB_ATLAS_PASSWORD = "UTJtbKxUzoxQ3arP"
 - `CAMPAIGN_CONTRACT_ADDR` which holds the address of the deployed campaign contract, as it will be seen in the next steps.
 - `MONGO_DB_ATLAS_USERNAME` is the MongoDB container `MONGO_INITDB_ROOT_USERNAME` variable.
 - `MONGO_DB_ATLAS_PASSWORD` is the MongoDB container `MONGO_INITDB_ROOT_PASSWORD` variable.
+- `PINATA_API_KEY` is the Pinata API key.
+- `PINATA_SECRET_API_KEY` is the Pinata API key secret.
 ## How to get Ether in your wallet?
 
 Welcome the [Goerli Faucet](https://goerlifaucet.com/).
@@ -46,6 +50,7 @@ According to Hardhat's configurations, the deployment already includes the verif
 - [OpenZeppelin](https://www.openzeppelin.com/) which provides security products to build, automate, and operate decentralized applications.
 - [MetaMask](https://metamask.io/) which holds the crypto wallet.
 - [Web3](https://web3js.readthedocs.io/en/v1.8.1/).
+- [Pinata](https://www.pinata.cloud/)
 
 **References:**
 - [Solidity Documentation](https://docs.soliditylang.org/en/v0.8.17/index.html);

@@ -5,7 +5,7 @@ const LoadingSpinner = ({ borderRadius = "0px" }) => {
     return (
         <div>
             <Backdrop
-                sx={{ borderRadius , color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                sx={{ borderRadius , color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1000 }}
                 open={true}
             >
                 <CircularProgress color="inherit" />

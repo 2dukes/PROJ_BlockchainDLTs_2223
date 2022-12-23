@@ -19,6 +19,9 @@ contract Campaign {
         uint256 approvalValue;
         uint256 openDate;
     }
+    
+    /// @notice Signals the minting of an NFT.
+    event NFTMinted(uint256 tokenID);
 
     /// @notice Array of campaign requests.
     Request[] public requests;
@@ -140,13 +143,12 @@ contract Campaign {
         maximumNFTContributors = _maximumNFTContributors;
         crowdNFTContractAddr = _crowdNFTContractAddr;
         endDate = block.timestamp + (_openDays * 24 * 60 * 60);
-        unitsSold = 0;
     }
 
     /** @notice Contribute to a campaign. The first maximumNFTContributors are awarded an NFT.
         @param tokenURI is the metadata of the NFT.
     */
-    function contribute(string calldata tokenURI) private {
+    function contribute(string memory tokenURI) private {
         uint256 previousValue = approvers[msg.sender]; // Default 0
 
         raisedValue += msg.value;
@@ -163,9 +165,13 @@ contract Campaign {
         // Contributor is only awarded an NFT if it's one of the first to contribute.
         if (
             approversCount <= maximumNFTContributors &&
-            approvers[msg.sender] != 0 &&
+            approvers[msg.sender] == 0 &&
             bytes(tokenURI).length > 0
-        ) CrowdNFT(crowdNFTContractAddr).mintNFT(msg.sender, tokenURI);
+        ) {
+            uint256 tokenID = CrowdNFT(crowdNFTContractAddr).mintNFT(msg.sender, tokenURI);
+            emit NFTMinted(tokenID);
+            maximumNFTContributors--;
+        }
 
         approvers[msg.sender] = previousValue + msg.value;
     }
@@ -174,7 +180,7 @@ contract Campaign {
         @dev Requires a msg.value > minimumContribution and date of contribution less than endDate.
         @param tokenURI is the metadata of the NFT.
      */
-    function donate(string calldata tokenURI)
+    function donate(string memory tokenURI)
         external
         payable
         sentEnoughValue(minimumContribution)
@@ -187,7 +193,7 @@ contract Campaign {
         @dev Requires a msg.value > productPrice and date of contribution less than endDate.
         @param tokenURI is the metadata of the NFT.
      */
-    function buyProduct(string calldata tokenURI)
+    function buyProduct(string memory tokenURI)
         external
         payable
         sentEnoughValue(productPrice)

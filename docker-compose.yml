@@ -22,6 +22,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - /app/contracts
       - /app/node_modules
       - /app/env/
       - ./backend:/app
