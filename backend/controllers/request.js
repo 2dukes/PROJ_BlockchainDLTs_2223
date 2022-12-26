@@ -58,7 +58,8 @@ const getRequestDetails = async (req, res, next) => {
                 complete: request.complete,
                 isApproved: Boolean(parseInt(isApprovedData[idx])),
                 openDate: dayjs.unix(request.openDate).format('DD/MM/YYYY'),
-                approvalCount: `${web3.utils.fromWei(request.approvalValue)}/${raisedValue}`
+                approvalCount: `${web3.utils.fromWei(request.approvalValue)}/${raisedValue}`,
+                canFinalize: web3.utils.fromWei(request.approvalValue) > (raisedValue / 2)
             };
         });
 

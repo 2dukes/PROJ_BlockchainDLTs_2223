@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, Fragment } from 'react';
+import { useState, useEffect, useContext, Fragment, useCallback } from 'react';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/TableBody';
@@ -24,7 +24,7 @@ const columns = [
     { id: 'finalize', label: 'Finalize', minWidth: 15 },
 ];
 
-const RequestTable = ({ address }) => {
+const RequestTable = ({ address, setTab }) => {
     const { enqueueSnackbar } = useSnackbar();
     const { connectedWallet } = useContext(Context);
     const [page, setPage] = useState(0);
@@ -43,54 +43,69 @@ const RequestTable = ({ address }) => {
         setPage(0);
     };
 
-    useEffect(() => {
-        const fetchRequests = async () => {
-            setIsLoading(true);
+    const fetchRequests = useCallback(async () => {
+        setIsLoading(true);
 
-            if (connectedWallet) {
-                const { ethereum } = window;
+        if (connectedWallet) {
+            const { ethereum } = window;
 
-                const data = { personalAddress: ethereum.selectedAddress };
-                const queryParams = Object.keys(data)
-                    .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
-                    .join('&');
+            const data = { personalAddress: ethereum.selectedAddress };
+            const queryParams = Object.keys(data)
+                .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+                .join('&');
 
+            try {
                 const requestResponse = await fetch(`http://localhost:8000/requests/${address}?` + queryParams);
                 const requestResponseJSON = await requestResponse.json();
 
-                console.log(requestResponseJSON);
                 const campaignContract = new web3.eth.Contract(campaign.abi, address);
                 const campaignCreator = (await campaignContract.methods.campaignCreator().call()).toLowerCase() === ethereum.selectedAddress.toLowerCase();
                 const isContributor = (await campaignContract.methods.approvers(ethereum.selectedAddress).call()) > 0;
                 setIsCampaignContributor(isContributor);
                 setIsCampaignCreator(campaignCreator);
                 setRequests(requestResponseJSON.requests);
+            } catch (err) {
+                console.log(err);
             }
+        }
 
-            setIsLoading(false);
-        };
-
-        fetchRequests();
+        setIsLoading(false);
     }, [address, connectedWallet]);
+
+    useEffect(() => {
+        fetchRequests();
+    }, [fetchRequests]);
 
     const approveRequest = async (id) => {
         setIsLoading(true);
 
         const { ethereum } = window;
         const campaignContract = new web3.eth.Contract(campaign.abi, address);
-        const tx = await campaignContract.methods.approveRequest(id).send({ from: ethereum.selectedAddress });
-        console.log(tx);
-
-        if (tx.status)
+        try {
+            await campaignContract.methods.approveRequest(id).send({ from: ethereum.selectedAddress });
             enqueueSnackbar('Request successfully approved!', { variant: "success" });
-        else
+            fetchRequests();
+        } catch (err) {
             enqueueSnackbar('An error occurred while approving the request!', { variant: "error" });
+        }
 
         setIsLoading(false);
     };
 
     const finalizeRequest = async (id) => {
-        console.log("CLICK FINALIZE REQUEST");
+        setIsLoading(true);
+
+        try {
+            const { ethereum } = window;
+            const campaignContract = new web3.eth.Contract(campaign.abi, address);
+            await campaignContract.methods.completeRequest(id).send({ from: ethereum.selectedAddress });
+            enqueueSnackbar('Request successfully finalized!', { variant: "success" });
+            fetchRequests();
+        } catch (err) {
+            enqueueSnackbar('An error occurred while finalizing the request!', { variant: "error" });
+        }
+
+        setIsLoading(false);
     };
 
     return (
@@ -138,7 +153,7 @@ const RequestTable = ({ address }) => {
                                                             </Button>
                                                         </TableCell>}
                                                         {isCampaignCreator && <TableCell key="finalize">
-                                                            <Button variant="outlined" color="secondary" onClick={finalizeRequest.bind(null, row.id)} disabled={row.complete}>
+                                                            <Button variant="outlined" color="secondary" onClick={finalizeRequest.bind(null, row.id)} disabled={row.complete || !row.canFinalize}>
                                                                 Finalize
                                                             </Button>
                                                         </TableCell>}
