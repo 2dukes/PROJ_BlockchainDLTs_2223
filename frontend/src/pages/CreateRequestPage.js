@@ -57,7 +57,6 @@ const CreateRequestPage = () => {
         for (let i = 0; i < numCampaigns; i++) {
             // Fetch data from Campaign contract
             const campaignDataPromises = methodNames.map(name => campaignContracts[i].methods[name]().call());
-            campaignDataPromises.push(web3.eth.getBalance(campaignAddresses[i])); // Get Balance
             const campaignData = await Promise.all(campaignDataPromises);
 
             // Fetch title and description from MongoDB
@@ -85,9 +84,8 @@ const CreateRequestPage = () => {
         const campaignStrData = await Promise.all(campaignStrDataPromises);
         const campaignStrDataJSONPromises = await Promise.all(campaignStrData.map(data => data.json()));
 
-        for (let i = 0; i < campaignObjs.length; i++) {
+        for (let i = 0; i < campaignObjs.length; i++)
             campaignObjs[i].title = campaignStrDataJSONPromises[i].campaignTitle;
-        }
 
         console.log(campaignObjs);
 
@@ -120,7 +118,16 @@ const CreateRequestPage = () => {
         const contractAddress = selectedCampaignAddr;
 
         // Create a contract instance
-        let campaignContract = new web3.eth.Contract(abi, contractAddress);
+        const campaignContract = new web3.eth.Contract(abi, contractAddress);
+        const campaignBalance = web3.utils.fromWei(await web3.eth.getBalance(contractAddress));
+
+        console.log(campaignBalance);
+
+        if (values.requestValue > campaignBalance) {
+            enqueueSnackbar('Withdrawal request value can\'t be greater than the campaign\'s total contributed amount.', { variant: "error" });
+            setIsLoading(false);
+            return;
+        }
 
         try {
             tx = await campaignContract.methods.createRequest(
@@ -148,15 +155,16 @@ const CreateRequestPage = () => {
             status &= storeRequestDetailsResultJSON.status;
         }
 
-        if (status)
-            enqueueSnackbar('Request created successfully', { variant: "success" });
+        if (status) {
+            enqueueSnackbar('Request created successfully.', { variant: "success" });
+            return navigate('/');
+        }
         else
-            enqueueSnackbar('Error creating request', { variant: "error" });
+            enqueueSnackbar('Error creating request!', { variant: "error" });
 
         console.log(status);
 
         setIsLoading(false);
-        return navigate('/');
     };
 
     const updateSelectedCampaign = (campaignAddress) => {

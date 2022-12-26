@@ -149,10 +149,12 @@ const NewCampaign = () => {
             const storeCampaignDetailsResultJSON = await storeCampaignDetailsResult.json();
 
             status &= storeCampaignDetailsResultJSON.status;
-    
+
+            enqueueSnackbar('Campaign created successfully!', { variant: "success" });
             return navigate("/");
         }
-        
+
+        enqueueSnackbar('Error creating campaign!', { variant: "error" });
         setIsLoading(false);
     };
 
