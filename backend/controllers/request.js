@@ -11,7 +11,7 @@ const storeRequestDetails = async (req, res, next) => {
         });
         
         campaign.requests.push(request);
-        const result = await request.save();
+        const result = await campaign.save();
 
         return res.status(200).json({
             status: true,

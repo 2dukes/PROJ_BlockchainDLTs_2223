@@ -10,7 +10,7 @@ contract CrowdNFT is ERC721URIStorage {
     using Counters for Counters.Counter;
 
     /// @notice The counter of how many NFTs were minted.
-    Counters.Counter private _tokenIds;
+    Counters.Counter public _tokenIds;
 
     /// @notice Instantiate CrowdNFT token.
     constructor() ERC721("CrowdNFT", "NFT") {}

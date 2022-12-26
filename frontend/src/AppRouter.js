@@ -44,7 +44,7 @@ const App = () => {
           key="/campaign/new"
           element={
             <PageLayout>
-              <CreateCampaignPage key="/campaign/new" />
+              <CreateCampaignPage key="/campaign/new" />              
             </PageLayout>
           }
         >
