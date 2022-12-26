@@ -214,7 +214,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
                             </Grid>
                         </TabPanel>
                         <TabPanel value="campaign-requests" sx={{ p: 0, pt: 2, height: isReallySmall ? "35rem" : "30rem" }}>
-                            <RequestTable />
+                            <RequestTable address={address}/>
                         </TabPanel>
                     </TabContext>
                 </Box>
