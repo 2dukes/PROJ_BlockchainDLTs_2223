@@ -31,18 +31,22 @@ const storeRequestDetails = async (req, res, next) => {
 
 const getRequestDetails = async (req, res, next) => {
     const id = req.params.campaignAddress;
+    const personalAddress = req.query.personalAddress;
 
     try {
         const campaignObj = await Campaign.findOne({ id });
         const requestsStr = campaignObj.requests.map((request) => { return { description: request.description }; });
 
         const campaignContract = new web3.eth.Contract(campaign.abi, id);
-        const requestPromises = [];
+        const requestPromises = [], isApprovedPromises = [];
 
-        for (let i = 0; i < requestsStr.length; i++)
+        for (let i = 0; i < requestsStr.length; i++) {
             requestPromises.push(campaignContract.methods.requests(i).call());
+            isApprovedPromises.push(Boolean(parseInt(await campaignContract.methods.hasApprovedCampaign(i).call())));
+        }
 
         const requestData = await Promise.all(requestPromises);
+        const isApprovedData = await Promise.all(isApprovedPromises);
 
         const raisedValue = web3.utils.fromWei(await campaignContract.methods.raisedValue().call());
 
@@ -51,10 +55,14 @@ const getRequestDetails = async (req, res, next) => {
                 id: idx,
                 description: requestsStr[idx].description,
                 askedValue: web3.utils.fromWei(request.value),
+                complete: request.complete,
+                isApproved: isApprovedData[idx],
                 openDate: dayjs.unix(request.openDate).format('DD/MM/YYYY'),
                 approvalCount: `${web3.utils.fromWei(request.approvalValue)}/${raisedValue}`
             };
         });
+
+        console.log(r);
 
 
         return res.status(200).json({

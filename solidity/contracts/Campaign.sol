@@ -266,8 +266,16 @@ contract Campaign {
     /** @notice Get number of requests so far.
         @return requestsCount Length of the requests array.
      */
-    function getRequestsCount() public view returns (uint256 requestsCount) {
+    function getRequestsCount() external view returns (uint256 requestsCount) {
         return requests.length;
+    }
+
+    /** @notice Tells if a certain user has already contributed to a certain campaign.
+        @param idx The index of the corresponding request in the Requests array.
+        @return requestState Either the user has already contributed or not. 
+     */
+    function hasApprovedCampaign(uint256 idx) external view returns (RequestState requestState) {
+        return requests[idx].approvals[msg.sender];
     }
 
     /** @notice Terminate contract.

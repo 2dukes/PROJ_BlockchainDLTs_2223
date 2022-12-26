@@ -55,7 +55,7 @@ contract CampaignFactory {
     /** @notice Get number of deployed campaigns.
         @return campaignsCount Length of campaigns array.
      */
-    function getCampaignsCount() public view returns (uint256 campaignsCount) {
+    function getCampaignsCount() external view returns (uint256 campaignsCount) {
         return campaigns.length;
     }
 }

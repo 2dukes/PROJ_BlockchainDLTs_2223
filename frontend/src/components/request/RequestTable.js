@@ -44,13 +44,21 @@ const RequestTable = ({ address }) => {
     useEffect(() => {
         const fetchRequests = async () => {
             setIsLoading(true);
-            const requestResponse = await fetch(`http://localhost:8000/requests/${address}`);
+
+            const data = { personalAddress: address };
+            const queryParams = Object.keys(data)
+                .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+                .join('&');
+
+            const requestResponse = await fetch(`http://localhost:8000/requests/${address}?` + queryParams);
             const requestResponseJSON = await requestResponse.json();
+
+            console.log(requestResponseJSON)
 
             if (connectedWallet) {
                 const { ethereum } = window;
                 const campaignContract = new web3.eth.Contract(campaign.abi, address);
-                const campaignCreator = await campaignContract.methods.campaignCreator().call();
+                const campaignCreator = (await campaignContract.methods.campaignCreator().call()).toLowerCase() === ethereum.selectedAddress.toLowerCase();
                 const isContributor = (await campaignContract.methods.approvers(ethereum.selectedAddress).call()) > 0;
                 setIsCampaignContributor(isContributor);
                 setIsCampaignCreator(campaignCreator);
@@ -63,6 +71,18 @@ const RequestTable = ({ address }) => {
 
         fetchRequests();
     }, [address, connectedWallet]);
+
+    const approveRequest = async (id) => {
+        const { ethereum } = window;
+        const campaignContract = new web3.eth.Contract(campaign.abi, address);
+        
+    
+        console.log("CLICK APPROVE REQUEST");
+    };
+
+    const finalizeRequest = async (id) => {
+        console.log("CLICK FINALIZE REQUEST");
+    };
 
     return (
         <Fragment>
@@ -104,12 +124,12 @@ const RequestTable = ({ address }) => {
                                                             );
                                                         })}
                                                         {isCampaignContributor && <TableCell key="approve">
-                                                            <Button variant="contained" color="success">
+                                                            <Button variant="contained" color="success" onClick={approveRequest.bind(null, row.id)} disabled={row.complete || row.isApproved}>
                                                                 Approve
                                                             </Button>
                                                         </TableCell>}
                                                         {isCampaignCreator && <TableCell key="finalize">
-                                                            <Button variant="outlined" color="secondary">
+                                                            <Button variant="outlined" color="secondary" onClick={finalizeRequest.bind(null, row.id)} disabled={row.complete}>
                                                                 Finalize
                                                             </Button>
                                                         </TableCell>}
