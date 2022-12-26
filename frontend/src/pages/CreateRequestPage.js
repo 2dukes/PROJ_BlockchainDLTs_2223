@@ -20,8 +20,6 @@ const CreateRequestPage = () => {
         campaignId: "",
     });
 
-    console.log(selectedCampaignAddr);
-
     const handleChange = (prop) => (event) => {
         setValues({ ...values, [prop]: event.target.value });
     };
@@ -42,8 +40,6 @@ const CreateRequestPage = () => {
             campaignPromises.push(campaignFactoryContract.methods.campaigns(i).call());
 
         const campaignAddresses = await Promise.all(campaignPromises);
-
-        console.log(campaignAddresses);
 
         const { ethereum } = window;
 
@@ -87,8 +83,6 @@ const CreateRequestPage = () => {
         for (let i = 0; i < campaignObjs.length; i++)
             campaignObjs[i].title = campaignStrDataJSONPromises[i].campaignTitle;
 
-        console.log(campaignObjs);
-
         return {
             campaigns: campaignObjs
         };
@@ -120,8 +114,6 @@ const CreateRequestPage = () => {
         // Create a contract instance
         const campaignContract = new web3.eth.Contract(abi, contractAddress);
         const campaignBalance = web3.utils.fromWei(await web3.eth.getBalance(contractAddress));
-
-        console.log(campaignBalance);
 
         if (values.requestValue > campaignBalance) {
             enqueueSnackbar('Withdrawal request value can\'t be greater than the campaign\'s total contributed amount.', { variant: "error" });

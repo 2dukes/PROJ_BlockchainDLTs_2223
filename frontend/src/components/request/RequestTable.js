@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, useContext, Fragment } from 'react';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/TableBody';
@@ -10,6 +10,9 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import LoadingSpinner from '../progress/LoadingSpinner';
+import { Context } from "../../services/context";
+import { web3 } from '../../services/connectWallet';
+import campaign from '../../contracts/Campaign.json';
 
 const columns = [
     { id: 'description', label: 'Description', minWidth: 350 },
@@ -21,10 +24,13 @@ const columns = [
 ];
 
 const RequestTable = ({ address }) => {
+    const { connectedWallet } = useContext(Context);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [requests, setRequests] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isCampaignContributor, setIsCampaignContributor] = useState(false);
+    const [isCampaignCreator, setIsCampaignCreator] = useState(false);
 
     const handleChangePage = (_, newPage) => {
         setPage(newPage);
@@ -41,12 +47,22 @@ const RequestTable = ({ address }) => {
             const requestResponse = await fetch(`http://localhost:8000/requests/${address}`);
             const requestResponseJSON = await requestResponse.json();
 
+            if (connectedWallet) {
+                const { ethereum } = window;
+                const campaignContract = new web3.eth.Contract(campaign.abi, address);
+                const campaignCreator = await campaignContract.methods.campaignCreator().call();
+                const isContributor = (await campaignContract.methods.approvers(ethereum.selectedAddress).call()) > 0;
+                setIsCampaignContributor(isContributor);
+                setIsCampaignCreator(campaignCreator);
+            }
+
+
             setRequests(requestResponseJSON.requests);
             setIsLoading(false);
         };
 
         fetchRequests();
-    }, [address]);
+    }, [address, connectedWallet]);
 
     return (
         <Fragment>
@@ -61,14 +77,16 @@ const RequestTable = ({ address }) => {
                                 <Table stickyHeader aria-label="sticky table">
                                     <TableHead>
                                         <TableRow>
-                                            {columns.map((column) => (
-                                                <TableCell
-                                                    key={column.id}
-                                                    style={{ minWidth: column.minWidth, fontWeight: "bold" }}
-                                                >
-                                                    {column.label}
-                                                </TableCell>
-                                            ))}
+                                            {columns.map((column) => {
+                                                if ((column.id === "approve" && isCampaignContributor) || (column.id === "finalize" && isCampaignContributor) || (column.id !== "approve" && column.id !== "finalize"))
+                                                    return (<TableCell
+                                                        key={column.id}
+                                                        style={{ minWidth: column.minWidth, fontWeight: "bold" }}
+                                                    >
+                                                        {column.label}
+                                                    </TableCell>);
+                                                return null;
+                                            })}
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -85,16 +103,16 @@ const RequestTable = ({ address }) => {
                                                                 </TableCell>
                                                             );
                                                         })}
-                                                        <TableCell key="approve">
+                                                        {isCampaignContributor && <TableCell key="approve">
                                                             <Button variant="contained" color="success">
                                                                 Approve
                                                             </Button>
-                                                        </TableCell>
-                                                        <TableCell key="finalize">
+                                                        </TableCell>}
+                                                        {isCampaignCreator && <TableCell key="finalize">
                                                             <Button variant="outlined" color="secondary">
                                                                 Finalize
                                                             </Button>
-                                                        </TableCell>
+                                                        </TableCell>}
                                                     </TableRow>
                                                 );
                                             })}
