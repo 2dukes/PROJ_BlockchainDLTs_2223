@@ -259,8 +259,9 @@ contract Campaign {
         uint8 royaltyFeePercentage = 2;
         uint256 royaltyAmount = (request.value * royaltyFeePercentage) / 100;
 
-        campaignCreator.transfer(request.value - royaltyAmount);
         crowdCreator.transfer(royaltyAmount);
+        campaignCreator.transfer(request.value - royaltyAmount);
+        request.complete = true;
     }
 
     /** @notice Get number of requests so far.
@@ -274,8 +275,8 @@ contract Campaign {
         @param idx The index of the corresponding request in the Requests array.
         @return requestState Either the user has already contributed or not. 
      */
-    function hasApprovedCampaign(uint256 idx) external view returns (RequestState requestState) {
-        return requests[idx].approvals[msg.sender];
+    function hasApprovedCampaign(uint256 idx, address sender) external view returns (RequestState requestState) {
+        return requests[idx].approvals[sender];
     }
 
     /** @notice Terminate contract.

@@ -13,6 +13,7 @@ import LoadingSpinner from '../progress/LoadingSpinner';
 import { Context } from "../../services/context";
 import { web3 } from '../../services/connectWallet';
 import campaign from '../../contracts/Campaign.json';
+import { useSnackbar } from 'notistack';
 
 const columns = [
     { id: 'description', label: 'Description', minWidth: 350 },
@@ -24,6 +25,7 @@ const columns = [
 ];
 
 const RequestTable = ({ address }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const { connectedWallet } = useContext(Context);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -45,27 +47,26 @@ const RequestTable = ({ address }) => {
         const fetchRequests = async () => {
             setIsLoading(true);
 
-            const data = { personalAddress: address };
-            const queryParams = Object.keys(data)
-                .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
-                .join('&');
-
-            const requestResponse = await fetch(`http://localhost:8000/requests/${address}?` + queryParams);
-            const requestResponseJSON = await requestResponse.json();
-
-            console.log(requestResponseJSON)
-
             if (connectedWallet) {
                 const { ethereum } = window;
+
+                const data = { personalAddress: ethereum.selectedAddress };
+                const queryParams = Object.keys(data)
+                    .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+                    .join('&');
+
+                const requestResponse = await fetch(`http://localhost:8000/requests/${address}?` + queryParams);
+                const requestResponseJSON = await requestResponse.json();
+
+                console.log(requestResponseJSON);
                 const campaignContract = new web3.eth.Contract(campaign.abi, address);
                 const campaignCreator = (await campaignContract.methods.campaignCreator().call()).toLowerCase() === ethereum.selectedAddress.toLowerCase();
                 const isContributor = (await campaignContract.methods.approvers(ethereum.selectedAddress).call()) > 0;
                 setIsCampaignContributor(isContributor);
                 setIsCampaignCreator(campaignCreator);
+                setRequests(requestResponseJSON.requests);
             }
 
-
-            setRequests(requestResponseJSON.requests);
             setIsLoading(false);
         };
 
@@ -73,11 +74,19 @@ const RequestTable = ({ address }) => {
     }, [address, connectedWallet]);
 
     const approveRequest = async (id) => {
+        setIsLoading(true);
+
         const { ethereum } = window;
         const campaignContract = new web3.eth.Contract(campaign.abi, address);
-        
-    
-        console.log("CLICK APPROVE REQUEST");
+        const tx = await campaignContract.methods.approveRequest(id).send({ from: ethereum.selectedAddress });
+        console.log(tx);
+
+        if (tx.status)
+            enqueueSnackbar('Request successfully approved!', { variant: "success" });
+        else
+            enqueueSnackbar('An error occurred while approving the request!', { variant: "error" });
+
+        setIsLoading(false);
     };
 
     const finalizeRequest = async (id) => {

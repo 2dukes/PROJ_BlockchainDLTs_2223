@@ -42,7 +42,7 @@ const getRequestDetails = async (req, res, next) => {
 
         for (let i = 0; i < requestsStr.length; i++) {
             requestPromises.push(campaignContract.methods.requests(i).call());
-            isApprovedPromises.push(Boolean(parseInt(await campaignContract.methods.hasApprovedCampaign(i).call())));
+            isApprovedPromises.push(campaignContract.methods.hasApprovedCampaign(i, personalAddress).call());
         }
 
         const requestData = await Promise.all(requestPromises);
@@ -56,14 +56,11 @@ const getRequestDetails = async (req, res, next) => {
                 description: requestsStr[idx].description,
                 askedValue: web3.utils.fromWei(request.value),
                 complete: request.complete,
-                isApproved: isApprovedData[idx],
+                isApproved: Boolean(parseInt(isApprovedData[idx])),
                 openDate: dayjs.unix(request.openDate).format('DD/MM/YYYY'),
                 approvalCount: `${web3.utils.fromWei(request.approvalValue)}/${raisedValue}`
             };
         });
-
-        console.log(r);
-
 
         return res.status(200).json({
             status: true,
