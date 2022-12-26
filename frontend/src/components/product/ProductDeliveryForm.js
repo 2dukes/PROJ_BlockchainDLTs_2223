@@ -1,6 +1,7 @@
 import { useState, forwardRef, Fragment, useContext } from 'react';
 import { AppBar, Button, TextField, Grid, Typography, FormControl, Dialog, DialogActions, DialogContent, Slide } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 import { web3 } from '../../services/connectWallet';
 import campaign from '../../contracts/Campaign.json';
 import LoadingSpinner from '../progress/LoadingSpinner';
@@ -17,6 +18,7 @@ const ProductDeliveryForm = ({ address, productPrice, title, description, open, 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [sendingAddress, setSendingAddress] = useState("");
+    const navigate = useNavigate();
 
     const formErrorVerification = () => {
         let noError = true;
@@ -70,7 +72,7 @@ const ProductDeliveryForm = ({ address, productPrice, title, description, open, 
 
         const availableNFT = nftResultJSON.status;
         const tokenURI = availableNFT ? `https://gateway.pinata.cloud/ipfs/${nftResultJSON.IpfsHash}` : "";
-        
+
         console.log(tokenURI);
 
         const { ethereum } = window;
@@ -92,13 +94,13 @@ const ProductDeliveryForm = ({ address, productPrice, title, description, open, 
                 const moveNFT = await fetch(`http://localhost:8000/images/nft/${address}/${nftResultJSON.imageIndex}?${moveParams}`, {
                     method: 'POST'
                 });
-                const moveNFTJSON = await moveNFT.json();
+                await moveNFT.json();
 
                 enqueueSnackbar('You were awarded an NFT!', { variant: "success" });
-                console.log(moveNFTJSON);
             }
-            
+
             enqueueSnackbar('Successfully submitted an order!', { variant: "success" });
+            return navigate(0);
         } catch (err) {
             console.log(err);
         }

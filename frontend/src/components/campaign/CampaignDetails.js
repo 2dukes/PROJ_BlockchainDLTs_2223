@@ -8,6 +8,7 @@ import CampaignInfoCard from './CampaignInfoCard';
 import RequestTable from '../request/RequestTable';
 import CampaignCardWithPrice from './CampaignCardWithPrice';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../progress/LoadingSpinner';
 import { Context } from "../../services/context";
 import { web3 } from '../../services/connectWallet';
@@ -32,6 +33,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
     const isReallySmall = useMediaQuery(theme.breakpoints.down('sm'));
+    const navigate = useNavigate();
 
     const [value, setValue] = useState('campaign-details');
     const [amountToContribute, setAmountToContribute] = useState(minimumContribution);
@@ -96,13 +98,13 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
                 const moveNFT = await fetch(`http://localhost:8000/images/nft/${address}/${nftResultJSON.imageIndex}?${moveParams}`, {
                     method: 'POST'
                 });
-                const moveNFTJSON = await moveNFT.json();
+                await moveNFT.json();
 
                 enqueueSnackbar('You were awarded an NFT!', { variant: "success" });
-                console.log(moveNFTJSON);
             }
             
             enqueueSnackbar('Successful donation!', { variant: "success" });
+            return navigate(0);
         } catch (err) {
             console.log(err);
         }
