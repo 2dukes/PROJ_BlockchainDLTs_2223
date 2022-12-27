@@ -26,12 +26,12 @@ const NFTImageURLs = [
     }
 ];
 
-const CAMPAIGNS_PER_PAGE = 1;
+const CAMP_PER_PAGE = 2;
 
 const fetchCampaigns = async (pageNumber, isContributed = false) => {
     const { ethereum } = window;
 
-    const data = { pageNumber, campaignsPerPage: CAMPAIGNS_PER_PAGE };
+    const data = { pageNumber, campaignsPerPage: CAMP_PER_PAGE };
     const queryParams = Object.keys(data)
         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
         .join('&');
@@ -72,11 +72,10 @@ const ProfilePage = () => {
     const imageListProp = isSmall ? {} : { rowHeight: 200 };
 
     useEffect(() => {
-        const fetchData = async (p, nextPage, setCampaigns, setTotal, isContributed = false) => {
-            console.log(isContributed)
+        const fetchData = async (pageNumber, nextPage, setCampaigns, setTotal, isContributed = false) => {
             if (nextPage && connectedWallet) {
                 setIsLoading(true);
-                const myCampaignData = await fetchCampaigns(p, isContributed);
+                const myCampaignData = await fetchCampaigns(pageNumber, isContributed);
                 setCampaigns(prevCampaigns => [...prevCampaigns, ...myCampaignData.campaigns]);
                 setTotal(myCampaignData.numCampaigns);
                 setIsLoading(false);
@@ -87,9 +86,10 @@ const ProfilePage = () => {
         fetchData(pageCTB, isNextPageCTB, setContributedCampaigns, setTotalCampaignsCTB, true);
     }, [page, pageCTB, isNextPage, isNextPageCTB, connectedWallet]);
 
-    const changePageCampaigns = (newPageNumber, highestPage, setNextPage, setHighestPage, setPageNumber) => {
+    const changePageCampaigns = (newPageNumber, highestPage, setNextPage, setOtherNextPage, setHighestPage, setPageNumber) => {
         if (newPageNumber > highestPage) {
             setNextPage(true);
+            setOtherNextPage(false);
             setHighestPage(newPageNumber);
         } else
             setNextPage(false);
@@ -100,16 +100,13 @@ const ProfilePage = () => {
         setSelectedCampaignAddr(campaignAddress);
     };
 
-    let indexOfLastResult = page * CAMPAIGNS_PER_PAGE;
-    const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
+    let indexOfLastResult = page * CAMP_PER_PAGE;
+    const indexOfFirstResult = indexOfLastResult - CAMP_PER_PAGE;
     indexOfLastResult = (indexOfLastResult + 1 > totalCampaigns) ? totalCampaigns : indexOfLastResult;
 
-    let indexOfLastResultCTB = pageCTB * CAMPAIGNS_PER_PAGE;
-    const indexOfFirstResultCTB = indexOfLastResultCTB - CAMPAIGNS_PER_PAGE;
+    let indexOfLastResultCTB = pageCTB * CAMP_PER_PAGE;
+    const indexOfFirstResultCTB = indexOfLastResultCTB - CAMP_PER_PAGE;
     indexOfLastResultCTB = (indexOfLastResultCTB + 1 > totalCampaignsCTB) ? totalCampaignsCTB : indexOfLastResultCTB;
-
-    console.log(indexOfFirstResult, indexOfLastResult)
-    console.log(myCampaigns)
 
     return (
         <Fragment>
@@ -130,7 +127,7 @@ const ProfilePage = () => {
                                 alignItems="center"
                                 justify="center" spacing={3}>
                                 {myCampaigns.slice(indexOfFirstResult, indexOfLastResult).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
-                                <Grid item xs={12} display="flex" justifyContent="center"><Pagination count={Math.ceil(totalCampaigns / CAMPAIGNS_PER_PAGE)} page={page} onChange={(_, newPageNumber) => changePageCampaigns(newPageNumber, highestPageNumber, setIsNextPage, setHighestPageNumber, setPage)} color="primary" /></Grid>
+                                <Grid item xs={12} display="flex" justifyContent="center"><Pagination count={Math.ceil(totalCampaigns / CAMP_PER_PAGE)} page={page} onChange={(_, newPageNumber) => changePageCampaigns(newPageNumber, highestPageNumber, setIsNextPage, setIsNextPageCTB, setHighestPageNumber, setPage)} color="primary" /></Grid>
                             </Grid>
                         )}
                     </Container>
@@ -145,7 +142,7 @@ const ProfilePage = () => {
                                 alignItems="center"
                                 justify="center" spacing={3}>
                                 {contributedCampaigns.slice(indexOfFirstResultCTB, indexOfLastResultCTB).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
-                                <Grid item xs={12} display="flex" justifyContent="center"><Pagination count={Math.ceil(totalCampaignsCTB / CAMPAIGNS_PER_PAGE)} page={pageCTB} onChange={(_, newPageNumber) => changePageCampaigns(newPageNumber, highestPageNumberCTB, setIsNextPageCTB, setHighestPageNumberCTB, setPageCTB)} color="primary" /></Grid>
+                                <Grid item xs={12} display="flex" justifyContent="center"><Pagination count={Math.ceil(totalCampaignsCTB / CAMP_PER_PAGE)} page={pageCTB} onChange={(_, newPageNumber) => changePageCampaigns(newPageNumber, highestPageNumberCTB, setIsNextPageCTB, setIsNextPage, setHighestPageNumberCTB, setPageCTB)} color="primary" /></Grid>
                             </Grid>
                         )}
                     </Container>
