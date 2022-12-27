@@ -26,7 +26,7 @@ const NFTImageURLs = [
     }
 ];
 
-const CAMPAIGNS_PER_PAGE = 4;
+const CAMPAIGNS_PER_PAGE = 1;
 
 const fetchCampaigns = async (pageNumber, isContributed = false) => {
     const { ethereum } = window;
@@ -72,18 +72,19 @@ const ProfilePage = () => {
     const imageListProp = isSmall ? {} : { rowHeight: 200 };
 
     useEffect(() => {
-        const fetchData = async (isNextPage, setCampaigns, setTotal, isContributed = false) => {
-            if (isNextPage && connectedWallet) {
+        const fetchData = async (p, nextPage, setCampaigns, setTotal, isContributed = false) => {
+            console.log(isContributed)
+            if (nextPage && connectedWallet) {
                 setIsLoading(true);
-                const myCampaignData = await fetchCampaigns(page, isContributed);
+                const myCampaignData = await fetchCampaigns(p, isContributed);
                 setCampaigns(prevCampaigns => [...prevCampaigns, ...myCampaignData.campaigns]);
                 setTotal(myCampaignData.numCampaigns);
                 setIsLoading(false);
             }
         };
 
-        fetchData(isNextPage, setMyCampaigns, setTotalCampaigns);
-        fetchData(isNextPageCTB, setContributedCampaigns, setTotalCampaignsCTB, true);
+        fetchData(page, isNextPage, setMyCampaigns, setTotalCampaigns);
+        fetchData(pageCTB, isNextPageCTB, setContributedCampaigns, setTotalCampaignsCTB, true);
     }, [page, pageCTB, isNextPage, isNextPageCTB, connectedWallet]);
 
     const changePageCampaigns = (newPageNumber, highestPage, setNextPage, setHighestPage, setPageNumber) => {
@@ -106,6 +107,9 @@ const ProfilePage = () => {
     let indexOfLastResultCTB = pageCTB * CAMPAIGNS_PER_PAGE;
     const indexOfFirstResultCTB = indexOfLastResultCTB - CAMPAIGNS_PER_PAGE;
     indexOfLastResultCTB = (indexOfLastResultCTB + 1 > totalCampaignsCTB) ? totalCampaignsCTB : indexOfLastResultCTB;
+
+    console.log(indexOfFirstResult, indexOfLastResult)
+    console.log(myCampaigns)
 
     return (
         <Fragment>

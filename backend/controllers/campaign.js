@@ -94,7 +94,7 @@ const getCampaigns = async (req, res, next) => {
 
         // console.log(campaignAddresses);
 
-        let campaignObjs = new Array(numCampaigns).fill({});
+        let campaignObjs = new Array(numberCampaignsToDisplay).fill({});
         let campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
 
         const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate", "unitsSold", "productPrice"];
@@ -169,15 +169,17 @@ const getMyCampaigns = async (req, res, next) => {
 
         campaignAddresses = campaignAddresses.filter((_, idx) => campaignCreators[idx].toLowerCase() === personalAddress.toLowerCase());
         numCampaigns = campaignAddresses.length;
-        campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
-
+        
         let indexOfLastResult = pageNumber * CAMPAIGNS_PER_PAGE;
         const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
         indexOfLastResult = (indexOfLastResult + 1 > numCampaigns) ? numCampaigns : indexOfLastResult;
-
+        
         const numberCampaignsToDisplay = indexOfLastResult - indexOfFirstResult;
+        
+        campaignAddresses = campaignAddresses.filter((addr, idx) => idx >= indexOfFirstResult && idx < indexOfLastResult);
+        campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
 
-        let campaignObjs = new Array(numCampaigns).fill({});
+        let campaignObjs = new Array(numberCampaignsToDisplay).fill({});
 
         const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate", "unitsSold", "productPrice"];
 
@@ -251,15 +253,17 @@ const getContributedCampaigns = async (req, res, next) => {
 
         campaignAddresses = campaignAddresses.filter((_, idx) => parseInt(campaignApproverValues[idx]) > 0);
         numCampaigns = campaignAddresses.length;
-        campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
-
+        
         let indexOfLastResult = pageNumber * CAMPAIGNS_PER_PAGE;
         const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
         indexOfLastResult = (indexOfLastResult + 1 > numCampaigns) ? numCampaigns : indexOfLastResult;
-
+        
         const numberCampaignsToDisplay = indexOfLastResult - indexOfFirstResult;
-
-        let campaignObjs = new Array(numCampaigns).fill({});
+        
+        campaignAddresses = campaignAddresses.filter((addr, idx) => idx >= indexOfFirstResult && idx < indexOfLastResult);
+        campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
+        
+        let campaignObjs = new Array(numberCampaignsToDisplay).fill({});
 
         const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate", "unitsSold", "productPrice"];
 

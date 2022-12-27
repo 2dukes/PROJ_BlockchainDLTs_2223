@@ -10,9 +10,9 @@ app.use(express.static(path.join(__dirname, 'public', 'campaigns'))); // http://
 const imageRoutes = require("./routes/image");
 const campaignRoutes = require("./routes/campaign");
 const requestRoutes = require("./routes/request");
+const NFTRoutes = require("./routes/nft");
 
 const errorMiddleware = require("./middleware/error");
-
 
 app.use((req, res, next) => {
   res.setHeader(
@@ -32,6 +32,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/images", imageRoutes);
 app.use("/campaigns", campaignRoutes);
 app.use("/requests", requestRoutes);
+app.use("/nfts", NFTRoutes);
 
 app.use(errorMiddleware);
 
