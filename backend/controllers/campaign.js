@@ -161,16 +161,15 @@ const getMyCampaigns = async (req, res, next) => {
         campaignPromises = [];
 
         let campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
-        
+
         for (let i = 0; i < numCampaigns; i++)
             campaignPromises.push(campaignContracts[i].methods.campaignCreator().call());
-        
+
         const campaignCreators = await Promise.all(campaignPromises);
 
         campaignAddresses = campaignAddresses.filter((_, idx) => campaignCreators[idx].toLowerCase() === personalAddress.toLowerCase());
         numCampaigns = campaignAddresses.length;
         campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
-
 
         let indexOfLastResult = pageNumber * CAMPAIGNS_PER_PAGE;
         const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
@@ -228,4 +227,86 @@ const getMyCampaigns = async (req, res, next) => {
     }
 };
 
-module.exports = { storeCampaignDetails, getCampaignDetails, buyCampaignProduct, getCampaigns, getMyCampaigns };
+const getContributedCampaigns = async (req, res, next) => {
+    const personalAddress = req.params.personalAddress;
+    const pageNumber = req.query.pageNumber;
+    const CAMPAIGNS_PER_PAGE = req.query.campaignsPerPage;
+
+    try {
+        let numCampaigns = await campaignFactoryContract.methods.getCampaignsCount().call();
+        let campaignPromises = [];
+
+        for (let i = 0; i < numCampaigns; i++)
+            campaignPromises.push(campaignFactoryContract.methods.campaigns(i).call());
+
+        let campaignAddresses = await Promise.all(campaignPromises);
+        campaignPromises = [];
+
+        let campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
+
+        for (let i = 0; i < numCampaigns; i++)
+            campaignPromises.push(campaignContracts[i].methods.approvers(personalAddress).call());
+
+        const campaignApproverValues = await Promise.all(campaignPromises);
+
+        campaignAddresses = campaignAddresses.filter((_, idx) => parseInt(campaignApproverValues[idx]) > 0);
+        numCampaigns = campaignAddresses.length;
+        campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
+
+        let indexOfLastResult = pageNumber * CAMPAIGNS_PER_PAGE;
+        const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
+        indexOfLastResult = (indexOfLastResult + 1 > numCampaigns) ? numCampaigns : indexOfLastResult;
+
+        const numberCampaignsToDisplay = indexOfLastResult - indexOfFirstResult;
+
+        let campaignObjs = new Array(numCampaigns).fill({});
+
+        const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate", "unitsSold", "productPrice"];
+
+        let campaignStrDataPromises = [];
+
+        for (let i = 0; i < numberCampaignsToDisplay; i++) {
+            // Fetch data from Campaign contract
+            const campaignDataPromises = methodNames.map(name => campaignContracts[i].methods[name]().call());
+            campaignDataPromises.push(web3.eth.getBalance(campaignAddresses[i])); // Get Balance
+            const campaignData = await Promise.all(campaignDataPromises);
+
+            // Fetch title and description from MongoDB
+            campaignStrDataPromises.push(Campaign.findOne({ id: campaignAddresses[i] }));
+
+            campaignObjs[i] = {
+                address: campaignAddresses[i],
+                balance: web3.utils.fromWei(campaignData.at(-1)),
+                campaignCreator: campaignData[0],
+                minimumContribution: web3.utils.fromWei(campaignData[1]),
+                maximumNFTContributors: campaignData[2],
+                raisedValue: web3.utils.fromWei(campaignData[3]),
+                targetValue: web3.utils.fromWei(campaignData[4]),
+                approversCount: campaignData[5],
+                endDate: dayjs.unix(campaignData[6]).format('DD/MM/YYYY'),
+                remainingDays: Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true)),
+                unitsSold: campaignData[7],
+                productPrice: web3.utils.fromWei(campaignData[8]),
+                imageURL: `http://localhost:8000/${campaignAddresses[i]}/campaignImage.png`,
+            };
+        }
+
+        const campaignStrData = await Promise.all(campaignStrDataPromises);
+
+        for (let i = 0; i < numberCampaignsToDisplay; i++) {
+            campaignObjs[i].title = campaignStrData[i].title;
+            campaignObjs[i].description = campaignStrData[i].description;
+        }
+
+        // console.log(campaignObjs);
+
+        return res.status(200).json({
+            campaigns: campaignObjs,
+            numCampaigns: parseInt(numCampaigns)
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+module.exports = { storeCampaignDetails, getCampaignDetails, buyCampaignProduct, getCampaigns, getMyCampaigns, getContributedCampaigns };
