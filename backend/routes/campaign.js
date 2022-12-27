@@ -1,4 +1,4 @@
-const { storeCampaignDetails, getCampaignDetails, buyCampaignProduct, getCampaigns } = require("../controllers/campaign");
+const { storeCampaignDetails, getCampaignDetails, buyCampaignProduct, getCampaigns, getMyCampaigns } = require("../controllers/campaign");
 
 const express = require("express");
 const router = express.Router();
@@ -10,5 +10,7 @@ router.get('/:campaignAddress', getCampaignDetails);
 router.put('/:campaignAddress', buyCampaignProduct);
 
 router.get('/', getCampaigns);
+
+router.get('/personal/:personalAddress', getMyCampaigns);
 
 module.exports = router;
