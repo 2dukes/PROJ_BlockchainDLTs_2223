@@ -28,7 +28,7 @@ const NFTImageURLs = [
 
 const CAMPAIGNS_PER_PAGE = 4;
 
-const fetchMyCampaigns = async (pageNumber) => {
+const fetchCampaigns = async (pageNumber, isContributed = false) => {
     const { ethereum } = window;
 
     const data = { pageNumber, campaignsPerPage: CAMPAIGNS_PER_PAGE };
@@ -36,25 +36,7 @@ const fetchMyCampaigns = async (pageNumber) => {
         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
         .join('&');
 
-    const campaignResult = await fetch(`http://localhost:8000/campaigns/personal/${ethereum.selectedAddress}?` + queryParams);
-
-    const campaignResultJSON = await campaignResult.json();
-
-    return {
-        campaigns: campaignResultJSON.campaigns,
-        numCampaigns: campaignResultJSON.numCampaigns
-    };
-};
-
-const fetchContributedCampaigns = async (pageNumber) => {
-    const { ethereum } = window;
-
-    const data = { pageNumber, campaignsPerPage: CAMPAIGNS_PER_PAGE };
-    const queryParams = Object.keys(data)
-        .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
-        .join('&');
-
-    const campaignResult = await fetch(`http://localhost:8000/campaigns/contribute/${ethereum.selectedAddress}?` + queryParams);
+    const campaignResult = await fetch(`http://localhost:8000/campaigns/${isContributed ? "contribute" : "personal"}/${ethereum.selectedAddress}?` + queryParams);
 
     const campaignResultJSON = await campaignResult.json();
 
@@ -90,46 +72,27 @@ const ProfilePage = () => {
     const imageListProp = isSmall ? {} : { rowHeight: 200 };
 
     useEffect(() => {
-        const fetchMyData = async () => {
+        const fetchData = async (isNextPage, setCampaigns, setTotal, isContributed = false) => {
             if (isNextPage && connectedWallet) {
                 setIsLoading(true);
-                const myCampaignData = await fetchMyCampaigns(page);
-                setMyCampaigns(prevCampaigns => [...prevCampaigns, ...myCampaignData.campaigns]);
-                setTotalCampaigns(myCampaignData.numCampaigns);
+                const myCampaignData = await fetchCampaigns(page, isContributed);
+                setCampaigns(prevCampaigns => [...prevCampaigns, ...myCampaignData.campaigns]);
+                setTotal(myCampaignData.numCampaigns);
                 setIsLoading(false);
             }
         };
 
-        const fetchContributedData = async () => {
-            if (isNextPageCTB && connectedWallet) {
-                setIsLoading(true);
-                const myCampaignData = await fetchContributedCampaigns(pageCTB);
-                setContributedCampaigns(prevCampaigns => [...prevCampaigns, ...myCampaignData.campaigns]);
-                setTotalCampaignsCTB(myCampaignData.numCampaigns);
-                setIsLoading(false);
-            }
-        }
-
-        fetchMyData();
-        fetchContributedData();
+        fetchData(isNextPage, setMyCampaigns, setTotalCampaigns);
+        fetchData(isNextPageCTB, setContributedCampaigns, setTotalCampaignsCTB, true);
     }, [page, pageCTB, isNextPage, isNextPageCTB, connectedWallet]);
 
-    const changePageMyCampaigns = (_, newPageNumber) => {
-        if (newPageNumber > highestPageNumber) {
-            setIsNextPage(true);
-            setHighestPageNumber(newPageNumber);
+    const changePageCampaigns = (newPageNumber, highestPage, setNextPage, setHighestPage, setPageNumber) => {
+        if (newPageNumber > highestPage) {
+            setNextPage(true);
+            setHighestPage(newPageNumber);
         } else
-            setIsNextPage(false);
-        setPage(newPageNumber);
-    };
-
-    const changePageCTB = (_, newPageNumber) => {
-        if (newPageNumber > highestPageNumberCTB) {
-            setIsNextPageCTB(true);
-            setHighestPageNumberCTB(newPageNumber);
-        } else
-            setIsNextPageCTB(false);
-        setPageCTB(newPageNumber);
+            setNextPage(false);
+        setPageNumber(newPageNumber);
     };
 
     const updateSelectedCampaign = (campaignAddress) => {
@@ -163,7 +126,7 @@ const ProfilePage = () => {
                                 alignItems="center"
                                 justify="center" spacing={3}>
                                 {myCampaigns.slice(indexOfFirstResult, indexOfLastResult).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
-                                <Grid item xs={12} display="flex" justifyContent="center"><Pagination count={Math.ceil(totalCampaigns / CAMPAIGNS_PER_PAGE)} page={page} onChange={changePageMyCampaigns} color="primary" /></Grid>
+                                <Grid item xs={12} display="flex" justifyContent="center"><Pagination count={Math.ceil(totalCampaigns / CAMPAIGNS_PER_PAGE)} page={page} onChange={(_, newPageNumber) => changePageCampaigns(newPageNumber, highestPageNumber, setIsNextPage, setHighestPageNumber, setPage)} color="primary" /></Grid>
                             </Grid>
                         )}
                     </Container>
@@ -178,7 +141,7 @@ const ProfilePage = () => {
                                 alignItems="center"
                                 justify="center" spacing={3}>
                                 {contributedCampaigns.slice(indexOfFirstResultCTB, indexOfLastResultCTB).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
-                                <Grid item xs={12} display="flex" justifyContent="center"><Pagination count={Math.ceil(totalCampaignsCTB / CAMPAIGNS_PER_PAGE)} page={pageCTB} onChange={changePageCTB} color="primary" /></Grid>
+                                <Grid item xs={12} display="flex" justifyContent="center"><Pagination count={Math.ceil(totalCampaignsCTB / CAMPAIGNS_PER_PAGE)} page={pageCTB} onChange={(_, newPageNumber) => changePageCampaigns(newPageNumber, highestPageNumberCTB, setIsNextPageCTB, setHighestPageNumberCTB, setPageCTB)} color="primary" /></Grid>
                             </Grid>
                         )}
                     </Container>
