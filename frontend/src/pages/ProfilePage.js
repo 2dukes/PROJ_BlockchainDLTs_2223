@@ -1,30 +1,13 @@
 import { Fragment, useState, useEffect, useContext } from 'react';
-import { Container, Grid, Typography, Pagination, useMediaQuery, ImageList, ImageListItem, Card } from '@mui/material';
+import { Container, Grid, Typography, Pagination, useMediaQuery, ImageList, ImageListItem, Card, CardActionArea } from '@mui/material';
 import AspectRatio from '@mui/joy/AspectRatio';
 import { useTheme } from '@mui/material/styles';
 import CampaignCard from '../components/campaign/CampaignCard';
 import CampaignDetails from '../components/campaign/CampaignDetails';
 import { Context } from "../services/context";
 import LoadingSpinner from '../components/progress/LoadingSpinner';
-
-const NFTImageURLs = [
-    {
-        id: 1,
-        imageURL: "https://emirateswoman.com/wp-content/uploads/2022/07/Bored-Ape-Club-NFT-1.png",
-    },
-    {
-        id: 2,
-        imageURL: "https://www.infomoney.com.br/wp-content/uploads/2022/01/FJkLjuCXMAYC1MO.jpg?resize=916%2C515&quality=50&strip=all"
-    },
-    {
-        id: 3,
-        imageURL: "https://miro.medium.com/max/670/0*iXFSD9fZ-AD73K3P.jpg"
-    },
-    {
-        id: 4,
-        imageURL: "https://cloudfront-us-east-2.images.arcpublishing.com/reuters/43YAWLITTZJLZIQTCP2JSS4KSM.jpg"
-    }
-];
+import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 const CAMP_PER_PAGE = 2;
 
@@ -46,6 +29,15 @@ const fetchCampaigns = async (pageNumber, isContributed = false) => {
     };
 };
 
+const fetchOwnNFTs = async (setNFTImageURLs) => {
+    const { ethereum } = window;
+
+    const NFTResult = await fetch(`http://localhost:8000/nfts/${ethereum.selectedAddress}`);
+    const NFTResultJSON = await NFTResult.json();
+
+    setNFTImageURLs(NFTResultJSON.nfts);
+};
+
 const ProfilePage = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +50,6 @@ const ProfilePage = () => {
     const [totalCampaigns, setTotalCampaigns] = useState(0);
     const [myCampaigns, setMyCampaigns] = useState([]);
 
-
     // Contributed Campaigns
     const [highestPageNumberCTB, setHighestPageNumberCTB] = useState(1);
     const [isNextPageCTB, setIsNextPageCTB] = useState(true);
@@ -66,14 +57,18 @@ const ProfilePage = () => {
     const [totalCampaignsCTB, setTotalCampaignsCTB] = useState(0);
     const [contributedCampaigns, setContributedCampaigns] = useState([]);
 
-    const { connectedWallet } = useContext(Context);
+    const [NFTImageURLs, setNFTImageURLs] = useState([]);
+
+    const { connectedWallet, walletConnectAttempt } = useContext(Context);
+    const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
     const imageListProp = isSmall ? {} : { rowHeight: 200 };
 
     useEffect(() => {
         const fetchData = async (pageNumber, nextPage, setCampaigns, setTotal, isContributed = false) => {
-            if (nextPage && connectedWallet) {
+            if (nextPage) {
                 setIsLoading(true);
                 const myCampaignData = await fetchCampaigns(pageNumber, isContributed);
                 setCampaigns(prevCampaigns => [...prevCampaigns, ...myCampaignData.campaigns]);
@@ -82,9 +77,16 @@ const ProfilePage = () => {
             }
         };
 
-        fetchData(page, isNextPage, setMyCampaigns, setTotalCampaigns);
-        fetchData(pageCTB, isNextPageCTB, setContributedCampaigns, setTotalCampaignsCTB, true);
-    }, [page, pageCTB, isNextPage, isNextPageCTB, connectedWallet]);
+        if (connectedWallet) {
+            fetchData(page, isNextPage, setMyCampaigns, setTotalCampaigns);
+            fetchData(pageCTB, isNextPageCTB, setContributedCampaigns, setTotalCampaignsCTB, true);
+            fetchOwnNFTs(setNFTImageURLs);
+        } else if (walletConnectAttempt && !connectedWallet) {
+            enqueueSnackbar('Please connect MetaMask!', { variant: "error" });
+            navigate("/");
+        }
+        
+    }, [page, pageCTB, isNextPage, isNextPageCTB, connectedWallet, enqueueSnackbar, navigate, walletConnectAttempt]);
 
     const changePageCampaigns = (newPageNumber, highestPage, setNextPage, setOtherNextPage, setHighestPage, setPageNumber) => {
         if (newPageNumber > highestPage) {
@@ -150,33 +152,41 @@ const ProfilePage = () => {
                         <Typography variant="h5" marginLeft="7.5px" fontWeight="bold" align={isSmall ? "center" : "left"} gutterBottom >
                             Awarded NFTs
                         </Typography>
-                        <ImageList cols={isSmall ? 1 : 3} {...imageListProp}>
+                        {NFTImageURLs.length > 0 ? (<ImageList cols={isSmall ? 1 : 3} {...imageListProp}>
                             {NFTImageURLs.map((img) => {
                                 if (!isSmall)
                                     return (
                                         <Card variant="outlined" key={img.id}>
-                                            <AspectRatio objectFit="cover">
-                                                <ImageListItem key={img.id} >
+                                            <CardActionArea href={img.NFTLink} target="_blank">
+                                                <AspectRatio objectFit="cover">
+                                                    <ImageListItem key={img.id} >
+                                                        <img
+                                                            src={img.imageURL}
+                                                            alt={img.imageURL}
+                                                            loading="lazy"
+                                                        />
+                                                    </ImageListItem>
+                                                </AspectRatio>
+                                            </CardActionArea>
+                                        </Card>);
+                                else
+                                    return (
+                                        <Card variant="outlined" sx={{ px: "10%", border: 0 }} key={img.id}>
+                                            <CardActionArea href={img.NFTLink} target="_blank">
+                                                <ImageListItem key={img.id}>
                                                     <img
                                                         src={img.imageURL}
                                                         alt={img.imageURL}
                                                         loading="lazy"
                                                     />
                                                 </ImageListItem>
-                                            </AspectRatio>
-                                        </Card>);
-                                else
-                                    return (<Card variant="outlined" sx={{ px: "10%", border: 0 }} key={img.id}>
-                                        <ImageListItem key={img.id}>
-                                            <img
-                                                src={img.imageURL}
-                                                alt={img.imageURL}
-                                                loading="lazy"
-                                            />
-                                        </ImageListItem>
-                                    </Card>);
+                                            </CardActionArea>
+                                        </Card>
+                                    );
                             })}
-                        </ImageList>
+                        </ImageList>) : (<Typography variant="body1" marginTop="2em" textAlign="center" gutterBottom>
+                            No data to show.
+                        </Typography>)}
                     </Container>
                 </Container>)}
         </Fragment>

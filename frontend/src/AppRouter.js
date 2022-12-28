@@ -9,12 +9,13 @@ import { connectWallet } from "./services/connectWallet";
 import { Context } from "./services/context";
 
 const App = () => {
-  const { setConnectedWallet } = useContext(Context);
+  const { setConnectedWallet, setWalletConnectAttempt } = useContext(Context);
 
   useEffect(() => {
     const testConnection = async () => {
       const { ethereum } = window;
       const accounts = await ethereum.request({ method: 'eth_accounts' });
+      setWalletConnectAttempt(true);
       if (accounts.length) {
         await connectWallet();
         setConnectedWallet(true);
@@ -23,7 +24,7 @@ const App = () => {
     };
 
     testConnection();
-  }, [setConnectedWallet]);
+  }, [setConnectedWallet, setWalletConnectAttempt]);
 
   return (
     <BrowserRouter>

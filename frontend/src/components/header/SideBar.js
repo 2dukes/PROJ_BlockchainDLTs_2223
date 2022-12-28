@@ -16,7 +16,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Context } from '../../services/context';
 
 const SideBar = ({ handleDrawerClose, open }) => {
-    const { connectedWallet, setConnectedWallet } = useContext(Context);
+    const { connectedWallet, setConnectedWallet, setWalletConnectAttempt } = useContext(Context);
     const { enqueueSnackbar } = useSnackbar();
     const location = useLocation();
     const theme = useTheme();
@@ -24,12 +24,14 @@ const SideBar = ({ handleDrawerClose, open }) => {
     const onClickConnectWallet = async () => {
         await connectWallet();
         setConnectedWallet(true);
+        setWalletConnectAttempt(true);
         enqueueSnackbar('Wallet connected!', { variant: "success" });
     };
 
     const onClickDisconnectWallet = () => {
         disconnectWallet();
         setConnectedWallet(false);
+        setWalletConnectAttempt(false);
         enqueueSnackbar('Wallet disconnected!', { variant: "success" });
     };
 

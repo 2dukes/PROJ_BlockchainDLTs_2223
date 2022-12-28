@@ -7,6 +7,7 @@ const app = express();
 const port = 8000;
 
 app.use(express.static(path.join(__dirname, 'public', 'campaigns'))); // http://localhost:8000/<campaign_addr>/<filename>.png
+app.use(express.static(path.join(__dirname, 'public', 'nfts')));
 const imageRoutes = require("./routes/image");
 const campaignRoutes = require("./routes/campaign");
 const requestRoutes = require("./routes/request");
