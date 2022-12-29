@@ -1,10 +1,16 @@
+import React from "react";
+import { useContext } from 'react';
 import { Toolbar, IconButton, Typography } from '@mui/material';
 import { Search, SearchIconWrapper, StyledInputBase, AppBar } from '../../styles/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link } from 'react-router-dom';
+import { Context } from "../../services/context";
 
 const TopBar = ({ handleDrawerOpen, open }) => {
+
+    const { setQuery } = useContext(Context);
+
     return (
         <AppBar position="fixed" open={open}>
             <Toolbar>
@@ -33,6 +39,7 @@ const TopBar = ({ handleDrawerOpen, open }) => {
                     <StyledInputBase
                         placeholder="Search…"
                         inputProps={{ 'aria-label': 'search' }}
+                        onChange={(e) => setQuery(e.target.value)}
                     />
                 </Search>
             </Toolbar>

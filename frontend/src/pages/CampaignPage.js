@@ -1,9 +1,10 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useContext } from 'react';
 import { Typography, Grid, Pagination, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import CampaignCard from "../components/campaign/CampaignCard";
 import CampaignDetails from '../components/campaign/CampaignDetails';
 import LoadingSpinner from '../components/progress/LoadingSpinner';
+import { Context } from '../services/context';
 
 const CAMPAIGNS_PER_PAGE = 4;
 
@@ -32,6 +33,7 @@ const CampaignPage = () => {
     const [totalCampaigns, setTotalCampaigns] = useState(1);
     const [selectedCampaignAddr, setSelectedCampaignAddr] = useState(null);
     const [campaigns, setCampaigns] = useState([]);
+    const { query } = useContext(Context);
 
     const theme = useTheme();
     const isReallySmall = useMediaQuery(theme.breakpoints.down('sm'));
@@ -81,7 +83,13 @@ const CampaignPage = () => {
                         <Grid container
                             alignItems="center"
                             justify="center" spacing={3}>
-                            {campaigns.slice(indexOfFirstResult, indexOfLastResult).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
+                            {campaigns.filter((val) => {
+                                if(query === "") {
+                                    return val;
+                                } else if (val.title.toLowerCase().includes(query.toLowerCase()) || val.description.toLowerCase().includes(query.toLowerCase())) {
+                                    return val;
+                                }
+                            }).slice(indexOfFirstResult, indexOfLastResult).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
                             <Grid item xs={12} display="flex" justifyContent="center">
                                 <Pagination size={isReallySmall ? "small" : "medium"} count={Math.ceil(totalCampaigns / CAMPAIGNS_PER_PAGE)} page={page} onChange={changePage} color="primary" />
                             </Grid>
