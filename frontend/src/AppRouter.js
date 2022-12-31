@@ -15,12 +15,12 @@ const App = () => {
     const testConnection = async () => {
       const { ethereum } = window;
       const accounts = await ethereum.request({ method: 'eth_accounts' });
-      setWalletConnectAttempt(true);
       if (accounts.length) {
         await connectWallet();
         setConnectedWallet(true);
         console.log(`You're connected to: ${accounts[0]}`);
       }
+      setWalletConnectAttempt(true);
     };
 
     testConnection();
