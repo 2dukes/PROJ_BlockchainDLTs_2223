@@ -27,7 +27,7 @@ const style = {
     p: 4
 };
 
-const CampaignDetails = ({ address, title, description, productPrice, unitsSold, balance, approversCount, maximumNFTContributors, minimumContribution, endDate, imageURL, modalOpen, setModalOpen }) => {
+const CampaignDetails = ({ address, title, description, productPrice, remainingDays, unitsSold, balance, approversCount, maximumNFTContributors, minimumContribution, endDate, imageURL, modalOpen, setModalOpen }) => {
     const { enqueueSnackbar } = useSnackbar();
     const { connectedWallet } = useContext(Context);
     const theme = useTheme();
@@ -76,7 +76,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
 
         const availableNFT = nftResultJSON.status;
         const tokenURI = availableNFT ? `https://gateway.pinata.cloud/ipfs/${nftResultJSON.IpfsHash}` : "";
-        
+
         console.log(tokenURI);
 
         const { ethereum } = window;
@@ -102,7 +102,7 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
 
                 enqueueSnackbar('You were awarded an NFT!', { variant: "success" });
             }
-            
+
             enqueueSnackbar('Successful donation!', { variant: "success" });
             return navigate(0);
         } catch (err) {
@@ -112,13 +112,14 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
         // Check update info
 
         setIsLoading(false);
-    } 
+    };
 
     const campaignProductData = {
         address,
         title,
         description,
         productPrice,
+        remainingDays,
         unitsSold,
         imageURL
     };
@@ -203,13 +204,13 @@ const CampaignDetails = ({ address, title, description, productPrice, unitsSold,
                                         id="minimum-contribution"
                                         type="number"
                                         value={amountToContribute}
-                                        onChange={(event) => setAmountToContribute(event.target.value)}
+                                        onChange={(event) => setAmountToContribute(event.target.value)}                                        
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
                                             inputProps: { min: 0, step: 0.1 }
                                         }}
                                     />
-                                    <Button sx={{ fontWeight: "bold", mt: 3 }} onClick={handleConfirm} variant="contained" color="primary" component="span">
+                                    <Button sx={{ fontWeight: "bold", mt: 3 }} onClick={handleConfirm} variant="contained" color="primary" component="span" disabled={remainingDays === "Campaign closed!"}>
                                         Contribute
                                     </Button>
                                 </Grid>

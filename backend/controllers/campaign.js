@@ -110,6 +110,8 @@ const getCampaigns = async (req, res, next) => {
             // Fetch title and description from MongoDB
             campaignStrDataPromises.push(Campaign.findOne({ id: campaignAddresses[i] }));
 
+            const remDays = Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true));
+
             campaignObjs[i] = {
                 address: campaignAddresses[i],
                 balance: web3.utils.fromWei(campaignData.at(-1)),
@@ -120,7 +122,7 @@ const getCampaigns = async (req, res, next) => {
                 targetValue: web3.utils.fromWei(campaignData[4]),
                 approversCount: campaignData[5],
                 endDate: dayjs.unix(campaignData[6]).format('DD/MM/YYYY'),
-                remainingDays: Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true)),
+                remainingDays: remDays > 0 ? `${remDays} days left` : (remDays === 0 ? (dayjs().isBefore(dayjs.unix(campaignData[6])) ? "Ends today!" : "Campaign closed!") : "Campaign closed!"),
                 unitsSold: campaignData[7],
                 productPrice: web3.utils.fromWei(campaignData[8]),
                 imageURL: `http://localhost:8000/${campaignAddresses[i]}/campaignImage.png`,
@@ -169,13 +171,13 @@ const getMyCampaigns = async (req, res, next) => {
 
         campaignAddresses = campaignAddresses.filter((_, idx) => campaignCreators[idx].toLowerCase() === personalAddress.toLowerCase());
         numCampaigns = campaignAddresses.length;
-        
+
         let indexOfLastResult = pageNumber * CAMPAIGNS_PER_PAGE;
         const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
         indexOfLastResult = (indexOfLastResult + 1 > numCampaigns) ? numCampaigns : indexOfLastResult;
-        
+
         const numberCampaignsToDisplay = indexOfLastResult - indexOfFirstResult;
-        
+
         campaignAddresses = campaignAddresses.filter((addr, idx) => idx >= indexOfFirstResult && idx < indexOfLastResult);
         campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
 
@@ -194,6 +196,8 @@ const getMyCampaigns = async (req, res, next) => {
             // Fetch title and description from MongoDB
             campaignStrDataPromises.push(Campaign.findOne({ id: campaignAddresses[i] }));
 
+            const remDays = Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true));
+
             campaignObjs[i] = {
                 address: campaignAddresses[i],
                 balance: web3.utils.fromWei(campaignData.at(-1)),
@@ -204,7 +208,7 @@ const getMyCampaigns = async (req, res, next) => {
                 targetValue: web3.utils.fromWei(campaignData[4]),
                 approversCount: campaignData[5],
                 endDate: dayjs.unix(campaignData[6]).format('DD/MM/YYYY'),
-                remainingDays: Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true)),
+                remainingDays: remDays > 0 ? `${remDays} days left` : (remDays === 0 ? (dayjs.unix(campaignData[6]) <= dayjs() ? "Ends today!" : "Campaign closed!") : "Campaign closed!"),
                 unitsSold: campaignData[7],
                 productPrice: web3.utils.fromWei(campaignData[8]),
                 imageURL: `http://localhost:8000/${campaignAddresses[i]}/campaignImage.png`,
@@ -253,16 +257,16 @@ const getContributedCampaigns = async (req, res, next) => {
 
         campaignAddresses = campaignAddresses.filter((_, idx) => parseInt(campaignApproverValues[idx]) > 0);
         numCampaigns = campaignAddresses.length;
-        
+
         let indexOfLastResult = pageNumber * CAMPAIGNS_PER_PAGE;
         const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
         indexOfLastResult = (indexOfLastResult + 1 > numCampaigns) ? numCampaigns : indexOfLastResult;
-        
+
         const numberCampaignsToDisplay = indexOfLastResult - indexOfFirstResult;
-        
+
         campaignAddresses = campaignAddresses.filter((addr, idx) => idx >= indexOfFirstResult && idx < indexOfLastResult);
         campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
-        
+
         let campaignObjs = new Array(numberCampaignsToDisplay).fill({});
 
         const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate", "unitsSold", "productPrice"];
@@ -278,6 +282,8 @@ const getContributedCampaigns = async (req, res, next) => {
             // Fetch title and description from MongoDB
             campaignStrDataPromises.push(Campaign.findOne({ id: campaignAddresses[i] }));
 
+            const remDays = Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true));
+
             campaignObjs[i] = {
                 address: campaignAddresses[i],
                 balance: web3.utils.fromWei(campaignData.at(-1)),
@@ -288,7 +294,7 @@ const getContributedCampaigns = async (req, res, next) => {
                 targetValue: web3.utils.fromWei(campaignData[4]),
                 approversCount: campaignData[5],
                 endDate: dayjs.unix(campaignData[6]).format('DD/MM/YYYY'),
-                remainingDays: Math.round(dayjs.unix(campaignData[6]).diff(dayjs(), 'day', true)),
+                remainingDays: remDays > 0 ? `${remDays} days left` : (remDays === 0 ? (dayjs.unix(campaignData[6]) <= dayjs() ? "Ends today!" : "Campaign closed!") : "Campaign closed!"),
                 unitsSold: campaignData[7],
                 productPrice: web3.utils.fromWei(campaignData[8]),
                 imageURL: `http://localhost:8000/${campaignAddresses[i]}/campaignImage.png`,

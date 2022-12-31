@@ -3,7 +3,7 @@ import { Box, Chip, Button, Card, CardContent, CardMedia, Typography, CardAction
 import ProductDeliveryForm from '../product/ProductDeliveryForm';
 import LoadingSpinner from '../progress/LoadingSpinner';
 
-const CampaignCardWithPrice = ({ address, title, description, productPrice, unitsSold, imageURL }) => {
+const CampaignCardWithPrice = ({ address, title, description, remainingDays, productPrice, unitsSold, imageURL }) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [ethPrice, setEthPrice] = useState(0);
@@ -60,7 +60,7 @@ const CampaignCardWithPrice = ({ address, title, description, productPrice, unit
                                 Ships worldwide.
                             </Typography>
                             <Box sx={{ mt: 2 }}>
-                                <Button variant="outlined" onClick={handleClickOpenDialog} sx={{ width: "100%" }}>
+                                <Button variant="outlined" onClick={handleClickOpenDialog} sx={{ width: "100%" }} disabled={remainingDays === "Campaign closed!"}>
                                     Buy Product
                                 </Button>
                             </Box>

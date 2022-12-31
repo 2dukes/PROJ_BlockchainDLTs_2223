@@ -55,7 +55,7 @@ const CampaignCard = ({ raisedValue, targetValue, remainingDays, imageURL, title
                     </Typography>
                     <LinearProgressWithLabel value={Math.round(raisedValue / targetValue * 100)} />
                     <Stack direction="row" alignItems="center" gap={1} marginTop="0.5em">
-                        <WatchLaterIcon color="disabled" /> {remainingDays > 0 ? `${remainingDays} days left` : ( remainingDays === 0 ? "Ends today!" : "Campaign closed!")}
+                        <WatchLaterIcon color="disabled" /> {remainingDays}
                         <Typography variant="body2" component="div" color="text.secondary">
                         </Typography>
                     </Stack>
