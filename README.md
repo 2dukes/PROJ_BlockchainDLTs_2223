@@ -2,7 +2,7 @@
 
 ## Setup
 
-Install [MetaMask](https://metamask.io/) on your browser. Create an `.env` file in the project's root folder with the following structure:
+Install [MetaMask](https://metamask.io/) on your browser and connect it to the Goerli test network. Create an `.env` file in the project's root folder with the following structure:
 
 ```
 ALCHEMY_API_URL = "https://eth-goerli.g.alchemy.com/v2/OMigXz2SzOnoSvOvI1YXiyDPDYRq6sUr"
@@ -18,14 +18,16 @@ PINATA_SECRET_API_KEY = "db6004caef4de67648925ba3f6356c4aad257b02024bb7eda06f2a3
 - `ALCHEMY_API_URL` which is Alchemy's API HTTPS entrypoint combined with the corresponding API Key.
 - `WALLET_PRIVATE_KEY` which is your MetaMask's wallet private key.
 - `ETHERSCAN_API_KEY` which is the Etherscan API key.
-- `CAMPAIGN_CONTRACT_ADDR` which holds the address of the deployed campaign contract, as it will be seen in the next steps.
+- `CAMPAIGN_CONTRACT_ADDR` which holds the address of the deployed campaign factory contract, as it will be seen in the next steps.
 - `MONGO_DB_ATLAS_USERNAME` is the MongoDB container `MONGO_INITDB_ROOT_USERNAME` variable.
 - `MONGO_DB_ATLAS_PASSWORD` is the MongoDB container `MONGO_INITDB_ROOT_PASSWORD` variable.
 - `PINATA_API_KEY` is the Pinata API key.
 - `PINATA_SECRET_API_KEY` is the Pinata API key secret.
+
 ## How to get Ether in your wallet?
 
 Welcome the [Goerli Faucet](https://goerlifaucet.com/).
+
 ## Deploy Contracts
 
 - Navigate to the `solidity/` folder. 
