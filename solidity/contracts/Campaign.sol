@@ -271,11 +271,11 @@ contract Campaign {
         return requests.length;
     }
 
-    /** @notice Tells if a certain user has already contributed to a certain campaign.
+    /** @notice Tells if a certain user has already contributed to a certain campaign request.
         @param idx The index of the corresponding request in the Requests array.
         @return requestState Either the user has already contributed or not. 
      */
-    function hasApprovedCampaign(uint256 idx, address sender) external view returns (RequestState requestState) {
+    function hasApprovedRequest(uint256 idx, address sender) external view returns (RequestState requestState) {
         return requests[idx].approvals[sender];
     }
 

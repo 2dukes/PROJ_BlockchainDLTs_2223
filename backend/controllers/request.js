@@ -42,7 +42,7 @@ const getRequestDetails = async (req, res, next) => {
 
         for (let i = 0; i < requestsStr.length; i++) {
             requestPromises.push(campaignContract.methods.requests(i).call());
-            isApprovedPromises.push(campaignContract.methods.hasApprovedCampaign(i, personalAddress).call());
+            isApprovedPromises.push(campaignContract.methods.hasApprovedRequest(i, personalAddress).call());
         }
 
         const requestData = await Promise.all(requestPromises);
