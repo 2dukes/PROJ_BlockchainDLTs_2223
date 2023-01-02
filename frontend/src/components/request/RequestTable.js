@@ -110,11 +110,11 @@ const RequestTable = ({ address, setTab }) => {
 
     return (
         <Fragment>
-            {requests !== undefined && requests.length === 0 ? (<Typography variant="body1" component="span">
+            {requests !== null && requests.length === 0 ? (<Typography variant="body1" component="span">
                 No requests available.
             </Typography>) : (isLoading && <LoadingSpinner borderRadius="20px" />)}
             {
-                (requests !== undefined && requests.length > 0) && (<Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                (requests !== null && requests.length > 0) && (<Paper sx={{ width: '100%', overflow: 'hidden' }}>
                     {isLoading ? <LoadingSpinner borderRadius="20px" /> : (
                         <Fragment>
                             <TableContainer sx={{ maxHeight: 440 }}>
