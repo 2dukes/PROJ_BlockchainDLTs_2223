@@ -254,6 +254,7 @@ contract Campaign {
             request.approvalValue > (raisedValue / 2),
             "Not enough approvers."
         ); // Rounded towards 0
+        require(address(this).balance >= request.value, "Not enough funds.");
 
         // Transfer funds to campaignCreator and charge 2% fee
         uint8 royaltyFeePercentage = 2;
@@ -275,7 +276,11 @@ contract Campaign {
         @param idx The index of the corresponding request in the Requests array.
         @return requestState Either the user has already contributed or not. 
      */
-    function hasApprovedRequest(uint256 idx, address sender) external view returns (RequestState requestState) {
+    function hasApprovedRequest(uint256 idx, address sender)
+        external
+        view
+        returns (RequestState requestState)
+    {
         return requests[idx].approvals[sender];
     }
 
