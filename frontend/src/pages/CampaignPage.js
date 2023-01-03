@@ -8,8 +8,8 @@ import { Context } from '../services/context';
 
 const CAMPAIGNS_PER_PAGE = 4;
 
-const fetchCampaigns = async (pageNumber) => {
-    const data = { pageNumber, campaignsPerPage: CAMPAIGNS_PER_PAGE};
+const fetchCampaigns = async (pageNumber, query) => {
+    const data = query === "" ? { pageNumber, campaignsPerPage: CAMPAIGNS_PER_PAGE } : { pageNumber, campaignsPerPage: CAMPAIGNS_PER_PAGE, searchQuery: query};
     const queryParams = Object.keys(data)
         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
         .join('&');
@@ -34,23 +34,37 @@ const CampaignPage = () => {
     const [selectedCampaignAddr, setSelectedCampaignAddr] = useState(null);
     const [campaigns, setCampaigns] = useState([]);
     const { query } = useContext(Context);
+    const [prevQuery, setPrevQuery] = useState("");
 
     const theme = useTheme();
     const isReallySmall = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         const fetchData = async () => {
-            if (isNextPage) {
+            if(isNextPage || query !== prevQuery) {
                 setIsLoading(true);
-                const campaignData = await fetchCampaigns(page);
-                setCampaigns(prevCampaigns => [...prevCampaigns, ...campaignData.campaigns]);
-                setTotalCampaigns(campaignData.numCampaigns);
+                if(query !== prevQuery) {
+                    const campaignData = await fetchCampaigns(1, query);
+                    console.log(campaignData);
+                    setCampaigns(campaignData.campaigns);
+                    setTotalCampaigns(campaignData.numCampaigns);
+                    setPrevQuery(query);
+                    setPage(1);
+                    setIsNextPage(false);
+                    setHighestPageNumber(0);
+                } else {
+                    const campaignData = await fetchCampaigns(page, query);
+                    console.log(campaignData);
+                    setCampaigns(prevCampaigns => [...prevCampaigns, ...campaignData.campaigns]);
+                    setTotalCampaigns(campaignData.numCampaigns);
+                }
                 setIsLoading(false);
             }
+            
         };
 
         fetchData();
-    }, [page, isNextPage]);
+    }, [page, isNextPage, query, prevQuery]);
 
     const changePage = (_, newPageNumber) => {
         if (newPageNumber > highestPageNumber) {
@@ -83,13 +97,7 @@ const CampaignPage = () => {
                         <Grid container
                             alignItems="center"
                             justify="center" spacing={3}>
-                            {campaigns.filter((val) => {
-                                if(query === "") {
-                                    return val;
-                                } else if (val.title.toLowerCase().includes(query.toLowerCase()) || val.description.toLowerCase().includes(query.toLowerCase())) {
-                                    return val;
-                                }
-                            }).slice(indexOfFirstResult, indexOfLastResult).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
+                            {campaigns.slice(indexOfFirstResult, indexOfLastResult).map(campaign => <Grid item xs={12} md={6} key={campaign.address} onClick={updateSelectedCampaign.bind(null, campaign.address)}><CampaignCard {...campaign} setModalOpen={setModalOpen} /></Grid>)}
                             <Grid item xs={12} display="flex" justifyContent="center">
                                 <Pagination size={isReallySmall ? "small" : "medium"} count={Math.ceil(totalCampaigns / CAMPAIGNS_PER_PAGE)} page={page} onChange={changePage} color="primary" />
                             </Grid>

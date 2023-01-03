@@ -6,10 +6,19 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link } from 'react-router-dom';
 import { Context } from "../../services/context";
+import { useLocation } from "react-router-dom";
 
 const TopBar = ({ handleDrawerOpen, open }) => {
 
     const { setQuery } = useContext(Context);
+    const location = useLocation();
+    const displaySearch = location.pathname === "/";
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            setQuery(event.target.value);
+        }
+      };
 
     return (
         <AppBar position="fixed" open={open}>
@@ -32,16 +41,18 @@ const TopBar = ({ handleDrawerOpen, open }) => {
                         DApp: Crowdfunding Reinvented
                     </Typography>
                 </Link>
-                <Search>
+                { displaySearch && (
+                    <Search>
                     <SearchIconWrapper>
                         <SearchIcon />
                     </SearchIconWrapper>
                     <StyledInputBase
                         placeholder="Search…"
                         inputProps={{ 'aria-label': 'search' }}
-                        onChange={(e) => setQuery(e.target.value)}
+                        onKeyDown={handleKeyDown}
                     />
                 </Search>
+                )}
             </Toolbar>
         </AppBar>
     );

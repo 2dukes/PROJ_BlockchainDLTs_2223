@@ -76,39 +76,46 @@ const getCampaignDetails = async (req, res, next) => {
 const getCampaigns = async (req, res, next) => {
     const pageNumber = req.query.pageNumber;
     const CAMPAIGNS_PER_PAGE = req.query.campaignsPerPage;
+    const searchQuery = (req.query.searchQuery) ? req.query.searchQuery : "";
 
     try {
         let numCampaigns = await campaignFactoryContract.methods.getCampaignsCount().call();
         let campaignPromises = [];
 
+        for (let i = 0; i < numCampaigns; i++)
+            campaignPromises.push(campaignFactoryContract.methods.campaigns(i).call());
+
+        let campaignAddresses = await Promise.all(campaignPromises);
+
+        const campaignStrData = await Campaign.find({ $or: [ { title: { $regex: searchQuery, '$options': 'i' } }, { description: { $regex: searchQuery, '$options': 'i' } } ] });
+        numCampaigns = campaignStrData.length;
+        console.log(campaignStrData);
+        const campaingsIds = campaignStrData.map(a => a.id.toLowerCase());
+
+        campaignAddresses = campaignAddresses.filter((addr, idx) => campaingsIds.includes(addr.toLowerCase()));
+
         let indexOfLastResult = pageNumber * CAMPAIGNS_PER_PAGE;
         const indexOfFirstResult = indexOfLastResult - CAMPAIGNS_PER_PAGE;
         indexOfLastResult = (indexOfLastResult + 1 > numCampaigns) ? numCampaigns : indexOfLastResult;
 
-        const numberCampaignsToDisplay = indexOfLastResult - indexOfFirstResult;
-
-        for (let i = indexOfFirstResult; i < indexOfLastResult; i++)
-            campaignPromises.push(campaignFactoryContract.methods.campaigns(i).call());
-
-        const campaignAddresses = await Promise.all(campaignPromises);
-
-        // console.log(campaignAddresses);
-
+        campaignAddresses = campaignAddresses.filter((addr, idx) => idx >= indexOfFirstResult && idx < indexOfLastResult);
+        campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
+        const numberCampaignsToDisplay = campaignContracts.length;
+        
         let campaignObjs = new Array(numberCampaignsToDisplay).fill({});
-        let campaignContracts = campaignAddresses.map(addr => new web3.eth.Contract(campaign.abi, addr));
 
         const methodNames = ["campaignCreator", "minimumContribution", "maximumNFTContributors", "raisedValue", "targetValue", "approversCount", "endDate", "unitsSold", "productPrice"];
-
-        let campaignStrDataPromises = [];
 
         for (let i = 0; i < numberCampaignsToDisplay; i++) {
             // Fetch data from Campaign contract
             const campaignDataPromises = methodNames.map(name => campaignContracts[i].methods[name]().call());
+
             campaignDataPromises.push(web3.eth.getBalance(campaignAddresses[i])); // Get Balance
             const campaignData = await Promise.all(campaignDataPromises);
 
-            // Fetch title and description from MongoDB
-            campaignStrDataPromises.push(Campaign.findOne({ id: campaignAddresses[i] }));
+            let campaignDetails = campaignStrData.filter(campaign => {
+                return campaign.id === campaignAddresses[i];
+            });
 
             campaignObjs[i] = {
                 address: campaignAddresses[i],
@@ -124,23 +131,17 @@ const getCampaigns = async (req, res, next) => {
                 unitsSold: campaignData[7],
                 productPrice: web3.utils.fromWei(campaignData[8]),
                 imageURL: `http://localhost:8000/${campaignAddresses[i]}/campaignImage.png`,
+                title: campaignDetails[0].title,
+                description: campaignDetails[0].description
             };
         }
-
-        const campaignStrData = await Promise.all(campaignStrDataPromises);
-
-        for (let i = 0; i < numberCampaignsToDisplay; i++) {
-            campaignObjs[i].title = campaignStrData[i].title;
-            campaignObjs[i].description = campaignStrData[i].description;
-        }
-
-        // console.log(campaignObjs);
 
         return res.status(200).json({
             campaigns: campaignObjs,
             numCampaigns: parseInt(numCampaigns)
         });
     } catch (err) {
+        console.log(err);
         next(err);
     }
 };
