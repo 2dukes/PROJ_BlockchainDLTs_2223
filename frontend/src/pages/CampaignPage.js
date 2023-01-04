@@ -1,14 +1,15 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useContext } from 'react';
 import { Typography, Grid, Pagination, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import CampaignCard from "../components/campaign/CampaignCard";
 import CampaignDetails from '../components/campaign/CampaignDetails';
 import LoadingSpinner from '../components/progress/LoadingSpinner';
+import { Context } from '../services/context';
 
 const CAMPAIGNS_PER_PAGE = 4;
 
-const fetchCampaigns = async (pageNumber) => {
-    const data = { pageNumber, campaignsPerPage: CAMPAIGNS_PER_PAGE};
+const fetchCampaigns = async (pageNumber, query) => {
+    const data = query === "" ? { pageNumber, campaignsPerPage: CAMPAIGNS_PER_PAGE } : { pageNumber, campaignsPerPage: CAMPAIGNS_PER_PAGE, searchQuery: query};
     const queryParams = Object.keys(data)
         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
         .join('&');
@@ -29,26 +30,41 @@ const CampaignPage = () => {
     const [highestPageNumber, setHighestPageNumber] = useState(1);
     const [isNextPage, setIsNextPage] = useState(true);
     const [page, setPage] = useState(1);
-    const [totalCampaigns, setTotalCampaigns] = useState(1);
+    const [totalCampaigns, setTotalCampaigns] = useState(0);
     const [selectedCampaignAddr, setSelectedCampaignAddr] = useState(null);
     const [campaigns, setCampaigns] = useState([]);
+    const { query } = useContext(Context);
+    const [prevQuery, setPrevQuery] = useState("");
 
     const theme = useTheme();
     const isReallySmall = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         const fetchData = async () => {
-            if (isNextPage) {
+            if(isNextPage || query !== prevQuery) {
                 setIsLoading(true);
-                const campaignData = await fetchCampaigns(page);
-                setCampaigns(prevCampaigns => [...prevCampaigns, ...campaignData.campaigns]);
-                setTotalCampaigns(campaignData.numCampaigns);
+                if(query !== prevQuery) {
+                    const campaignData = await fetchCampaigns(1, query);
+                    console.log(campaignData);
+                    setCampaigns(campaignData.campaigns);
+                    setTotalCampaigns(campaignData.numCampaigns);
+                    setPrevQuery(query);
+                    setPage(1);
+                    setIsNextPage(false);
+                    setHighestPageNumber(0);
+                } else {
+                    const campaignData = await fetchCampaigns(page, query);
+                    console.log(campaignData);
+                    setCampaigns(prevCampaigns => [...prevCampaigns, ...campaignData.campaigns]);
+                    setTotalCampaigns(campaignData.numCampaigns);
+                }
                 setIsLoading(false);
             }
+            
         };
 
         fetchData();
-    }, [page, isNextPage]);
+    }, [page, isNextPage, query, prevQuery]);
 
     const changePage = (_, newPageNumber) => {
         if (newPageNumber > highestPageNumber) {

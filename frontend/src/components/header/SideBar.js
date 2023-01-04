@@ -16,7 +16,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Context } from '../../services/context';
 
 const SideBar = ({ handleDrawerClose, open }) => {
-    const { connectedWallet, setConnectedWallet, setWalletConnectAttempt } = useContext(Context);
+    const { connectedWallet, setConnectedWallet, setWalletConnectAttempt, setQuery } = useContext(Context);
     const { enqueueSnackbar } = useSnackbar();
     const location = useLocation();
     const theme = useTheme();
@@ -38,7 +38,7 @@ const SideBar = ({ handleDrawerClose, open }) => {
     const sideBarNames = ['All Campaigns', 'Create Campaign', 'Create Request', 'My Profile', connectedWallet ? 'Disconnect Wallet' : 'Connect Wallet'];
     const linkTo = ["/", "/campaign/new", "/request/new", "/profile", undefined];
     const sideBarIcons = [<CampaignIcon />, <AddCircleIcon />, <CreateIcon />, <AccountCircleIcon />, connectedWallet ? <LockOpenIcon /> : <LockIcon />];
-    const onClickActions = [() => { }, () => { }, () => { }, () => { }, connectedWallet ? onClickDisconnectWallet : onClickConnectWallet];
+    const onClickActions = [() => setQuery(""), () => setQuery(""), () => setQuery(""), () => setQuery(""), connectedWallet ? onClickDisconnectWallet : onClickConnectWallet];
 
     return (
         <Drawer
