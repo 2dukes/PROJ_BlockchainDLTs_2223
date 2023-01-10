@@ -35,10 +35,18 @@ const SideBar = ({ handleDrawerClose, open }) => {
         enqueueSnackbar('Wallet disconnected!', { variant: "success" });
     };
 
+    const visitProfileAction = (e) => {
+        if(!connectedWallet) {
+            e.preventDefault();
+            enqueueSnackbar('Please connect MetaMask!', { variant: "error" });
+        }
+        setQuery("");
+    }
+
     const sideBarNames = ['All Campaigns', 'Create Campaign', 'Create Request', 'My Profile', connectedWallet ? 'Disconnect Wallet' : 'Connect Wallet'];
     const linkTo = ["/", "/campaign/new", "/request/new", "/profile", undefined];
     const sideBarIcons = [<CampaignIcon />, <AddCircleIcon />, <CreateIcon />, <AccountCircleIcon />, connectedWallet ? <LockOpenIcon /> : <LockIcon />];
-    const onClickActions = [() => setQuery(""), () => setQuery(""), () => setQuery(""), () => setQuery(""), connectedWallet ? onClickDisconnectWallet : onClickConnectWallet];
+    const onClickActions = [() => setQuery(""), () => setQuery(""), () => setQuery(""), visitProfileAction, connectedWallet ? onClickDisconnectWallet : onClickConnectWallet];
 
     return (
         <Drawer
