@@ -122,7 +122,7 @@ const RequestTable = ({ address, setTab }) => {
                                     <TableHead>
                                         <TableRow>
                                             {columns.map((column) => {
-                                                if ((column.id === "approve" && isCampaignContributor) || (column.id === "finalize" && isCampaignContributor) || (column.id !== "approve" && column.id !== "finalize"))
+                                                if ((column.id === "approve" && isCampaignContributor) || (column.id === "finalize" && isCampaignCreator) || (column.id !== "approve" && column.id !== "finalize"))
                                                     return (<TableCell
                                                         key={column.id}
                                                         style={{ minWidth: column.minWidth, fontWeight: "bold" }}
