@@ -2,7 +2,7 @@
 
 ## Setup
 
-Install [MetaMask](https://metamask.io/) on your browser and connect it to the Goerli test network. Create an `.env` file in the project's root folder with the following structure:
+Install [MetaMask](https://metamask.io/) on your browser and **connect it to the Goerli test network**. Create an `.env` file in the project's root folder with the following structure:
 
 ```
 ALCHEMY_API_URL = "https://eth-goerli.g.alchemy.com/v2/OMigXz2SzOnoSvOvI1YXiyDPDYRq6sUr"
@@ -15,14 +15,14 @@ PINATA_API_KEY = "d2521bdd89920f00a4af"
 PINATA_SECRET_API_KEY = "db6004caef4de67648925ba3f6356c4aad257b02024bb7eda06f2a3bf7f55bfd"
 ```
 
-- `ALCHEMY_API_URL` which is Alchemy's API HTTPS entrypoint combined with the corresponding API Key.
-- `WALLET_PRIVATE_KEY` which is your MetaMask's wallet private key.
-- `ETHERSCAN_API_KEY` which is the Etherscan API key.
+- `ALCHEMY_API_URL` which is [Alchemy's API](https://dashboard.alchemy.com/mempool) HTTPS entrypoint combined with the corresponding API Key.
+- `WALLET_PRIVATE_KEY` which is your [MetaMask's wallet](https://metamask.io/) private key.
+- `ETHERSCAN_API_KEY` which is the [Etherscan API](https://goerli.etherscan.io/apidoc) key.
 - `CAMPAIGN_CONTRACT_ADDR` which holds the address of the deployed campaign factory contract, as it will be seen in the next steps.
-- `MONGO_DB_ATLAS_USERNAME` is the MongoDB container `MONGO_INITDB_ROOT_USERNAME` variable.
-- `MONGO_DB_ATLAS_PASSWORD` is the MongoDB container `MONGO_INITDB_ROOT_PASSWORD` variable.
-- `PINATA_API_KEY` is the Pinata API key.
-- `PINATA_SECRET_API_KEY` is the Pinata API key secret.
+- `MONGO_DB_ATLAS_USERNAME` is the MongoDB container `MONGO_INITDB_ROOT_USERNAME` variable, as shown in the [docker-compose.yml](./docker-compose.yml).
+- `MONGO_DB_ATLAS_PASSWORD` is the MongoDB container `MONGO_INITDB_ROOT_PASSWORD` variable, as shown in the [docker-compose.yml](./docker-compose.yml)
+- `PINATA_API_KEY` is the [Pinata API](https://www.pinata.cloud/) key.
+- `PINATA_SECRET_API_KEY` is the [Pinata API](https://www.pinata.cloud/) key secret.
 
 ## How to get Ether in your wallet?
 
@@ -35,7 +35,7 @@ Welcome the [Goerli Faucet](https://goerlifaucet.com/).
 - Deploy:
     - [CampaignFactory.sol](./solidity/contracts/CampaignFactory.sol) using `npx hardhat run scripts/deployCampaign.mjs --network goerli`.
 
-According to Hardhat's configurations, the deployment already includes the verification of the contracts in the Goerli Network, which an Ethereum Testnet. This means that the code of the Smart Contract is visible to everyone in [Etherscan](https://goerli.etherscan.io/).
+According to Hardhat's configurations, the deployment already includes verifying the contracts in the Goerli Network, which is an Ethereum Testnet. This means that the code of the Smart Contract is visible to everyone in [Etherscan](https://goerli.etherscan.io/).
 
 ## Frontend Running instructions:
 
@@ -45,14 +45,23 @@ According to Hardhat's configurations, the deployment already includes the verif
 
 > `docker-compose up --build`
 
-## Dependencies (*so far*):
+## Architecture
+
+![](./images/Architecture.png)
+
+## Dependencies:
 
 - [Material UI](https://mui.com/material-ui/getting-started/overview/) which is a library of React UI components that implements Google's Material Design.
-- [Hardhat](https://hardhat.org/) which is an Ethereum development environment for professionals. It facilitates performing frequent tasks, such as running tests, automatically checking code for mistakes or interacting with a Smart Contract.
+- [Hardhat](https://hardhat.org/) which is an Ethereum development environment for professionals. It facilitates performing frequent tasks, such as running tests, automatically checking code for mistakes, or interacting with a Smart Contract.
 - [OpenZeppelin](https://www.openzeppelin.com/) which provides security products to build, automate, and operate decentralized applications.
 - [MetaMask](https://metamask.io/) which holds the crypto wallet.
-- [Web3](https://web3js.readthedocs.io/en/v1.8.1/).
-- [Pinata](https://www.pinata.cloud/)
+- [Web3.js](https://web3js.readthedocs.io/en/v1.8.1/).
+- [Pinata](https://www.pinata.cloud/).
+- [Mongoose](https://mongoosejs.com/docs/documents.html).
+- [Alchemy](https://docs.alchemy.com/).
+- [ReactJS](https://reactjs.org/docs/getting-started.html).
+- [NodeJS](https://nodejs.org/api/).
+- [IPFS](https://ipfs.tech/).
 
 **References:**
 - [Solidity Documentation](https://docs.soliditylang.org/en/v0.8.17/index.html);
@@ -64,4 +73,4 @@ According to Hardhat's configurations, the deployment already includes the verif
 
 ## Contract Documentation
 
-To generate the Solidity contract's documentation, first install the Solidity Compiler, [solc](https://docs.soliditylang.org/en/v0.8.17/installing-solidity.html#clone-the-repository). Then run `solc --pretty-json --devdoc /path/to/solidity/file`.
+To generate the Solidity contract's documentation, first install the Solidity Compiler, [solc](https://docs.soliditylang.org/en/v0.8.17/installing-solidity.html#clone-the-repository). Then run `solc --pretty-json --devdoc /path/to/solidity/file`. Beware that you may have to change the source slightly due to OpenZeppelin dependencies.
