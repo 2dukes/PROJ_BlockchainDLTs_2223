@@ -13,10 +13,13 @@ const fetchCampaigns = async (pageNumber, query) => {
     const queryParams = Object.keys(data)
         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
         .join('&');
-
-    const campaignResult = await fetch("http://localhost:8000/campaigns?" + queryParams);
-
+    
+    let campaignResult = await fetch("http://localhost:8000/campaigns?" + queryParams);
+    while(!(campaignResult.status === 200)) 
+        campaignResult = await fetch("http://localhost:8000/campaigns?" + queryParams);
+    
     const campaignResultJSON = await campaignResult.json();
+    
 
     return {
         campaigns: campaignResultJSON.campaigns,

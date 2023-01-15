@@ -19,7 +19,9 @@ const fetchCampaigns = async (pageNumber, isContributed = false) => {
         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
         .join('&');
 
-    const campaignResult = await fetch(`http://localhost:8000/campaigns/${isContributed ? "contribute" : "personal"}/${ethereum.selectedAddress}?` + queryParams);
+    let campaignResult = await fetch(`http://localhost:8000/campaigns/${isContributed ? "contribute" : "personal"}/${ethereum.selectedAddress}?` + queryParams);
+    while(!(campaignResult.status === 200))
+        campaignResult = await fetch(`http://localhost:8000/campaigns/${isContributed ? "contribute" : "personal"}/${ethereum.selectedAddress}?` + queryParams);
 
     const campaignResultJSON = await campaignResult.json();
 
