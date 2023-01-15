@@ -1,5 +1,9 @@
 # DApp: Crowdfunding Reinvented
 
+## Documents
+
+In the repository, we can find the [project's report](./Report.pdf) and a [demo](./Demo.mkv) of the DApp. 
+
 ## Setup
 
 Install [MetaMask](https://metamask.io/) on your browser and **connect it to the Goerli test network**. Create an `.env` file in the project's root folder with the following structure:
