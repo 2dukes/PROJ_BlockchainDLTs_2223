@@ -27,7 +27,7 @@ const style = {
     p: 4
 };
 
-const CampaignDetails = ({ address, title, description, productPrice, remainingDays, unitsSold, balance, approversCount, maximumNFTContributors, minimumContribution, endDate, imageURL, modalOpen, setModalOpen }) => {
+const CampaignDetails = ({ campaignCreator, address, title, description, productPrice, remainingDays, unitsSold, balance, approversCount, maximumNFTContributors, minimumContribution, endDate, imageURL, modalOpen, setModalOpen }) => {
     const { enqueueSnackbar } = useSnackbar();
     const { connectedWallet } = useContext(Context);
     const theme = useTheme();
@@ -126,7 +126,7 @@ const CampaignDetails = ({ address, title, description, productPrice, remainingD
 
     const items = [
         {
-            header: address,
+            header: campaignCreator,
             meta: "Address of Manager",
             description:
                 "The manager created this campaign and can create requests to withdraw money.",
