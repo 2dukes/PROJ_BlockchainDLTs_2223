@@ -2,7 +2,7 @@
 
 ## Documents
 
-In the repository, we can find the [project's report](./Report.pdf) and a [demo](./Demo.mkv) of the DApp. 
+In the repository, we can find the [project's report](./Report.pdf), a [video demo](./Demo.mkv), and a [presentation](./presentation.pdf) of the DApp.
 
 ## Setup
 
@@ -11,12 +11,12 @@ Install [MetaMask](https://metamask.io/) on your browser and **connect it to the
 ```
 ALCHEMY_API_URL = "https://eth-goerli.g.alchemy.com/v2/OMigXz2SzOnoSvOvI1YXiyDPDYRq6sUr"
 WALLET_PRIVATE_KEY = "..."
-ETHERSCAN_API_KEY = "1CIKT13TG7M115V5CQSRCT2QKGIIUZEYIX"
+ETHERSCAN_API_KEY = "..."
 CAMPAIGN_CONTRACT_ADDR = "..."
 MONGO_DB_ATLAS_USERNAME = "admin"
 MONGO_DB_ATLAS_PASSWORD = "UTJtbKxUzoxQ3arP"
-PINATA_API_KEY = "d2521bdd89920f00a4af"
-PINATA_SECRET_API_KEY = "db6004caef4de67648925ba3f6356c4aad257b02024bb7eda06f2a3bf7f55bfd"
+PINATA_API_KEY = "..."
+PINATA_SECRET_API_KEY = "..."
 ```
 
 - `ALCHEMY_API_URL` which is [Alchemy's API](https://dashboard.alchemy.com/mempool) HTTPS entrypoint combined with the corresponding API Key.
